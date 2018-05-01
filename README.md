@@ -1,2 +1,3 @@
 # NanoJ-Fluidics
-Manual, source-code and binaries for the NanoJ-Fluidics project
+Source coude page for the software components of the NanoJ-Fluidics project.
+More information can be found at: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki
