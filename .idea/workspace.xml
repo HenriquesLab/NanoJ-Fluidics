@@ -76,7 +76,7 @@
     <property name="Downloaded.Files.Path.Enabled" value="true" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.16692914" />
     <property name="project.structure.side.proportion" value="0.30827066" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/Pumps/pumpControl.dummy/META-INF" />
@@ -396,7 +396,7 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>8.0</last-edited>
+          <last-edited>1.8</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
