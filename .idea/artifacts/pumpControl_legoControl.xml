@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="pumpControl.legoControl">
+    <output-path>$PROJECT_DIR$/Jars</output-path>
+    <root id="archive" name="pumpControl.legoControl.jar">
+      <element id="module-output" name="NanoJ-Fluidics" />
+      <element id="module-output" name="pumpControl.legoControl" />
+      <element id="directory" name="META-INF">
+        <element id="dir-copy" path="$PROJECT_DIR$/Pumps/pumpControl.legoControl/META-INF" />
+      </element>
+    </root>
+  </artifact>
+</component>
