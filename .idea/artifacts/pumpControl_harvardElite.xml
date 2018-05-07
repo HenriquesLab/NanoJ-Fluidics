@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="pumpControl.harvardElite">
+    <output-path>$PROJECT_DIR$/PumpPlugins</output-path>
+    <root id="archive" name="pumpControl.harvardElite.jar">
+      <element id="module-output" name="pumpControl.harvardElite" />
+      <element id="directory" name="META-INF">
+        <element id="dir-copy" path="$PROJECT_DIR$/Pumps/pumpControl.harvardElite/META-INF" />
+      </element>
+    </root>
+  </artifact>
+</component>

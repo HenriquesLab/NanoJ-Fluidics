@@ -3,10 +3,10 @@
     <output-path>$PROJECT_DIR$</output-path>
     <root id="archive" name="NanoJ-Fluidics.jar">
       <element id="module-output" name="NanoJ-Fluidics" />
-      <element id="module-output" name="pumpControl_SA" />
       <element id="directory" name="META-INF">
-        <element id="dir-copy" path="$PROJECT_DIR$/Pumps/pumpControl_SA/src/META-INF" />
+        <element id="dir-copy" path="$PROJECT_DIR$/Applications/pumpControl_SA/src/META-INF" />
       </element>
+      <element id="module-output" name="pumpControl_SA" />
     </root>
   </artifact>
 </component>
