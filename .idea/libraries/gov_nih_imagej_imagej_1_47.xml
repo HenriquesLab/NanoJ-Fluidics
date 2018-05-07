@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="gov.nih.imagej:imagej:1.47" type="repository">
+    <properties maven-id="gov.nih.imagej:imagej:1.47" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Libraries/imagej-1.47.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

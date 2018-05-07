@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="org.apache.commons:commons-lang3:3.3.2" type="repository">
+    <properties maven-id="org.apache.commons:commons-lang3:3.3.2" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/commons-lang3-3.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
