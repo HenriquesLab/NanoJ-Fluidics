@@ -32,13 +32,9 @@ public class Step extends Observable{
     public static final String[] VOLUME_UNITS = {"ul","ml"};
     public static final String INFUSE = "Infuse";
     public static final String WITHDRAW = "Withdraw";
-    public static final String UP = new String(Character.toChars(9650));
     public static final String UP_TEXT = "Replace previous step with this one";
-    public static final String DOWN = new String(Character.toChars(9660));
     public static final String DOWN_TEXT = "Replace next step with this one";
-    public static final String DUPLICATE = "+";
     public static final String DUPLICATE_TEXT = "Duplicate this step";
-    public static final String EXPIRE = "X";
     public static final String EXPIRE_TEXT = "Remove step";
 
     private Listener listener = new Listener();
@@ -141,6 +137,30 @@ public class Step extends Observable{
     class ButtonPanel extends Container {
 
         ButtonPanel() {
+
+            int height = 21;
+
+            int width = 21;
+
+            ImageIcon up = new ImageIcon();
+            ImageIcon down = new ImageIcon();
+            ImageIcon duplicate = new ImageIcon();
+            ImageIcon expire = new ImageIcon();
+            try {
+                up = new ImageIcon(Step.class.getResource("/up.png"));
+                down  = new ImageIcon(Step.class.getResource("/down.png"));
+                duplicate = new ImageIcon(Step.class.getResource("/duplicate.png"));
+                expire = new ImageIcon(Step.class.getResource("/expire.png"));
+
+                up = new ImageIcon(up.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+                down  = new ImageIcon(down.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+                duplicate = new ImageIcon(duplicate.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+                expire = new ImageIcon(expire.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             this.setLayout(new GridBagLayout());
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -148,31 +168,30 @@ public class Step extends Observable{
 
             constraints.gridx = 0;
             constraints.gridy = 0;
-            this.add(new StepButton(UP, UP_TEXT), constraints);
+            this.add(new StepButton(up, UP_TEXT), constraints);
 
             constraints.gridx = 1;
             constraints.gridy = 0;
-            this.add(new StepButton(DOWN, DOWN_TEXT), constraints);
+            this.add(new StepButton(down, DOWN_TEXT), constraints);
 
             constraints.gridx = 2;
             constraints.gridy = 0;
-            this.add(new StepButton(DUPLICATE, DUPLICATE_TEXT), constraints);
+            this.add(new StepButton(duplicate, DUPLICATE_TEXT), constraints);
 
             constraints.gridx = 3;
             constraints.gridy = 0;
-            this.add(new StepButton(EXPIRE, EXPIRE_TEXT), constraints);
+            this.add(new StepButton(expire, EXPIRE_TEXT), constraints);
 
-            int height = 21;
-
-            int width = height*4;
+            height = 24;
+            width = height * 4;
 
             this.setPreferredSize(new Dimension(width,height));
         }
 
         class StepButton extends JButton {
 
-            StepButton(String text, String tooltip) {
-                super(text);
+            StepButton(ImageIcon icon, String tooltip) {
+                super(icon);
                 this.addActionListener(new ButtonListener());
                 this.setToolTipText(tooltip);
             }
@@ -184,7 +203,7 @@ public class Step extends Observable{
             public void actionPerformed(ActionEvent e) {
                 setChanged();
                 JButton source = (JButton) e.getSource();
-                notifyObservers(source.getText());
+                notifyObservers(source.getToolTipText());
             }
         }
     }

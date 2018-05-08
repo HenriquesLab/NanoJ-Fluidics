@@ -803,7 +803,7 @@ public final class GUI {
         public void update(Observable o, Object arg) {
             Step step = (Step) o;
 
-            if (arg.equals(Step.DOWN)) {
+            if (arg.equals(Step.DOWN_TEXT)) {
                 int index = step.getNumber();
                 if (index == sequence.size()) return;
 
@@ -820,7 +820,7 @@ public final class GUI {
                 updateGUI();
             }
 
-            if (arg.equals(Step.UP)) {
+            if (arg.equals(Step.UP_TEXT)) {
                 int index = step.getNumber() - 1;
                 if (index < 1) return;
 
@@ -837,7 +837,7 @@ public final class GUI {
                 updateGUI();
             }
 
-            if (arg.equals(Step.DUPLICATE)) {
+            if (arg.equals(Step.DUPLICATE_TEXT)) {
                 int index = step.getNumber();
                 Step newStep = new Step();
                 newStep.updateStepInformation(step.getStepInformation());
@@ -857,7 +857,7 @@ public final class GUI {
                 updateGUI();
             }
 
-            if (arg.equals(Step.EXPIRE)) {
+            if (arg.equals(Step.EXPIRE_TEXT)) {
                 int index = step.getNumber()-1;
                 sequence.remove(index);
                 sequentialLabellingStepsPanel.remove(index);
