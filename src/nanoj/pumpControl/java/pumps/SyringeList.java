@@ -2,6 +2,7 @@ package nanoj.pumpControl.java.pumps;
 
 public class SyringeList {
     private static final Syringe[] syringeList = new Syringe[] {
+            new Syringe(1, "Peristaltic", 1),
             new Syringe(50, "BD", 26.594),
             new Syringe(20, "BD", 19.05),
             new Syringe(10, "BD", 14.427),
