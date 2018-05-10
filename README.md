@@ -1,10 +1,10 @@
-Welcome to the NanoJ-Fluidics package page!
+# Welcome to the NanoJ-Fluidics package repository!
 
 The NanoJ Open-Source project was created and is maintained by the [Henriques group][1] at the [Laboratory for Molecular Cell Biology][2], in [University College London][3].
 
 The Fluidics part of NanoJ enables a simple and direct way for most labs to start performing microfluidic experiments with their microscopes.
 
-It consists of three parts:
+## It consists of three parts:
 + [LEGO-based, multiplexable and compact syringe pumps][4]
 + [A simple "hack" to enable liquid exchange on cell culture dishes][5]
 + And a comprehensive [electronic][6] and [software][7] control suite to control the pumps.
