@@ -9,7 +9,7 @@ NanoJ-Fluidics is an open-source device, composed of easily accessible LEGO-part
 + [A simple "hack" to enable liquid exchange on cell culture dishes][5]
 + And a comprehensive [electronic][6] and [software][7] control suite to control the pumps.
 
-This Wiki provides all the information necessary for researchers to reproduce their own systems and start performing fluidic experiments on their microscopes.
+This [Wiki][10] provides all the information necessary for researchers to reproduce their own systems and start performing fluidic experiments on their microscopes.
 
 ## Developers
 NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [Leterrier][9] laboratories. 
@@ -23,3 +23,4 @@ NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [L
   [7]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/GUI-Home
   [8]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Files/PedroPumpsSample.png
   [9]: http://www.neurocytolab.org/
+  [10]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki
