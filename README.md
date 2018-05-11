@@ -1,8 +1,8 @@
-# Welcome to the NanoJ-Fluidics package repository!
+# NanoJ-Fluidics: open-source fluid exchange in microscopy
 
-The NanoJ Open-Source project was created and is maintained by the [Henriques group][1] at the [Laboratory for Molecular Cell Biology][2], in [University College London][3].
+![][8]
 
-The Fluidics part of NanoJ enables a simple and direct way for most labs to start performing microfluidic experiments with their microscopes.
+NanoJ-Fluidics is an open-source device, composed of easily accessible LEGO-parts, electronics and labware. It is designed to automate and simplify fluid exchange experiments in microscopy. 
 
 ## It consists of three parts:
 + [LEGO-based, multiplexable and compact syringe pumps][4]
@@ -11,7 +11,8 @@ The Fluidics part of NanoJ enables a simple and direct way for most labs to star
 
 This Wiki provides all the information necessary for researchers to reproduce their own systems and start performing fluidic experiments on their microscopes.
 
-![][8]
+## Developers
+NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [Leterrier][9] laboratories. 
 
   [1]: http://www.ucl.ac.uk/lmcb/users/ricardo-henriques
   [2]: http://www.ucl.ac.uk/lmcb/
@@ -21,3 +22,4 @@ This Wiki provides all the information necessary for researchers to reproduce th
   [6]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Electronics-Home
   [7]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/GUI-Home
   [8]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Files/PedroPumpsSample.png
+  [9]: http://www.neurocytolab.org/
