@@ -31,7 +31,6 @@ Our testing with 1 ml syringe tells us the speed will correspond to:
 // Adafruit Motor Shield libraries
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
-#include "utility/Adafruit_PWMServoDriver.h"
 
 //// Settings
 
