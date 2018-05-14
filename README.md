@@ -2,7 +2,8 @@
 
 ![][8]
 
-NanoJ-Fluidics is an open-source device, composed of easily accessible LEGO-parts, electronics and labware. It is designed to automate and simplify fluid exchange experiments in microscopy. 
+NanoJ-Fluidics is an open-source device, composed of easily accessible LEGO-parts, electronics and labware. It is designed to automate and simplify fluid exchange experiments in microscopy. Check the pre-print in: [bioRxiv: Automating multimodal microscopy with
+NanoJ-Fluidics][https://www.biorxiv.org/content/early/2018/05/14/320416].
 
 ## It consists of three parts:
 + [LEGO-based, multiplexable and compact syringe pumps][4]
