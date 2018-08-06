@@ -13,7 +13,7 @@ public class Sequence extends ArrayList<Step> {
     private Step suckStep;
     private boolean suck;
 
-    Sequence(Observer changer) {
+    public Sequence(Observer changer) {
         super();
 
         try {

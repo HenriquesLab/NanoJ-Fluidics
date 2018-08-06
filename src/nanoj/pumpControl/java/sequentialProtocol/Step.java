@@ -62,11 +62,11 @@ public class Step extends Observable{
     private double syringeMin;
 
     // Constructors
-    Step() {
+    public Step() {
         this(1,new String[]{PumpManager.NO_PUMP_CONNECTED});
     }
 
-    Step(int num, String[] pumps) {
+    public Step(int num, String[] pumps) {
         this(num,"Name",true,1,0, 0,"500",0,0,pumps);
     }
 
