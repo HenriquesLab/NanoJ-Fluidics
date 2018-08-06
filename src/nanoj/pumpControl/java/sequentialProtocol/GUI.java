@@ -220,7 +220,6 @@ public final class GUI {
         updateSyringeInformation.actionPerformed(new ActionEvent(pumpConnections.connectedPumpsTableModel, 0, ""));
     }
 
-
     // Private classes
 
     public static class Log extends JTextArea {

@@ -53,12 +53,12 @@ public class PumpConnections extends JPanel {
 
         availablePumpsList = new JComboBox(gui.pumpManager.getAvailablePumpsList());
         availablePumpsList.setSelectedItem(prefs.get(PUMP, VIRTUAL_PUMP));
+
         portsList = new JComboBox(new Vector(NRSerialPort.getAvailableSerialPorts()));
         portsList.addItem(VIRTUAL_PORT);
         portsList.setSelectedItem(prefs.get(PORT, VIRTUAL_PORT));
 
-        PumpConnectionsLayout layout = new PumpConnectionsLayout(this);
-        setLayout(layout);
+        setLayout( new PumpConnectionsLayout(this));
 
         connectButton.addActionListener(new PumpConnections.Connect());
         disconnectButton.addActionListener(new PumpConnections.Disconnect());

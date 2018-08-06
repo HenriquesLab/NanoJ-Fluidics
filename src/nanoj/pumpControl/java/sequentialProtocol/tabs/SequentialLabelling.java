@@ -111,7 +111,7 @@ public class SequentialLabelling extends JPanel {
 
         sequenceManager.addObserver(new SequenceObserver());
 
-        SequentialLabellingLayout layout = new SequentialLabellingLayout(this);
+        new SequentialLabellingLayout(this);
     }
 
     private void updateStepPanel(ArrayList<HashMap<String,String>> newStepList) {

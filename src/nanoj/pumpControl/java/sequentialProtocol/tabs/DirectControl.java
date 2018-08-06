@@ -61,8 +61,7 @@ public class DirectControl extends JPanel {
         buttons.add(infuse);
         buttons.add(withdraw);
 
-        DirectControLayout layout = new DirectControLayout(this);
-        setLayout(layout);
+        setLayout(new DirectControLayout(this));
 
         stopPump = new StopPump();
 
