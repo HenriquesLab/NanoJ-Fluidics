@@ -66,7 +66,7 @@ public final class GUI {
     private DirectControl directControl;
     private SequentialLabelling sequentialLabelling;
 
-    public JButton stopPumpOnSeqButton = new JButton("Stop Pump!");
+    public JButton stopPumpOnSeqButton;
 
     public PanelListener panelListener = new PanelListener();
 
@@ -110,6 +110,9 @@ public final class GUI {
 
         // General information tracking objects
         updateSyringeInformation = new UpdateSyringeInformation();
+
+        // Stop button
+        stopPumpOnSeqButton =  new JButton("Stop Pump!");
 
         //Tap objects
         pumpConnections = new PumpConnections(this);
