@@ -1,6 +1,7 @@
 package nanoj.pumpControl.java.sequentialProtocol.tabs;
 
 import gnu.io.NRSerialPort;
+import nanoj.pumpControl.java.pumps.ConnectedSubPump;
 import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
@@ -94,10 +95,10 @@ public class PumpConnections extends JPanel {
                         connectedPumpsTableModel.removeRow(i);
                     }
                 }
-                String[][] results = gui.pumpManager.getConnectedPumpsList();
-                for (String[] result: results){
-                    connectedPumpsTableModel.addRow(result);
-                }
+
+                for (ConnectedSubPump pump: gui.pumpManager.getConnectedPumpsList())
+                    connectedPumpsTableModel.addRow(pump.asArray());
+
                 gui.updatePumpSelection();
                 gui.log.message("Connected to " + gui.pumpManager.getAvailablePumpsList()[availablePumpsList.getSelectedIndex()] +
                         " on port " + port);
@@ -133,10 +134,10 @@ public class PumpConnections extends JPanel {
                         connectedPumpsTableModel.removeRow(i);
                     }
                 }
-                String[][] results = gui.pumpManager.getConnectedPumpsList();
-                for (String[] result: results){
-                    connectedPumpsTableModel.addRow(result);
-                }
+
+                for (ConnectedSubPump subPump: gui.pumpManager.getConnectedPumpsList())
+                    connectedPumpsTableModel.addRow(subPump.asArray());
+
                 gui.log.message("Disconnected from " + pump + " on port " + port + ".");
             }
             gui.updatePumpSelection();

@@ -1,5 +1,6 @@
 package nanoj.pumpControl.java.sequentialProtocol.tabs;
 
+import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.pumps.SyringeList;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
@@ -89,11 +90,15 @@ public class DirectControl extends JPanel {
             prefs.put(TARGET, targetField.getText());
             if (gui.pumpManager.isConnected()) {
                 try {
+                    Pump.Action action;
+                    if (infuse.isSelected())
+                        action = Pump.Action.Infuse;
+                    else action = Pump.Action.Withdraw;
                     gui.log.message("" + gui.pumpManager.startPumping(
                             syringeComboBox.getSelectedIndex(),
                             Double.parseDouble(rateText.getText()),
                             Double.parseDouble(targetField.getText()),
-                            infuse.isSelected()
+                            action
                     ));
                 } catch (Exception e1) {
                     gui.log.message("Error, problem with starting the pump.");

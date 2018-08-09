@@ -34,7 +34,7 @@ public class SequentialLabelling extends JPanel {
     JPanel stepsPanel;
     JScrollPane scrollPane;
     private StepChanger stepChanger = new StepChanger();
-    public Sequence sequence = new Sequence(stepChanger);
+    public Sequence sequence;
     UpdateStepPump updateStepPump = new UpdateStepPump();
 
     JButton protocolLoad;
@@ -60,6 +60,8 @@ public class SequentialLabelling extends JPanel {
     public SequentialLabelling(GUI gui) {
         super();
         this.gui = gui;
+
+        sequence =  new Sequence(stepChanger, gui.connectedSubPumps);
 
         topPanel = new JPanel();
         stepsPanel = new JPanel();
@@ -220,7 +222,7 @@ public class SequentialLabelling extends JPanel {
                         int currentStep = steps_on_list + s;
                         // Add to the current step list a new step object with the current index.
                         // The name of the step will be it's index on the list.
-                        Step step = new Step(currentStep + 1,gui.connectedPumps);
+                        Step step = new Step(currentStep + 1,gui.connectedSubPumps);
                         step.addActionListener(updateStepPump);
                         sequence.add(step);
                         // Add this step to the panel on the GUI
@@ -284,7 +286,7 @@ public class SequentialLabelling extends JPanel {
                 Step newStep = new Step();
                 newStep.updateStepInformation(step.getStepInformation());
                 newStep.setNumber(index + 1);
-                newStep.setPumps(gui.connectedPumps);
+                newStep.setPumps(gui.connectedSubPumps);
 
                 sequence.add(index, newStep);
 

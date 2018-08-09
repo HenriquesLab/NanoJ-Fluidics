@@ -57,9 +57,9 @@ public final class HarvardEliteControl extends Pump {
     }
 
     @Override
-    public synchronized void startPumping(boolean direction) throws Exception{
+    public synchronized void startPumping(Action direction) throws Exception{
         String action;
-        if(direction) action = "irun";
+        if(direction.equals(Action.Infuse)) action = "irun";
         else action = "wrun";
         sendCommand(action);
     }

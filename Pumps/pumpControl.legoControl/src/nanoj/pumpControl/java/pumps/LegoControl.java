@@ -103,7 +103,7 @@ public class LegoControl extends Pump {
     public void setTargetVolume(double target) { targetVolume = target; } //Target volume should be given in ul
 
     @Override
-    public synchronized void startPumping(boolean direction) throws Exception {
+    public synchronized void startPumping(Action direction) throws Exception {
         // Target volume is in ul and flowrate in ul/sec but the arduino code
         // wants a duration in seconds. So we have to convert.
 
@@ -124,9 +124,8 @@ public class LegoControl extends Pump {
         else if(duration < 10000) {
             target = "0" + duration;
         }
-        if (direction) action = 1;
+        if(direction.equals(Action.Infuse)) action = 1;
         else action = 2;
-
 
         /*
         rxydttttt - Start pump xy in direction d for ttttt seconds

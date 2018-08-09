@@ -1,6 +1,8 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
 import mmcorej.CMMCore;
+import nanoj.pumpControl.java.pumps.ConnectedSubPump;
+import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.pumps.SyringeList;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.DirectControl;
@@ -31,7 +33,7 @@ import java.util.prefs.Preferences;
 public final class GUI {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
     public PumpManager pumpManager;
-    public String[] connectedPumps = new String[]{PumpManager.NO_PUMP_CONNECTED};
+    public ConnectedSubPumpsList connectedSubPumps;
     private boolean closeOnExit = false;
     private double syringeMin = 1;
     private double syringeRate = 1;
@@ -99,6 +101,8 @@ public final class GUI {
         pumpManager.loadPlugins();
         Thread pumpThread = new Thread(pumpManager);
         pumpThread.start();
+
+        connectedSubPumps = pumpManager.getConnectedPumpsList();
 
         // GUI objects and layout.
         mainFrame = new JFrame("Pump Control and Sequential Protocol");
@@ -199,24 +203,21 @@ public final class GUI {
     }
 
     public void updatePumpSelection() {
-        String[][] result = pumpManager.getConnectedPumpsList();
-        if (result[0][0].equals(PumpManager.NO_PUMP_CONNECTED)) {
-            connectedPumps = new String[]{PumpManager.NO_PUMP_CONNECTED};
+        ConnectedSubPumpsList list = pumpManager.getConnectedPumpsList();
+        if (list.noPumpsConnected()) {
             directControl.pumpSelection.removeAllItems();
             directControl.pumpSelection.addItem(PumpManager.NO_PUMP_CONNECTED);
         }
         else {
-            connectedPumps = new String[result.length];
             directControl.pumpSelection.removeAllItems();
-            for (int s= 0; s<connectedPumps.length; s++){
-                String entry = result[s][1] + ", " + result[s][2];
-                directControl.pumpSelection.addItem(entry);
-                connectedPumps[s] = entry;
-            }
+            for (ConnectedSubPump pump: connectedSubPumps)
+                directControl.pumpSelection.addItem(pump.getFullName());
 
         }
-        for (Step step: sequentialLabelling.sequence) step.setPumps(connectedPumps);
-        sequentialLabelling.sequence.getSuckStep().setPumps(connectedPumps);
+        for (Step step: sequentialLabelling.sequence)
+            step.setPumps(connectedSubPumps);
+
+        sequentialLabelling.sequence.getSuckStep().setPumps(connectedSubPumps);
         updateSyringeInformation.actionPerformed(new ActionEvent(pumpConnections.connectedPumpsTableModel, 0, ""));
     }
 

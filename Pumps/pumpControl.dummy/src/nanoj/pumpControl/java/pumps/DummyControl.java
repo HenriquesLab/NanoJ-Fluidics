@@ -54,9 +54,9 @@ public final class DummyControl extends Pump implements PumpInterface {
     }
 
     @Override
-    public void startPumping(boolean direction) throws Exception {
+    public void startPumping(Action direction) throws Exception {
         String action;
-        if(direction) action = "pushing.";
+        if(direction.equals(Action.Infuse)) action = "pushing.";
         else action = "withdrawing.";
         status = currentSubPump() + "Started " + action;
         message(status);

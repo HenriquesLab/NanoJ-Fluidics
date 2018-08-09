@@ -1,7 +1,6 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
-import nanoj.pumpControl.java.pumps.PumpManager;
-import nanoj.pumpControl.java.pumps.SyringeList;
+import nanoj.pumpControl.java.pumps.*;
 import org.micromanager.utils.ReportingUtils;
 
 import javax.swing.*;
@@ -30,8 +29,6 @@ public class Step extends Observable{
     // Labels
     public static final String[] TIME_UNITS = {"secs","mins","hours"};
     public static final String[] VOLUME_UNITS = {"ul","ml"};
-    public static final String INFUSE = "Infuse";
-    public static final String WITHDRAW = "Withdraw";
     public static final String UP_TEXT = "Replace previous step with this one";
     public static final String DOWN_TEXT = "Replace next step with this one";
     public static final String DUPLICATE_TEXT = "Duplicate this step";
@@ -43,7 +40,7 @@ public class Step extends Observable{
     private FlowLayout step_layout = new FlowLayout(FlowLayout.LEADING);
     private JPanel step = new JPanel(step_layout);
     private JLabel numberLabel = new JLabel("");
-    private JTextField name = new JTextField(WITHDRAW);
+    private JTextField name;
     private JCheckBox suck = new JCheckBox("",false);
     private JTextField time;
     private JComboBox timeUnitsList;
@@ -53,8 +50,7 @@ public class Step extends Observable{
     private JLabel rateLabel = new JLabel("");
     private JTextField volume;
     private JComboBox volumeUnitsList;
-    private String[] actions = {INFUSE, WITHDRAW};
-    private JComboBox action = new JComboBox(actions);
+    private JComboBox action = new JComboBox(Pump.Action.values());
     private boolean syringeExchangeRequired = false;
     private int number = -1;
 
@@ -63,15 +59,15 @@ public class Step extends Observable{
 
     // Constructors
     public Step() {
-        this(1,new String[]{PumpManager.NO_PUMP_CONNECTED});
+        this(1,new ConnectedSubPumpsList());
     }
 
-    public Step(int num, String[] pumps) {
-        this(num,"Name",true,1,0, 0,"500",0,0,pumps);
+    public Step(int num, ConnectedSubPumpsList pumps) {
+        this(num,"Name",true,1,0, 0,"500",0, Pump.Action.Infuse,pumps);
     }
 
     Step(int num, String givenName, boolean givenSuck, int givenTime, int givenTimeUnits,
-                            int givenSyringe, String givenVolume, int givenVolumeUnits, int givenAction, String[] pumps)
+         int givenSyringe, String givenVolume, int givenVolumeUnits, Pump.Action givenAction, ConnectedSubPumpsList pumps)
     {
 
         try {
@@ -103,7 +99,7 @@ public class Step extends Observable{
         timeUnitsList.setSelectedIndex(givenTimeUnits);
         step.add(timeUnitsList);
 
-        pumpList = new JComboBox(pumps);
+        pumpList = new JComboBox(pumps.getAllFullNames());
         pumpList.setPrototypeDisplayValue(PumpManager.NO_PUMP_CONNECTED);
         step.add(pumpList);
 
@@ -125,7 +121,7 @@ public class Step extends Observable{
         volumeUnitsList.setSelectedIndex(givenVolumeUnits);
         step.add(volumeUnitsList);
 
-        action.setSelectedIndex(givenAction);
+        action.setSelectedItem(givenAction);
         step.add(action);
 
         listener.updateSyringeInformation();
@@ -211,7 +207,9 @@ public class Step extends Observable{
     class Listener extends MouseAdapter implements ActionListener, ChangeListener {
 
         void updateSyringeInformation() {
-            double[] newInformation = pumpManager.getMaxMin(
+            double[] newInformation = {0.0,0.0};
+            if (pumpManager.getConnectedPumpsList().anyPumpsConnected())
+                newInformation = pumpManager.getMaxMin(
                     pumpList.getSelectedIndex(),
                     SyringeList.getDiameter(syringe.getSelectedIndex())
             );
@@ -303,9 +301,10 @@ public class Step extends Observable{
 
     // Getters and setters
 
-    public void setPumps(String[] connectedPumps) {
+    public void setPumps(ConnectedSubPumpsList connectedPumps) {
         pumpList.removeAllItems();
-        for (String pump: connectedPumps) pumpList.addItem(pump);
+        for (ConnectedSubPump pump: connectedPumps)
+            pumpList.addItem(pump.getFullName());
         listener.updateSyringeInformation();
     }
 
@@ -374,8 +373,8 @@ public class Step extends Observable{
         return syringe.getSelectedIndex();
     }
 
-    public boolean getAction() {
-        return action.getSelectedIndex() == 0;
+    public Pump.Action getAction() {
+        return Pump.Action.valueOf(action.getSelectedItem().toString());
     }
 
     public void setSyringeExchangeRequired(boolean value ) {

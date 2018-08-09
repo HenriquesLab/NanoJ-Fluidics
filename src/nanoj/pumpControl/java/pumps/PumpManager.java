@@ -2,19 +2,19 @@ package nanoj.pumpControl.java.pumps;
 
 import mmcorej.CMMCore;
 import java.util.*;
+import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList.PumpNotFoundException;
 
 public class PumpManager extends Observable implements Runnable {
     private CMMCore serialManager;
     private LinkedHashMap<String, Pump> availablePumps = new LinkedHashMap<String, Pump>();
-    private LinkedHashMap<String[], Pump> connectedPumps = new LinkedHashMap<String[], Pump>();
-    private ArrayList<String[]> connectedPumpsArray = new ArrayList<String[]>();
-    private ArrayList<String> connectedPorts = new ArrayList<String>();
+    private ConnectedSubPumpsList connectedSubPumps = new ConnectedSubPumpsList();
     private String status = NO_PUMP_CONNECTED;
-    private String[] currentPump = null;
+    private int currentPump = -1;
     private boolean alive = true;
 
     private long wait = 100;  // Wait time for status checker in milliSeconds
 
+    public static final String FAILED_TO_CONNECT = "Failed to connect to pump.";
     public static final String PORT_ALREADY_CONNECTED = "Port already in use.";
     public static final String NOT_AVAILABLE = "Pump not available to manager.";
     public static final String NEW_STATUS_AVAILABLE = "New status available.";
@@ -25,18 +25,15 @@ public class PumpManager extends Observable implements Runnable {
     public static final String VOLUME_UNITS = "ul";
     public static final String TIME_UNITS = "sec";
     public static final String FLOW_RATE_UNITS = VOLUME_UNITS + "/" + TIME_UNITS;
-    public static final String INFUSE = "Infuse";
-    public static final String WITHDRAW = "Withdraw";
 
     public final static PumpManager INSTANCE = new PumpManager();
 
-    private PumpManager() {
     /*This no-argument constructor is required for the singleton design pattern.
       Remember to loadPlugins.
       loadPlugins is called after construction since the PumpManager class might be loaded in the class path and created
       before the application (in our case MicroManager) has loaded all plugin classes
       */
-    }
+    private PumpManager() {  }
 
     public void loadPlugins() {
         //Looks in the class path for all classes declaring themselves as services of the type "nanoj.(...).Pump"
@@ -47,96 +44,63 @@ public class PumpManager extends Observable implements Runnable {
         }
     }
 
-    public void setCore(CMMCore core) throws Exception { serialManager = core; }
+    public void setCore(CMMCore core) { serialManager = core; }
 
     public String connect(String pump, String port) throws Exception {
-        if (connectedPorts.contains(port)) return PORT_ALREADY_CONNECTED;
+        if (connectedSubPumps.connectedPorts().contains(port)) return PORT_ALREADY_CONNECTED;
         if (!availablePumps.containsKey(pump)) return NOT_AVAILABLE;
 
         Pump newPump = availablePumps.get(pump).getNewInstance();
         newPump.setCore(serialManager);
         String answer = newPump.connectToPump(port);
-        String[] newSubPumps = newPump.getSubPumps();
-        if (answer == Pump.FAILED_TO_CONNECT) {
+
+        if (answer.equals(Pump.FAILED_TO_CONNECT)) {
             return Pump.FAILED_TO_CONNECT;
         }
-        for (String subPump: newSubPumps) {
-            String[] entry = new String[]{pump,subPump,port};
-            connectedPumps.put(entry, newPump);
-            connectedPumpsArray.add(entry);
-        }
-        connectedPorts.add(port);
+
+        connectedSubPumps.addPump(newPump);
+
         setChanged();
         notifyObservers(NEW_PUMP_CONNECTED);
         return answer;
     }
 
-    public synchronized String startPumping(int syringe, double flowRate, double targetVolume, boolean infuse) throws Exception {
+    public synchronized String startPumping(int syringe, double flowRate, double targetVolume, Pump.Action infuse) throws Exception {
+        return startPumping(currentPump,syringe,flowRate,targetVolume,infuse);
+    }
+
+    public synchronized String startPumping(int pumpIndex, int syringe, double flowRate,
+                               double targetVolume, Pump.Action action) throws Exception {
         String answer;
-        String action;
-        Pump pump = connectedPumps.get(currentPump);
+
+        ConnectedSubPump connectedSubPump = connectedSubPumps.getSubPump(pumpIndex);
+        Pump pump = connectedSubPump.pump;
+
         pump.setUnitsOfVolume(VOLUME_UNITS);
         pump.setUnitsOfTime(TIME_UNITS);
-        pump.setCurrentSubPump(currentPump[1]);
+        pump.setCurrentSubPump(connectedSubPump.subPump);
         pump.setSyringeDiameter(SyringeList.getDiameter(syringe));
         pump.setFlowRate(flowRate);
         pump.setTargetVolume(targetVolume);
-        pump.startPumping(infuse);
-        if (infuse) action = INFUSE; else action = WITHDRAW;
-        answer = action + " " + targetVolume+" "+pump.getUnitsOfVolume()+ " at " +flowRate+" "
+        pump.startPumping(action);
+
+        answer = action.toString() + " " + targetVolume+" "+pump.getUnitsOfVolume()+ " at " +flowRate+" "
                 + pump.getUnitsOfFlowRate() + " with " + SyringeList.getVolumeWUnits(syringe) + " syringe.";
         return answer;
     }
 
-    public synchronized String startPumping(int pumpIndex, int syringe, double flowRate,
-                               double targetVolume, boolean infuse) throws Exception {
-        String[] pumpKey = connectedPumpsArray.get(pumpIndex);
-        String action;
-
-        Pump pump = connectedPumps.get(pumpKey);
-        pump.setUnitsOfVolume(VOLUME_UNITS);
-        pump.setUnitsOfTime(TIME_UNITS);
-        pump.setCurrentSubPump(pumpKey[1]);
-        pump.setSyringeDiameter(SyringeList.getDiameter(syringe));
-        pump.setFlowRate(flowRate);
-        pump.setTargetVolume(targetVolume);
-
-        pump.startPumping(infuse);
-
-        if (infuse) action = INFUSE; else action = WITHDRAW;
-
-        return action + " " + targetVolume+" "+pump.getUnitsOfVolume()+ " at " +flowRate+" "
-                + pump.getUnitsOfFlowRate() + " with " + SyringeList.getVolumeWUnits(syringe) + " syringe.";
+    public synchronized void stopPumping() throws Exception {
+        connectedSubPumps.getSubPump(currentPump).pump.stopPump();;
     }
 
-    public synchronized boolean stopPumping() throws Exception {
-        connectedPumps.get(currentPump).stopPump();
-        return true;
+    public synchronized void stopPumping(String pumpName, String subPump, String port) throws Exception {
+        connectedSubPumps.getSubPump(pumpName,subPump,port).pump.stopPump();
     }
 
-    public synchronized boolean stopPumping(String[] pump) throws Exception {
-        connectedPumps.get(pump).stopPump();
-        return true;
-    }
-
-    public synchronized  boolean disconnect(int zePump) throws Exception {
-        boolean success;
-        String[] pump = connectedPumpsArray.get(zePump);
-        ArrayList<String[]> keysToRemove = new ArrayList<String[]>();
-        success = connectedPumps.get(pump).disconnect();
-        if (success) {
-            for (String[] currentKey: connectedPumpsArray) {
-                if (currentKey[0].equals(pump[0]) && currentKey[2].equals(pump[2])) {
-                    keysToRemove.add(currentKey);
-                }
-            }
-            //The actual removal is done on a later loop to prevent concurrency issues.
-            for (String[] key: keysToRemove) {
-                connectedPumps.remove(key);
-                connectedPumpsArray.remove(key);
-            }
-            connectedPorts.remove(pump[2]);
-        }
+    public synchronized boolean disconnect(int index) throws Exception {
+        boolean success = connectedSubPumps.getSubPump(index).pump.disconnect();
+        if (success)
+            connectedSubPumps.removePump(connectedSubPumps.getSubPump(index).name);
         return success;
     }
 
@@ -147,59 +111,52 @@ public class PumpManager extends Observable implements Runnable {
         else return new String[]{NO_PUMP_AVAILABLE};
     }
 
-    public String[][] getConnectedPumpsList() {
-        if (connectedPumpsArray.size() == 0) return new String[][]{{NO_PUMP_CONNECTED,"",""}};
-        String[][] result = new String[connectedPumpsArray.size()][];
-        for (int e=0; e<connectedPumpsArray.size(); e++) {
-            result[e] = connectedPumpsArray.get(e);
-        }
-        return result;
+    public ConnectedSubPumpsList getConnectedPumpsList() {
+        return connectedSubPumps;
     }
 
     public String getStatus() { return status; }
 
     public synchronized boolean isConnected() {
-        return currentPump != null && connectedPumps != null && connectedPumps.get(currentPump).isConnected();
+        return currentPump >0
+                && connectedSubPumps != null
+                && connectedSubPumps.getSubPump(currentPump).pump.isConnected();
     }
 
-    public synchronized boolean isConnected(String[] pump) {
-        return connectedPumps != null && connectedPumps.get(pump).isConnected();
+    public synchronized boolean isConnected(String pumpName) {
+        return connectedSubPumps != null && connectedSubPumps.getPump(pumpName).isConnected();
     }
 
-    public void setCurrentPump(int index) {
-        if (connectedPumpsArray.size() == 0) currentPump = null;
-        else currentPump = connectedPumpsArray.get(index);
+    public void setCurrentPump(int index) throws PumpNotFoundException {
+        if (connectedSubPumps.notPresent(index))
+            throw new PumpNotFoundException();
+        else currentPump = index;
         setChanged();
         notifyObservers(CURRENT_PUMP_CHANGED);
     }
 
-    public String[] getCurrentPump() { return currentPump; }
+    public int getCurrentPump() { return currentPump; }
 
-    public double[] getMaxMin(int pump, double diameter) {
-        if (connectedPumps.size() > 0) {
-            String[] pumpKey = connectedPumpsArray.get(pump);
-            return connectedPumps.get(pumpKey).getMaxMin(diameter);
-        }
-        else return null;
+    public double[] getMaxMin(int pumpIndex, double diameter) throws PumpNotFoundException {
+        return getMaxMin(connectedSubPumps.getPumpName(pumpIndex),diameter);
     }
 
-    public double[] getMaxMin(String pump, double diameter) {
-        if (availablePumps.size() > 0) return availablePumps.get(pump).getMaxMin(diameter);
-        else return new double[]{0,1};
+    public double[] getMaxMin(String pump, double diameter) throws PumpNotFoundException {
+        return connectedSubPumps.getPump(pump).getMaxMin(diameter);
     }
 
     private synchronized void getStatusFromPump() throws Exception {
-        status = connectedPumps.get(currentPump).getStatus();
+        status = connectedSubPumps.getSubPump(currentPump).pump.getStatus();
     }
 
     @Override
     public void run() {
         while (alive) {
             try {
-                if (currentPump == null || connectedPumps.size() == 0)
+                if (currentPump < 0 || connectedSubPumps.noPumpsConnected())
                     status = NO_PUMP_CONNECTED;
                 else {
-                    wait = connectedPumps.get(currentPump).getTimeOut();
+                    wait = connectedSubPumps.getSubPump(currentPump).pump.getTimeOut();
                     getStatusFromPump();
                     setChanged();
                     notifyObservers(NEW_STATUS_AVAILABLE);

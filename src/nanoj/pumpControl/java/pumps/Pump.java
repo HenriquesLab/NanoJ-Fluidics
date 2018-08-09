@@ -22,6 +22,11 @@ public abstract class Pump implements PumpInterface{
     protected String name;
     protected double[] referenceRates;
 
+    public enum Action {
+        Infuse,
+        Withdraw
+    }
+
     public static final String[] SINGLE_PUMP = {"This is a single pump device."};
     public static final String FAILED_TO_CONNECT = "Failed to connect!";
 

@@ -52,10 +52,10 @@ public class StepperControl extends Pump{
     }
 
     @Override
-    public void startPumping(boolean forward) throws Exception {
+    public void startPumping(Action forward) throws Exception {
 
         int direction = 2;
-        if (forward) direction = 1;
+        if(forward.equals(Action.Infuse)) direction = 1;
 
         int volume = (int) targetVolume;
 

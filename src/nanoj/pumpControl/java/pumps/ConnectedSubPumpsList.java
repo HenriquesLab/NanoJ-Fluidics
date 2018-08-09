@@ -1,0 +1,137 @@
+package nanoj.pumpControl.java.pumps;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
+    private ArrayList<ConnectedSubPump> list = new ArrayList<ConnectedSubPump>();
+
+    private static final String OUT_OF_BOUNDS = "SubPump index doesn't exist in list.";
+
+    public boolean notPresent(int index) {
+        return index < list.size() || index >= 0;
+    }
+
+    public void addPump(Pump pump) {
+        for (String subPump: pump.subPumps)
+            list.add(new ConnectedSubPump(pump, subPump));
+    }
+
+    public void removePump(String pumpName) {
+        for (ConnectedSubPump pump: list)
+            if (pump.name.equals(pumpName))
+                list.remove(pump);
+    }
+
+    public void removePump(Pump pump) {
+        for (ConnectedSubPump subPump: list)
+            if (subPump.name.equals(pump.name))
+                list.remove(subPump);
+    }
+
+    public ConnectedSubPump getSubPump(String name, String subPump, String port) throws PumpNotFoundException {
+        ConnectedSubPump result = null;
+        for (ConnectedSubPump connectedSubPump : list)
+            if (connectedSubPump.name.equals(name) &&
+                connectedSubPump.subPump.equals(subPump) &&
+                connectedSubPump.port.equals(port))
+            {
+                result = connectedSubPump;
+                break;
+            }
+
+        if (result == null)
+            throw new PumpNotFoundException();
+        else return result;
+    }
+
+    public Pump getPump(String pumpName) throws PumpNotFoundException {
+        Pump pump = null;
+        for (ConnectedSubPump subPump: list)
+            if (subPump.name.equals(pumpName)) {
+                pump = subPump.pump;
+                break;
+            }
+
+        if (pump == null)
+            throw new PumpNotFoundException();
+        else return pump;
+    }
+
+    public boolean anyPumpsConnected() {
+        return !list.isEmpty();
+    }
+
+    public boolean noPumpsConnected() {
+        return list.isEmpty();
+    }
+
+    public ConnectedSubPump getSubPump(int index) throws IndexOutOfBoundsException {
+        if (notPresent(index))
+            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+        return list.get(index);
+    }
+
+    public String getFullName(int index) throws IndexOutOfBoundsException {
+        if (!notPresent(index))
+            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+        return list.get(index).getFullName();
+    }
+
+    public String[] getAllFullNames() {
+        String array[] = new String[list.size()];
+        if (list.isEmpty())
+            return new String[]{};
+        else {
+            for (int i = 0; i < list.size(); i++) {
+                array[i] = list.get(i).getFullName();
+            }
+            return array;
+        }
+    }
+
+    public String getPumpName(int index) throws IndexOutOfBoundsException {
+        if (notPresent(index))
+            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+        return list.get(index).name;
+    }
+
+    public String getPumpSubName(int index) throws IndexOutOfBoundsException {
+        if (notPresent(index))
+            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+        return list.get(index).subPump;
+    }
+
+    public String getPumpPort(int index) throws IndexOutOfBoundsException {
+        if (notPresent(index))
+            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+        return list.get(index).port;
+    }
+
+    public void clearList() {
+        list.clear();
+    }
+
+    public int size() {
+        return list.size();
+    }
+
+    public ArrayList<String> connectedPorts() {
+        ArrayList<String> ports = new ArrayList<String>();
+        for (ConnectedSubPump pump: list) {
+            if (!ports.contains(pump.port))
+                ports.add(pump.port);
+        }
+        return ports;
+    }
+
+    @Override
+    public Iterator<ConnectedSubPump> iterator() {
+        return list.iterator();
+    }
+
+    public static class PumpNotFoundException extends RuntimeException {
+        public PumpNotFoundException() { super();}
+        public PumpNotFoundException(String message) { super(message);}
+    }
+}
