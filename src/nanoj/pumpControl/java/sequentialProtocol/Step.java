@@ -15,8 +15,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.Observer;
 
-public class Step extends Observable{
+public class Step extends Observable implements Observer {
     /*
     When you add a step on the GUI, it creates a prototypical object of this type.
     It will be able to update itself when any change is  done and it will also be able to report back it's currently
@@ -59,15 +60,15 @@ public class Step extends Observable{
 
     // Constructors
     public Step() {
-        this(1,new ConnectedSubPumpsList());
+        this(1);
     }
 
-    public Step(int num, ConnectedSubPumpsList pumps) {
-        this(num,"Name",true,1,0, 0,"500",0, Pump.Action.Infuse,pumps);
+    public Step(int num) {
+        this(num,"Name",true,1,0, 0,"500",0, Pump.Action.Infuse);
     }
 
     Step(int num, String givenName, boolean givenSuck, int givenTime, int givenTimeUnits,
-         int givenSyringe, String givenVolume, int givenVolumeUnits, Pump.Action givenAction, ConnectedSubPumpsList pumps)
+         int givenSyringe, String givenVolume, int givenVolumeUnits, Pump.Action givenAction)
     {
 
         try {
@@ -99,7 +100,13 @@ public class Step extends Observable{
         timeUnitsList.setSelectedIndex(givenTimeUnits);
         step.add(timeUnitsList);
 
-        pumpList = new JComboBox(pumps.getAllFullNames());
+        String pumps[];
+        if (pumpManager.noPumpsConnected())
+             pumps = new String[]{PumpManager.NO_PUMP_CONNECTED};
+        else
+            pumps = pumpManager.getAllFullNames();
+        
+        pumpList = new JComboBox(pumps);
         pumpList.setPrototypeDisplayValue(PumpManager.NO_PUMP_CONNECTED);
         step.add(pumpList);
 
@@ -126,6 +133,25 @@ public class Step extends Observable{
 
         listener.updateSyringeInformation();
         listener.setText();
+
+        pumpManager.addObserver(this);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (arg.equals(PumpManager.NEW_PUMP_CONNECTED) ||
+                arg.equals(PumpManager.PUMP_DISCONNECTED)) {
+            if (pumpManager.noPumpsConnected()) {
+                pumpList.removeAllItems();
+                pumpList.addItem(PumpManager.NO_PUMP_CONNECTED);
+            }
+            else {
+                pumpList.removeAllItems();
+                for (ConnectedSubPump pump: pumpManager.getConnectedPumpsList())
+                    pumpList.addItem(pump.getFullName());
+
+            }
+        }
     }
 
     // Inner Classes
@@ -208,7 +234,7 @@ public class Step extends Observable{
 
         void updateSyringeInformation() {
             double[] newInformation = {0.0,0.0};
-            if (pumpManager.getConnectedPumpsList().anyPumpsConnected())
+            if (pumpManager.anyPumpsConnected())
                 newInformation = pumpManager.getMaxMin(
                     pumpList.getSelectedIndex(),
                     SyringeList.getDiameter(syringe.getSelectedIndex())
@@ -297,15 +323,6 @@ public class Step extends Observable{
         volume.setText(givenInformation.get("volume"));
         volumeUnitsList.setSelectedIndex(Integer.parseInt(givenInformation.get("volumeUnits")));
         action.setSelectedIndex(Integer.parseInt(givenInformation.get("action")));
-    }
-
-    // Getters and setters
-
-    public void setPumps(ConnectedSubPumpsList connectedPumps) {
-        pumpList.removeAllItems();
-        for (ConnectedSubPump pump: connectedPumps)
-            pumpList.addItem(pump.getFullName());
-        listener.updateSyringeInformation();
     }
 
     public double getRate() {

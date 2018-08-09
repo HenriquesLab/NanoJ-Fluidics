@@ -99,7 +99,6 @@ public class PumpConnections extends JPanel {
                 for (ConnectedSubPump pump: gui.pumpManager.getConnectedPumpsList())
                     connectedPumpsTableModel.addRow(pump.asArray());
 
-                gui.updatePumpSelection();
                 gui.log.message("Connected to " + gui.pumpManager.getAvailablePumpsList()[availablePumpsList.getSelectedIndex()] +
                         " on port " + port);
             } catch (Exception e1) {
@@ -140,7 +139,6 @@ public class PumpConnections extends JPanel {
 
                 gui.log.message("Disconnected from " + pump + " on port " + port + ".");
             }
-            gui.updatePumpSelection();
         }
     }
 

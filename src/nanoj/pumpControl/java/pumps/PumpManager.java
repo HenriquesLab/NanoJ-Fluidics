@@ -4,12 +4,11 @@ import mmcorej.CMMCore;
 import java.util.*;
 import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList.PumpNotFoundException;
 
-public class PumpManager extends Observable implements Runnable {
+public class PumpManager extends Observable {
     private CMMCore serialManager;
     private LinkedHashMap<String, Pump> availablePumps = new LinkedHashMap<String, Pump>();
     private ConnectedSubPumpsList connectedSubPumps = new ConnectedSubPumpsList();
     private String status = NO_PUMP_CONNECTED;
-    private int currentPump = -1;
     private boolean alive = true;
 
     private long wait = 100;  // Wait time for status checker in milliSeconds
@@ -20,8 +19,9 @@ public class PumpManager extends Observable implements Runnable {
     public static final String NEW_STATUS_AVAILABLE = "New status available.";
     public static final String NO_PUMP_CONNECTED = "No pump connected.";
     public static final String NEW_PUMP_CONNECTED = "New pump has been connected.";
-    public static final String CURRENT_PUMP_CHANGED = "Changed the current pump.";
+    public static final String PUMP_DISCONNECTED = "A pump has been disconnected.";
     public static final String NO_PUMP_AVAILABLE = "No Pump available!";
+
     public static final String VOLUME_UNITS = "ul";
     public static final String TIME_UNITS = "sec";
     public static final String FLOW_RATE_UNITS = VOLUME_UNITS + "/" + TIME_UNITS;
@@ -65,10 +65,6 @@ public class PumpManager extends Observable implements Runnable {
         return answer;
     }
 
-    public synchronized String startPumping(int syringe, double flowRate, double targetVolume, Pump.Action infuse) throws Exception {
-        return startPumping(currentPump,syringe,flowRate,targetVolume,infuse);
-    }
-
     public synchronized String startPumping(int pumpIndex, int syringe, double flowRate,
                                double targetVolume, Pump.Action action) throws Exception {
         String answer;
@@ -86,21 +82,36 @@ public class PumpManager extends Observable implements Runnable {
 
         answer = action.toString() + " " + targetVolume+" "+pump.getUnitsOfVolume()+ " at " +flowRate+" "
                 + pump.getUnitsOfFlowRate() + " with " + SyringeList.getVolumeWUnits(syringe) + " syringe.";
+
+        setChanged();
+        notifyObservers(NEW_STATUS_AVAILABLE);
         return answer;
     }
 
-    public synchronized void stopPumping() throws Exception {
-        connectedSubPumps.getSubPump(currentPump).pump.stopPump();;
+    public synchronized void stopAllPumps() throws Exception {
+        for (Pump pump: connectedSubPumps.getAllConnectedPumps())
+            pump.stopAllPumps();
+    }
+
+    public synchronized void stopPumping(int pumpIndex) throws Exception {
+        connectedSubPumps.getSubPump(pumpIndex).pump.stopPump();
+        setChanged();
+        notifyObservers(NEW_STATUS_AVAILABLE);
     }
 
     public synchronized void stopPumping(String pumpName, String subPump, String port) throws Exception {
         connectedSubPumps.getSubPump(pumpName,subPump,port).pump.stopPump();
+        setChanged();
+        notifyObservers(NEW_STATUS_AVAILABLE);
     }
 
     public synchronized boolean disconnect(int index) throws Exception {
         boolean success = connectedSubPumps.getSubPump(index).pump.disconnect();
         if (success)
             connectedSubPumps.removePump(connectedSubPumps.getSubPump(index).name);
+
+        setChanged();
+        notifyObservers(PUMP_DISCONNECTED);
         return success;
     }
 
@@ -117,25 +128,13 @@ public class PumpManager extends Observable implements Runnable {
 
     public String getStatus() { return status; }
 
-    public synchronized boolean isConnected() {
-        return currentPump >0
-                && connectedSubPumps != null
-                && connectedSubPumps.getSubPump(currentPump).pump.isConnected();
+    public synchronized boolean isConnected(int pumpIndex) {
+        return connectedSubPumps != null && connectedSubPumps.getSubPump(pumpIndex).pump.isConnected();
     }
 
     public synchronized boolean isConnected(String pumpName) {
         return connectedSubPumps != null && connectedSubPumps.getPump(pumpName).isConnected();
     }
-
-    public void setCurrentPump(int index) throws PumpNotFoundException {
-        if (connectedSubPumps.notPresent(index))
-            throw new PumpNotFoundException();
-        else currentPump = index;
-        setChanged();
-        notifyObservers(CURRENT_PUMP_CHANGED);
-    }
-
-    public int getCurrentPump() { return currentPump; }
 
     public double[] getMaxMin(int pumpIndex, double diameter) throws PumpNotFoundException {
         return getMaxMin(connectedSubPumps.getPumpName(pumpIndex),diameter);
@@ -145,26 +144,19 @@ public class PumpManager extends Observable implements Runnable {
         return connectedSubPumps.getPump(pump).getMaxMin(diameter);
     }
 
-    private synchronized void getStatusFromPump() throws Exception {
-        status = connectedSubPumps.getSubPump(currentPump).pump.getStatus();
+    private synchronized void getStatusFromPump(int pumpIndex) throws Exception {
+        status = connectedSubPumps.getSubPump(pumpIndex).pump.getStatus();
     }
 
-    @Override
-    public void run() {
-        while (alive) {
-            try {
-                if (currentPump < 0 || connectedSubPumps.noPumpsConnected())
-                    status = NO_PUMP_CONNECTED;
-                else {
-                    wait = connectedSubPumps.getSubPump(currentPump).pump.getTimeOut();
-                    getStatusFromPump();
-                    setChanged();
-                    notifyObservers(NEW_STATUS_AVAILABLE);
-                }
-                Thread.sleep(wait);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public boolean anyPumpsConnected() {
+        return connectedSubPumps.anyPumpsConnected();
+    }
+
+    public boolean noPumpsConnected() {
+        return connectedSubPumps.noPumpsConnected();
+    }
+
+    public String[] getAllFullNames() {
+        return connectedSubPumps.getAllFullNames();
     }
 }

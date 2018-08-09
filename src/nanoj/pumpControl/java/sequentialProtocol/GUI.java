@@ -33,10 +33,7 @@ import java.util.prefs.Preferences;
 public final class GUI {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
     public PumpManager pumpManager;
-    public ConnectedSubPumpsList connectedSubPumps;
     private boolean closeOnExit = false;
-    private double syringeMin = 1;
-    private double syringeRate = 1;
 
     // Log object
     public Log log = Log.INSTANCE;
@@ -59,9 +56,6 @@ public final class GUI {
     public static final int largeButtonWidth = 150;
     public static final int smallButtonWidth = 50;
     public static final int sizeSecondColumn = 250;
-
-    //Information tracking objects
-    private UpdateSyringeInformation updateSyringeInformation;
 
     //Tab objects
     private PumpConnections pumpConnections;
@@ -99,11 +93,6 @@ public final class GUI {
         pumpManager = PumpManager.INSTANCE;
         pumpManager.setCore(core);
         pumpManager.loadPlugins();
-        Thread pumpThread = new Thread(pumpManager);
-        pumpThread.start();
-
-        connectedSubPumps = pumpManager.getConnectedPumpsList();
-
         // GUI objects and layout.
         mainFrame = new JFrame("Pump Control and Sequential Protocol");
         mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -112,18 +101,15 @@ public final class GUI {
                 log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         topPane = new JTabbedPane();
 
-        // General information tracking objects
-        updateSyringeInformation = new UpdateSyringeInformation();
-
         // Stop button
         stopPumpOnSeqButton =  new JButton("Stop Pump!");
 
-        //Tap objects
+        //Tab objects
         pumpConnections = new PumpConnections(this);
         directControl = new DirectControl(this);
         sequentialLabelling = new SequentialLabelling(this);
 
-        //Sequential Labelling tab objects
+        pumpManager.addObserver(directControl);
 
         mainFrame.addComponentListener(panelListener);
 
@@ -137,15 +123,7 @@ public final class GUI {
 
         log.set("NanoJ Sequential Labelling");
 
-        //Listeners
-        pumpConnections.availablePumpsList.addActionListener(updateSyringeInformation);
-        directControl.syringeComboBox.addActionListener(updateSyringeInformation);
-        directControl.rateSlider.addChangeListener(updateSyringeInformation);
         stopPumpOnSeqButton.addActionListener(directControl.stopPump);
-
-        //Status observers
-        pumpManager.addObserver(new UpdatePumpStatus());
-        pumpManager.addObserver(updateSyringeInformation);
 
         topPane.addTab(pumpConnections.name, pumpConnections);
         topPane.addTab(directControl.name, directControl);
@@ -165,12 +143,11 @@ public final class GUI {
         //Minor GUI initialization steps
         sequentialLabelling.sequenceManager.defineSequence(sequentialLabelling.sequence);
         sequentialLabelling.sequenceManager.isSyringeExchangeRequiredOnSequence();
-        new UpdateSyringeInformation().actionPerformed(new ActionEvent(directControl.syringeComboBox, 0, ""));
     }
 
     public void dispose() {
         try {
-            pumpManager.stopPumping();
+            pumpManager.stopAllPumps();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -187,12 +164,12 @@ public final class GUI {
     }
 
     public String startSequence() {
-        if (pumpManager.isConnected()) {
+        if (pumpManager.noPumpsConnected()) {
             sequentialLabelling.sequence.setSuck(sequentialLabelling.suckBetweenSteps.isSelected());
             sequentialLabelling.sequenceManager.start(sequentialLabelling.sequence);
             return "Started sequence!";
         }
-        else return "Can't do anything until pump is connected.";
+        else return "Can't do anything until a pump is connected.";
     }
 
     public boolean isRunning() { return sequentialLabelling.sequenceManager.isStarted(); }
@@ -200,25 +177,6 @@ public final class GUI {
     public void updateGUI() {
         mainFrame.validate();
         mainFrame.pack();
-    }
-
-    public void updatePumpSelection() {
-        ConnectedSubPumpsList list = pumpManager.getConnectedPumpsList();
-        if (list.noPumpsConnected()) {
-            directControl.pumpSelection.removeAllItems();
-            directControl.pumpSelection.addItem(PumpManager.NO_PUMP_CONNECTED);
-        }
-        else {
-            directControl.pumpSelection.removeAllItems();
-            for (ConnectedSubPump pump: connectedSubPumps)
-                directControl.pumpSelection.addItem(pump.getFullName());
-
-        }
-        for (Step step: sequentialLabelling.sequence)
-            step.setPumps(connectedSubPumps);
-
-        sequentialLabelling.sequence.getSuckStep().setPumps(connectedSubPumps);
-        updateSyringeInformation.actionPerformed(new ActionEvent(pumpConnections.connectedPumpsTableModel, 0, ""));
     }
 
     // Private classes
@@ -247,7 +205,7 @@ public final class GUI {
             this.setCaretPosition(this.getDocument().getLength());
         }
     }
-
+/*
     public class UpdateSyringeInformation implements ActionListener, Observer, ChangeListener {
 
         @Override
@@ -286,9 +244,9 @@ public final class GUI {
             double rate = (syringeRate*sliderValue)+syringeMin;
             directControl.rateText.setText("" + new BigDecimal(rate).setScale(3, RoundingMode.HALF_EVEN).toPlainString());
         }
-    }
+    }*/
 
-    private class UpdatePumpStatus implements Observer {
+    /*private class UpdatePumpStatus implements Observer {
 
         @Override
         public void update(Observable o, Object arg) {
@@ -296,7 +254,7 @@ public final class GUI {
             directControl.pumpStatus.setText(pumpManager.getStatus());
             sequentialLabelling.pumpStatusOnSeq.setText(pumpManager.getStatus());
         }
-    }
+    }*/
 
     private class PanelListener implements ChangeListener, ComponentListener{
 

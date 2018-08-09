@@ -61,7 +61,7 @@ public class SequentialLabelling extends JPanel {
         super();
         this.gui = gui;
 
-        sequence =  new Sequence(stepChanger, gui.connectedSubPumps);
+        sequence =  new Sequence(stepChanger);
 
         topPanel = new JPanel();
         stepsPanel = new JPanel();
@@ -107,7 +107,6 @@ public class SequentialLabelling extends JPanel {
         
         //Initiate SequenceManager
         sequenceManager = SequenceManager.INSTANCE;
-        sequenceManager.setPumpManager(gui.pumpManager);
         Thread sequenceThread = new Thread(sequenceManager);
         sequenceThread.start();
 
@@ -222,7 +221,7 @@ public class SequentialLabelling extends JPanel {
                         int currentStep = steps_on_list + s;
                         // Add to the current step list a new step object with the current index.
                         // The name of the step will be it's index on the list.
-                        Step step = new Step(currentStep + 1,gui.connectedSubPumps);
+                        Step step = new Step(currentStep + 1);
                         step.addActionListener(updateStepPump);
                         sequence.add(step);
                         // Add this step to the panel on the GUI
@@ -286,7 +285,6 @@ public class SequentialLabelling extends JPanel {
                 Step newStep = new Step();
                 newStep.updateStepInformation(step.getStepInformation());
                 newStep.setNumber(index + 1);
-                newStep.setPumps(gui.connectedSubPumps);
 
                 sequence.add(index, newStep);
 
@@ -434,11 +432,8 @@ public class SequentialLabelling extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             prefs.putBoolean(SUCK, suckBetweenSteps.isSelected());
-            if (gui.pumpManager.isConnected()) {
-                sequence.setSuck(suckBetweenSteps.isSelected());
-                sequenceManager.start(sequence);
-            }
-            else seqStatus.setText("Can't do anything until pump is connected.");
+            sequence.setSuck(suckBetweenSteps.isSelected());
+            sequenceManager.start(sequence);
         }
     }
 
@@ -446,8 +441,7 @@ public class SequentialLabelling extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (gui.pumpManager.isConnected()) sequenceManager.stop();
-            else seqStatus.setText("Can't do anything until pump is connected.");
+            sequenceManager.stop();
         }
     }
     

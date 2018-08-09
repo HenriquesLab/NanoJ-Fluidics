@@ -5,28 +5,42 @@ import java.util.Iterator;
 
 public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     private ArrayList<ConnectedSubPump> list = new ArrayList<ConnectedSubPump>();
+    private ArrayList<Pump> connectedPumps = new ArrayList<Pump>();
 
     private static final String OUT_OF_BOUNDS = "SubPump index doesn't exist in list.";
 
     public boolean notPresent(int index) {
-        return index < list.size() || index >= 0;
+        return index >= list.size() || index < 0;
     }
 
     public void addPump(Pump pump) {
         for (String subPump: pump.subPumps)
             list.add(new ConnectedSubPump(pump, subPump));
+        connectedPumps.add(pump);
     }
 
     public void removePump(String pumpName) {
+        ArrayList<ConnectedSubPump> pumpsToRemove = new ArrayList<ConnectedSubPump>();
         for (ConnectedSubPump pump: list)
             if (pump.name.equals(pumpName))
-                list.remove(pump);
+                pumpsToRemove.add(pump);
+
+        for (ConnectedSubPump pumpToRemove: pumpsToRemove)
+            list.remove(pumpToRemove);
+
+        for (ConnectedSubPump pump: list)
+            if (pump.name.equals(pumpName)) {
+                connectedPumps.remove(pump.pump);
+                break;
+            }
     }
 
     public void removePump(Pump pump) {
         for (ConnectedSubPump subPump: list)
             if (subPump.name.equals(pump.name))
                 list.remove(subPump);
+
+        connectedPumps.remove(pump);
     }
 
     public ConnectedSubPump getSubPump(String name, String subPump, String port) throws PumpNotFoundException {
@@ -78,6 +92,10 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         return list.get(index).getFullName();
     }
 
+    protected ArrayList<Pump> getAllConnectedPumps() {
+        return connectedPumps;
+    }
+
     public String[] getAllFullNames() {
         String array[] = new String[list.size()];
         if (list.isEmpty())
@@ -106,10 +124,6 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         if (notPresent(index))
             throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
         return list.get(index).port;
-    }
-
-    public void clearList() {
-        list.clear();
     }
 
     public int size() {

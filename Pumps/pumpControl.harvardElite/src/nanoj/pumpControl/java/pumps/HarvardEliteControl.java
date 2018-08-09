@@ -13,7 +13,7 @@ public final class HarvardEliteControl extends Pump {
     @Override
     public String connectToPump(String comPort) throws Exception {
         //First, unload any potential leftovers of failed connections
-        portName = "HarvardPort" + comPort;
+        portName = comPort;
         StrVector devices = core.getLoadedDevices();
         for(int i = 0; i<devices.size(); i++) {
             if (devices.get(i).equals(portName)) {

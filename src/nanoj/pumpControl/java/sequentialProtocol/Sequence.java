@@ -11,13 +11,13 @@ import java.util.Observer;
 
 public class Sequence extends ArrayList<Step> {
     private Observer stepObserver;
-    private ConnectedSubPumpsList subPumps;
+    // Foreign objects
+    private PumpManager pumpManager = PumpManager.INSTANCE;
     private Step suckStep;
     private boolean suck;
 
-    public Sequence(Observer changer, ConnectedSubPumpsList subPumps) {
+    public Sequence(Observer changer) {
         super();
-        this.subPumps = subPumps;
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -27,12 +27,12 @@ public class Sequence extends ArrayList<Step> {
 
         this.stepObserver = changer;
 
-        this.suckStep = new Step(0, "suck", false,10, 0, 0, "7", 0, Pump.Action.Withdraw,subPumps);
+        this.suckStep = new Step(0, "suck", false,10, 0, 0, "7", 0, Pump.Action.Withdraw);
         this.suckStep.setIsSuckStep();
 
-        add(new Step(1, "Start", true, 1, 0, 0,  "0.5", 1,Pump.Action.Infuse, subPumps));
-        add(new Step(2, "Middle", true, 1, 0, 1, "1", 1,Pump.Action.Infuse, subPumps));
-        add(new Step(3, "Finish", true,1, 0, 2,"100", 0,Pump.Action.Infuse, subPumps));
+        add(new Step(1, "Start", true, 1, 0, 0,  "0.5", 1,Pump.Action.Infuse));
+        add(new Step(2, "Middle", true, 1, 0, 1, "1", 1,Pump.Action.Infuse));
+        add(new Step(3, "Finish", true,1, 0, 2,"100", 0,Pump.Action.Infuse));
 
     }
 

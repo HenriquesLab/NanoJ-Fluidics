@@ -22,7 +22,7 @@ public class LegoControl extends Pump {
 
         this.comPort = comPort;
         //First, unload any potential leftovers of failed connections
-        portName = "LegoPumps" + comPort;
+        portName = comPort;
         StrVector devices = core.getLoadedDevices();
         for (int i = 0; i < devices.size(); i++) {
             if (devices.get(i).equals(portName)) {
@@ -166,7 +166,7 @@ public class LegoControl extends Pump {
         */
 
         //First, unload any potential leftovers of failed connections
-        portName = "LegoPumps" + comPort;
+        portName = comPort;
         StrVector devices = core.getLoadedDevices();
         for(int i = 0; i<devices.size(); i++) {
             if (devices.get(i).equals(portName)) {

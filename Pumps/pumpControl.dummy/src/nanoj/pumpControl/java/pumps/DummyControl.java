@@ -29,7 +29,7 @@ public final class DummyControl extends Pump implements PumpInterface {
     @Override
     public String connectToPump(String comPort) throws Exception {
         connected = true;
-        portName = "Port " + comPort;
+        portName = comPort;
         core.loadDevice(portName, "SerialManager", comPort);
         status = "Connected to " + portName;
         return status;
