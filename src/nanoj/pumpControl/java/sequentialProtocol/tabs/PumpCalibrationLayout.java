@@ -17,12 +17,22 @@ public class PumpCalibrationLayout extends GroupLayout {
 
         setVerticalGroup(
                 createSequentialGroup()
+                        .addGroup(createParallelGroup()
+                                .addComponent(panel.loadCalibration)
+                                .addComponent(panel.saveCalibration)
+                                .addComponent(panel.resetCalibration)
+                        )
                         .addGroup(createParallelGroup().addComponent(panel.tableLabel))
                         .addGroup(createParallelGroup().addComponent(panel.tableScrollPane))
         );
 
         setHorizontalGroup(
                 createParallelGroup()
+                        .addGroup(createSequentialGroup()
+                                .addComponent(panel.loadCalibration)
+                                .addComponent(panel.saveCalibration)
+                                .addComponent(panel.resetCalibration)
+                        )
                         .addGroup(createParallelGroup().addComponent(panel.tableLabel))
                         .addGroup(createParallelGroup().addComponent(panel.tableScrollPane))
         );

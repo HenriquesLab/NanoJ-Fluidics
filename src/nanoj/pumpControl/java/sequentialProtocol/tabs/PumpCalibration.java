@@ -8,11 +8,13 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
 
-public class PumpCalibration extends JPanel implements Observer, TableModelListener {
+public class PumpCalibration extends JPanel implements Observer, TableModelListener, ActionListener {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
     private PumpManager pumpManager = PumpManager.INSTANCE;
     private GUI gui;
@@ -47,6 +49,10 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
         tableModel = new CalibrationTable();
         table = new JTable(tableModel);
         tableScrollPane = new JScrollPane(table);
+
+        loadCalibration.addActionListener(this);
+        saveCalibration.addActionListener(this);
+        resetCalibration.addActionListener(this);
 
         pumpManager.addObserver(this);
         tableModel.addTableModelListener(this);
@@ -120,6 +126,41 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                 gui.log.message("Updated calibration of " + name + ", " + subPump + " on port " + port + " to: " +
                         diameter + ", " + maxFlowRate + ", " + minFlowRate);
             }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource().equals(loadCalibration)) {
+
+        } else if (e.getSource().equals(saveCalibration)) {
+
+        } else if (e.getSource().equals(resetCalibration)) {
+
+            editing = true;
+
+            int index = 0;
+
+            for (ConnectedSubPump subPump: pumpManager.getConnectedPumpsList()) {
+                String key = subPump.name+subPump.subPump+subPump.port;
+
+                double diameter =Double.parseDouble(subPump.asCalibrationArray()[DIAMETER]);
+                tableModel.setValueAt("" + diameter,index,DIAMETER);
+                prefs.putDouble(CAL+DIAMETER+key,diameter);
+
+                double maxFlowRate =Double.parseDouble(subPump.asCalibrationArray()[MAX_FLOW_RATE]);
+                tableModel.setValueAt("" + maxFlowRate,index,MAX_FLOW_RATE);
+                prefs.putDouble(CAL+MAX_FLOW_RATE+key,maxFlowRate);
+
+                double minFlowRate =Double.parseDouble(subPump.asCalibrationArray()[MIN_FLOW_RATE]);
+                tableModel.setValueAt("" + minFlowRate,index,MIN_FLOW_RATE);
+                prefs.putDouble(CAL+MIN_FLOW_RATE+key,minFlowRate);
+
+                index++;
+            }
+
+            editing = false;
+
         }
     }
 
