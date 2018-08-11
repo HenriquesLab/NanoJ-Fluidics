@@ -60,6 +60,9 @@ public final class DummyControl extends Pump implements PumpInterface {
         String action;
         if(direction.equals(Action.Infuse)) action = "pushing.";
         else action = "withdrawing.";
+        message("Reference diameter for sub pump is: " + referenceRates.get(currentSubPump)[0]);
+        message("Reference max rate for sub pump is: " + referenceRates.get(currentSubPump)[1]);
+        message("Reference min rate for sub pump is: " + referenceRates.get(currentSubPump)[2]);
         setStatus(currentSubPump() + "Started " + action);
         message(status);
     }
