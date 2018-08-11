@@ -8,8 +8,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Observable;
-import java.util.Observer;
 
 public class FlowRateSlider extends JPanel implements ChangeListener {
     private PumpManager pumpManager = PumpManager.INSTANCE;

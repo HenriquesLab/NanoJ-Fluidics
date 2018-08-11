@@ -1,10 +1,7 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
 import mmcorej.CMMCore;
-import nanoj.pumpControl.java.pumps.ConnectedSubPump;
-import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList;
 import nanoj.pumpControl.java.pumps.PumpManager;
-import nanoj.pumpControl.java.pumps.SyringeList;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.DirectControl;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpConnections;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.SequentialLabelling;
@@ -16,19 +13,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.prefs.Preferences;
-
-/*
-  TODO: Automatic way to load syringes from a file
- */
 
 public final class GUI {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
@@ -204,56 +193,6 @@ public final class GUI {
             this.setCaretPosition(this.getDocument().getLength());
         }
     }
-/*
-    public class UpdateSyringeInformation implements ActionListener, Observer, ChangeListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (!(pumpConnections.connectedPumpsTableModel.getValueAt(
-                    directControl.pumpSelection.getSelectedIndex(), 0))
-                    .equals(PumpManager.NO_PUMP_CONNECTED)) {
-                double[] newInformation = pumpManager.getMaxMin(
-                        (String) pumpConnections.connectedPumpsTableModel.getValueAt(
-                                directControl.pumpSelection.getSelectedIndex(),0),
-                        SyringeList.getDiameter(directControl.syringeComboBox.getSelectedIndex()));
-
-                syringeMin = newInformation[1];
-                syringeRate = (newInformation[0] - newInformation[1]);
-
-                double sliderValue = (double) directControl.rateSlider.getValue() + (double) Integer.MAX_VALUE + 1;
-                sliderValue = sliderValue/ ((2*((double) Integer.MAX_VALUE)) +1);
-
-                double rate = (syringeRate*sliderValue)+syringeMin;
-                directControl.rateText.setText("" + new BigDecimal(rate).setScale(3, RoundingMode.HALF_EVEN).toPlainString());
-            }
-
-            pumpConnections.rememberSettings();
-        }
-
-        @Override
-        public void update(Observable o, Object arg) {
-            if(arg == PumpManager.CURRENT_PUMP_CHANGED) actionPerformed(new ActionEvent(directControl.pumpSelection,0,""));
-        }
-
-        @Override
-        public void stateChanged(ChangeEvent e) {
-            double sliderValue = (double) directControl.rateSlider.getValue() + (double) Integer.MAX_VALUE + 1;
-            sliderValue = sliderValue/ ((2*((double) Integer.MAX_VALUE)) +1);
-
-            double rate = (syringeRate*sliderValue)+syringeMin;
-            directControl.rateText.setText("" + new BigDecimal(rate).setScale(3, RoundingMode.HALF_EVEN).toPlainString());
-        }
-    }*/
-
-    /*private class UpdatePumpStatus implements Observer {
-
-        @Override
-        public void update(Observable o, Object arg) {
-            if (arg != PumpManager.NEW_STATUS_AVAILABLE) return;
-            directControl.pumpStatus.setText(pumpManager.getStatus());
-            sequentialLabelling.pumpStatusOnSeq.setText(pumpManager.getStatus());
-        }
-    }*/
 
     private class PanelListener implements ChangeListener, ComponentListener{
 

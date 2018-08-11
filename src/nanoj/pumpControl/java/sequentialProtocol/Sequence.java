@@ -11,8 +11,6 @@ import java.util.Observer;
 
 public class Sequence extends ArrayList<Step> {
     private Observer stepObserver;
-    // Foreign objects
-    private PumpManager pumpManager = PumpManager.INSTANCE;
     private Step suckStep;
     private boolean suck;
 
