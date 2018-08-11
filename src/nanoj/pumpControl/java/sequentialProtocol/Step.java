@@ -1,5 +1,6 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import nanoj.pumpControl.java.pumps.*;
 import org.micromanager.utils.ReportingUtils;
 
@@ -35,8 +36,6 @@ public class Step extends Observable implements Observer {
     public static final String DUPLICATE_TEXT = "Duplicate this step";
     public static final String EXPIRE_TEXT = "Remove step";
 
-    private Listener listener = new Listener();
-
     private String[] syringes = SyringeList.getBrandedNames(3);
     private FlowLayout step_layout = new FlowLayout(FlowLayout.LEADING);
     private JPanel step = new JPanel(step_layout);
@@ -47,16 +46,12 @@ public class Step extends Observable implements Observer {
     private JComboBox timeUnitsList;
     private JComboBox pumpList;
     private JComboBox syringe = new JComboBox(syringes);
-    private JSlider rateSlider;
-    private JLabel rateLabel = new JLabel("");
+    private FlowRateSlider rateSlider;
     private JTextField volume;
     private JComboBox volumeUnitsList;
     private JComboBox action = new JComboBox(Pump.Action.values());
     private boolean syringeExchangeRequired = false;
-    private int number = -1;
-
-    private double syringeRate;
-    private double syringeMin;
+    private int number;
 
     // Constructors
     public Step() {
@@ -93,6 +88,7 @@ public class Step extends Observable implements Observer {
         step.add(suck);
 
         time = new JTextField(Integer.toString(givenTime), 2);
+        Listener listener = new Listener();
         time.addActionListener(listener);
         step.add(time);
 
@@ -105,17 +101,15 @@ public class Step extends Observable implements Observer {
              pumps = new String[]{PumpManager.NO_PUMP_CONNECTED};
         else
             pumps = pumpManager.getAllFullNames();
-        
+
         pumpList = new JComboBox(pumps);
         pumpList.setPrototypeDisplayValue(PumpManager.NO_PUMP_CONNECTED);
         step.add(pumpList);
 
-        rateSlider = new JSlider(JSlider.HORIZONTAL, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-        rateSlider.setMinimumSize(new Dimension(100,27));
-        rateSlider.setPreferredSize(new Dimension(100,27));
-        rateSlider.addChangeListener(listener);
+        rateSlider = new FlowRateSlider();
+        rateSlider.setMinimumSize(new Dimension(200,28));
+        rateSlider.setPreferredSize(new Dimension(250,28));
         step.add(rateSlider);
-        step.add(rateLabel);
 
         syringe.setSelectedIndex(givenSyringe);
         syringe.addActionListener(listener);
@@ -132,7 +126,6 @@ public class Step extends Observable implements Observer {
         step.add(action);
 
         listener.updateSyringeInformation();
-        listener.setText();
 
         pumpManager.addObserver(this);
     }
@@ -151,7 +144,21 @@ public class Step extends Observable implements Observer {
                     pumpList.addItem(pump.getFullName());
 
             }
+
+            if (pumpManager.noPumpsConnected())
+                return;
+
+            rateSlider.setPumpSelection(pumpList.getSelectedIndex());
+            rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringe.getSelectedIndex()));
         }
+    }
+
+    public double getFlowRate() {
+        return rateSlider.getCurrentFlowRate();
+    }
+
+    public int getRate() {
+        return rateSlider.getSliderValue();
     }
 
     // Inner Classes
@@ -230,35 +237,13 @@ public class Step extends Observable implements Observer {
         }
     }
 
-    class Listener extends MouseAdapter implements ActionListener, ChangeListener {
+    class Listener extends MouseAdapter implements ActionListener {
 
         void updateSyringeInformation() {
-            double[] newInformation = {0.0,0.0};
-            if (pumpManager.anyPumpsConnected())
-                newInformation = pumpManager.getMaxMin(
-                    pumpList.getSelectedIndex(),
-                    SyringeList.getDiameter(syringe.getSelectedIndex())
-            );
-
-            if (newInformation == null) return;
-
-            syringeMin = newInformation[1];
-            syringeRate = (newInformation[0] - newInformation[1]);
-
-            setText();
-        }
-
-        void setText() {
-            int digits = 1;
-            if (getRate() < 10) digits = 2;
-            rateLabel.setText(
-                    new BigDecimal(getRate()).setScale(digits, RoundingMode.HALF_EVEN).toPlainString()
-                            + " " + PumpManager.FLOW_RATE_UNITS);
-        }
-
-        @Override
-        public void stateChanged(ChangeEvent e) {
-            setText();
+            if (pumpManager.anyPumpsConnected()) {
+                rateSlider.setPumpSelection(pumpList.getSelectedIndex());
+                rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringe.getSelectedIndex()));
+            }
         }
 
         @Override
@@ -282,12 +267,6 @@ public class Step extends Observable implements Observer {
             }
         }
 
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            super.mouseDragged(e);
-            setText();
-        }
-
     }
 
     // Methods
@@ -295,12 +274,13 @@ public class Step extends Observable implements Observer {
     public HashMap<String,String> getStepInformation() {
         HashMap<String,String> info = new HashMap<String,String>();
         info.put("number", numberLabel.getText());
+        info.put("pump", (String) pumpList.getSelectedItem());
         info.put("name",name.getText());
         info.put("suck", "" + suck.isSelected());
         info.put("time",time.getText());
         info.put("timeUnits","" + timeUnitsList.getSelectedIndex());
         info.put("syringe","" + syringe.getSelectedIndex());
-        info.put("rate", "" + rateSlider.getValue());
+        info.put("rate", "" + rateSlider.getSliderValue());
         info.put("volume",volume.getText());
         info.put("volumeUnits","" + volumeUnitsList.getSelectedIndex());
         info.put("action","" + action.getSelectedIndex());
@@ -311,25 +291,21 @@ public class Step extends Observable implements Observer {
         pumpList.addActionListener(a);
     }
 
-
     public void updateStepInformation(HashMap<String,String> givenInformation) {
+        String pump = givenInformation.get("pump");
+        if (pumpManager.isConnected(pump, true))
+            pumpList.setSelectedItem(pump);
+
         numberLabel.setText(givenInformation.get("number"));
         name.setText(givenInformation.get("name"));
         suck.setSelected(Boolean.parseBoolean(givenInformation.get("suck")));
         time.setText(givenInformation.get("time"));
         timeUnitsList.setSelectedIndex(Integer.parseInt(givenInformation.get("timeUnits")));
         syringe.setSelectedIndex(Integer.parseInt(givenInformation.get("syringe")));
-        rateSlider.setValue(Integer.parseInt(givenInformation.get("rate")));
+        rateSlider.setFlowRate(Integer.parseInt(givenInformation.get("rate")));
         volume.setText(givenInformation.get("volume"));
         volumeUnitsList.setSelectedIndex(Integer.parseInt(givenInformation.get("volumeUnits")));
         action.setSelectedIndex(Integer.parseInt(givenInformation.get("action")));
-    }
-
-    public double getRate() {
-        double sliderValue = (double) rateSlider.getValue() + (double) Integer.MAX_VALUE + 1;
-        sliderValue = sliderValue/ ((2*((double) Integer.MAX_VALUE)) +1);
-        
-        return (syringeRate*sliderValue)+syringeMin;
     }
 
     public double getTargetVolume() {

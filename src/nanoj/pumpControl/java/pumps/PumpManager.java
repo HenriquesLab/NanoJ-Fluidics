@@ -132,8 +132,18 @@ public class PumpManager extends Observable {
         return connectedSubPumps != null && connectedSubPumps.getSubPump(pumpIndex).pump.isConnected();
     }
 
-    public synchronized boolean isConnected(String pumpName) {
-        return connectedSubPumps != null && connectedSubPumps.getPump(pumpName).isConnected();
+    public synchronized boolean isConnected(String pumpName, boolean fullName) {
+        boolean isIt = false;
+        if (fullName) {
+            for (String pump: getAllFullNames())
+                if (pump.equals(pumpName)) {
+                    isIt = true;
+                    break;
+                }
+        }
+        else isIt = connectedSubPumps != null && connectedSubPumps.getPump(pumpName).isConnected();
+
+        return isIt;
     }
 
     public double[] getMaxMin(int pumpIndex, double diameter) throws PumpNotFoundException {

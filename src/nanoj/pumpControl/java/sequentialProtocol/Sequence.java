@@ -30,9 +30,9 @@ public class Sequence extends ArrayList<Step> {
         this.suckStep = new Step(0, "suck", false,10, 0, 0, "7", 0, Pump.Action.Withdraw);
         this.suckStep.setIsSuckStep();
 
-        add(new Step(1, "Start", true, 1, 0, 0,  "0.5", 1,Pump.Action.Infuse));
-        add(new Step(2, "Middle", true, 1, 0, 1, "1", 1,Pump.Action.Infuse));
-        add(new Step(3, "Finish", true,1, 0, 2,"100", 0,Pump.Action.Infuse));
+        add(new Step(1, "Start", true, 1, 0, 1,  "0.5", 1,Pump.Action.Infuse));
+        add(new Step(2, "Middle", true, 1, 0, 3, "1", 1,Pump.Action.Infuse));
+        add(new Step(3, "Finish", true,1, 0, 6,"100", 0,Pump.Action.Infuse));
 
     }
 

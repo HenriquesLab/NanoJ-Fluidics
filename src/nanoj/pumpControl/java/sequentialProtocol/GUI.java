@@ -109,7 +109,6 @@ public final class GUI {
         directControl = new DirectControl(this);
         sequentialLabelling = new SequentialLabelling(this);
 
-        pumpManager.addObserver(directControl);
 
         mainFrame.addComponentListener(panelListener);
 

@@ -4,20 +4,17 @@ import nanoj.pumpControl.java.pumps.ConnectedSubPump;
 import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.pumps.SyringeList;
+import nanoj.pumpControl.java.sequentialProtocol.FlowRateSlider;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
 
-public class DirectControl extends JPanel implements Observer, ActionListener, ChangeListener {
+public class DirectControl extends JPanel implements Observer, ActionListener {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
     private GUI gui;
     private PumpManager pumpManager = PumpManager.INSTANCE;
@@ -33,10 +30,9 @@ public class DirectControl extends JPanel implements Observer, ActionListener, C
     JLabel syringeLabel;
     public JComboBox syringeComboBox;
     JLabel rateLabel;
-    public JSlider rateSlider;
-    public JLabel rateText;
+    public FlowRateSlider rateSlider;
     JLabel targetLabel;
-    JTextField targetField;
+    JTextField targetVolume;
     JLabel actionLabel;
     JRadioButton infuse;
     JRadioButton withdraw;
@@ -54,10 +50,9 @@ public class DirectControl extends JPanel implements Observer, ActionListener, C
         pumpSelectionLabel = new JLabel("Select pump to control: ");
         syringeLabel = new JLabel("Syringe");
         rateLabel = new JLabel("Rate ("+ PumpManager.FLOW_RATE_UNITS+")");
-        rateSlider = new JSlider(JSlider.HORIZONTAL, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-        rateText = new JLabel("");
+        rateSlider = new FlowRateSlider();
         targetLabel = new JLabel("Target Volume (" + PumpManager.VOLUME_UNITS + ")");
-        targetField = new JTextField(prefs.get(TARGET, "500"), 6);
+        targetVolume = new JTextField(prefs.get(TARGET, "500"), 6);
         actionLabel = new JLabel("Action to Perform");
         infuse = new JRadioButton("Infuse", true);
         withdraw = new JRadioButton("Withdraw");
@@ -70,34 +65,19 @@ public class DirectControl extends JPanel implements Observer, ActionListener, C
         buttons.add(infuse);
         buttons.add(withdraw);
 
-        setLayout(new DirectControLayout(this));
+        setLayout(new DirectControlLayout(this));
 
         stopPump = new StopPump();
 
         syringeComboBox.addActionListener(this);
         startPumpButton.addActionListener(this);
         stopPumpButton.addActionListener(stopPump);
-        rateSlider.addChangeListener(this);
+
+        pumpManager.addObserver(this);
     }
 
     public void rememberPreferences() {
-        prefs.put(TARGET, targetField.getText());
-    }
-
-    private void updateFlowRateInformation() {
-        double[] newInformation = pumpManager.getMaxMin(
-                pumpSelection.getSelectedIndex(),
-                SyringeList.getDiameter(syringeComboBox.getSelectedIndex()));
-
-        double syringeMin = newInformation[1];
-        double syringeRate = (newInformation[0] - newInformation[1]);
-
-        double sliderValue = (double) rateSlider.getValue() + (double) Integer.MAX_VALUE + 1;
-        sliderValue = sliderValue/ ((2*((double) Integer.MAX_VALUE)) +1);
-
-        double rate = (syringeRate*sliderValue)+syringeMin;
-        rateText.setText("" + new BigDecimal(rate).setScale(3, RoundingMode.HALF_EVEN).toPlainString());
-
+        prefs.put(TARGET, targetVolume.getText());
     }
 
     @Override
@@ -118,7 +98,8 @@ public class DirectControl extends JPanel implements Observer, ActionListener, C
             if (pumpManager.noPumpsConnected())
                 return;
 
-            updateFlowRateInformation();
+            rateSlider.setPumpSelection(pumpSelection.getSelectedIndex());
+            rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringeComboBox.getSelectedIndex()));
         }
     }
 
@@ -126,22 +107,24 @@ public class DirectControl extends JPanel implements Observer, ActionListener, C
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource().equals(syringeComboBox) && pumpManager.anyPumpsConnected())
-            updateFlowRateInformation();
+            rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringeComboBox.getSelectedIndex()));
 
         else if (e.getSource().equals(startPumpButton)) {
             int index = pumpSelection.getSelectedIndex();
-            prefs.put(TARGET, targetField.getText());
+            prefs.put(TARGET, targetVolume.getText());
             if (gui.pumpManager.isConnected(index)) {
                 try {
                     Pump.Action action;
                     if (infuse.isSelected())
                         action = Pump.Action.Infuse;
                     else action = Pump.Action.Withdraw;
+                    rateSlider.setPumpSelection(index);
+                    rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringeComboBox.getSelectedIndex()));
                     gui.log.message("" + gui.pumpManager.startPumping(
                             index,
                             syringeComboBox.getSelectedIndex(),
-                            Double.parseDouble(rateText.getText()),
-                            Double.parseDouble(targetField.getText()),
+                            rateSlider.getCurrentFlowRate(),
+                            Double.parseDouble(targetVolume.getText()),
                             action
                     ));
                 } catch (Exception e1) {
@@ -151,12 +134,6 @@ public class DirectControl extends JPanel implements Observer, ActionListener, C
             } else gui.log.message("Can't do anything until pump is connected.");
         }
 
-    }
-
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        if (e.getSource().equals(rateSlider) && pumpManager.anyPumpsConnected())
-            updateFlowRateInformation();
     }
 
     private class StopPump implements ActionListener {

@@ -49,7 +49,7 @@ public class SequenceManager extends Observable implements Runnable {
                             pumpManager.startPumping(
                                     currentPump,
                                     sequence.getSuckStep().getSyringeIndex(),
-                                    sequence.getSuckStep().getRate(),
+                                    sequence.getSuckStep().getFlowRate(),
                                     sequence.getSuckStep().getTargetVolume(),
                                     sequence.getSuckStep().getAction()
                             );
@@ -81,7 +81,7 @@ public class SequenceManager extends Observable implements Runnable {
                         pumpManager.startPumping(
                             currentPump,
                             sequence.get(current).getSyringeIndex(),
-                            sequence.get(current).getRate(),
+                            sequence.get(current).getFlowRate(),
                             sequence.get(current).getTargetVolume(),
                             sequence.get(current).getAction()
                         );
