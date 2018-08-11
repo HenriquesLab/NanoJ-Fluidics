@@ -83,11 +83,12 @@ public final class HarvardEliteControl extends Pump {
 
     private String parseAnswer(String answer) {
         if (answer == null) answer = "Null answer!";
-        if (answer.contains(":")) answer = "Pump is idle.";
-        if (answer.contains(">")) answer = "Pump is infusing.";
-        if (answer.contains("<")) answer = "Pump is withdrawing.";
-        if (answer.contains("*")) answer = "Pump is stalled.";
-        if (answer.contains("T*")) answer = "Pump reached target volume.";
+        else if (answer.contains(":")) answer = "Pump is idle.";
+        else if (answer.contains(">")) answer = "Pump is infusing.";
+        else if (answer.contains("<")) answer = "Pump is withdrawing.";
+        else if (answer.contains("*")) answer = "Pump is stalled.";
+        else if (answer.contains("T*")) answer = "Pump reached target volume.";
+        setStatus(answer);
         return answer;
     }
 }

@@ -68,7 +68,7 @@ public class LegoControl extends Pump {
                 subPumps[a] = SHIELD + (s+1) + "," + PUMP + (p+1);
                 a++;
             }
-
+            
         return answer;
     }
 
@@ -193,7 +193,11 @@ public class LegoControl extends Pump {
             throw e;
         }
         result = result.substring(0, result.length()-1);
-        log.message("Response from pump: " + result);
+
+        String prefix = "Response from pump: ";
+        log.message(prefix + result);
+        setStatus(prefix + result);
+
         return result;
 
     }
