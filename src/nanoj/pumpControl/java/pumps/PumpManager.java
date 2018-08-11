@@ -71,7 +71,7 @@ public class PumpManager extends Observable implements Observer {
                                double targetVolume, Pump.Action action) throws Exception {
         String answer;
 
-        ConnectedSubPump connectedSubPump = connectedSubPumps.getSubPump(pumpIndex);
+        ConnectedSubPump connectedSubPump = connectedSubPumps.getConnectedSubPump(pumpIndex);
         Pump pump = connectedSubPump.pump;
 
         pump.setUnitsOfVolume(VOLUME_UNITS);
@@ -96,21 +96,23 @@ public class PumpManager extends Observable implements Observer {
     }
 
     public synchronized void stopPumping(int pumpIndex) throws Exception {
-        connectedSubPumps.getSubPump(pumpIndex).pump.stopPump();
+        connectedSubPumps.getConnectedSubPump(pumpIndex).pump.stopPump();
         setChanged();
         notifyObservers(NEW_STATUS_AVAILABLE);
     }
 
     public synchronized void stopPumping(String pumpName, String subPump, String port) throws Exception {
-        connectedSubPumps.getSubPump(pumpName,subPump,port).pump.stopPump();
+        connectedSubPumps.getConnectedSubPump(pumpName,subPump,port).pump.stopPump();
         setChanged();
         notifyObservers(NEW_STATUS_AVAILABLE);
     }
 
     public synchronized boolean disconnect(int index) throws Exception {
-        boolean success = connectedSubPumps.getSubPump(index).pump.disconnect();
+        boolean success = connectedSubPumps.getConnectedSubPump(index).pump.disconnect();
+        String name = connectedSubPumps.getConnectedSubPump(index).name;
+        String port = connectedSubPumps.getConnectedSubPump(index).port;
         if (success)
-            connectedSubPumps.removePump(connectedSubPumps.getSubPump(index).name);
+            connectedSubPumps.removePump(name,port);
 
         setChanged();
         notifyObservers(PUMP_DISCONNECTED);
@@ -129,10 +131,10 @@ public class PumpManager extends Observable implements Observer {
     }
 
     public synchronized boolean isConnected(int pumpIndex) {
-        return connectedSubPumps != null && connectedSubPumps.getSubPump(pumpIndex).pump.isConnected();
+        return connectedSubPumps != null && connectedSubPumps.getConnectedSubPump(pumpIndex).pump.isConnected();
     }
 
-    public synchronized boolean isConnected(String pumpName, boolean fullName) {
+    public synchronized boolean isConnected(String pumpName, String port, boolean fullName) {
         boolean isIt = false;
         if (fullName) {
             for (String pump: getAllFullNames())
@@ -141,22 +143,21 @@ public class PumpManager extends Observable implements Observer {
                     break;
                 }
         }
-        else isIt = connectedSubPumps != null && connectedSubPumps.getPump(pumpName).isConnected();
+        else isIt = connectedSubPumps != null && connectedSubPumps.getPump(pumpName, port).isConnected();
 
         return isIt;
     }
 
     public double[] getMaxMin(int pumpIndex, double diameter) throws PumpNotFoundException {
-        return getMaxMin(connectedSubPumps.getPumpName(pumpIndex),diameter);
-    }
-
-    public double[] getMaxMin(String pump, double diameter) throws PumpNotFoundException {
-        return connectedSubPumps.getPump(pump).getMaxMin(diameter);
+        String name = connectedSubPumps.getPumpName(pumpIndex);
+        String port = connectedSubPumps.getPumpPort(pumpIndex);
+        String subPump = connectedSubPumps.getPumpSubName(pumpIndex);
+        return connectedSubPumps.getPump(name,port).getMaxMin(subPump,diameter);
     }
 
     private synchronized void getStatusFromPump(int pumpIndex) throws Exception {
         if (isConnected(pumpIndex))
-            status = connectedSubPumps.getSubPump(pumpIndex).pump.getStatus();
+            status = connectedSubPumps.getConnectedSubPump(pumpIndex).pump.getStatus();
     }
 
     public String getStatus() {
@@ -173,6 +174,12 @@ public class PumpManager extends Observable implements Observer {
 
     public String[] getAllFullNames() {
         return connectedSubPumps.getAllFullNames();
+    }
+
+    public void updateReferenceRate(int pumpIndex, double[] newRate) {
+        connectedSubPumps.getConnectedSubPump(pumpIndex).pump.updateReferenceRate(
+                connectedSubPumps.getConnectedSubPump(pumpIndex).subPump,
+                newRate);
     }
 
     @Override

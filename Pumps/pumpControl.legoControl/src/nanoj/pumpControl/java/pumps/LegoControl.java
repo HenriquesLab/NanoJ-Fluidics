@@ -12,8 +12,6 @@ public class LegoControl extends Pump {
     public LegoControl() {
         name = "NanoJ Lego Control Hub";
         timeOut = 2000;
-        double max = 2.3;
-        referenceRates = new double[]{4.699,max,max*0.25};
     }
 
     @Override
@@ -69,13 +67,17 @@ public class LegoControl extends Pump {
                 a++;
             }
 
+        double max = 2.3;
+        for (String subPump : subPumps)
+            referenceRates.put(subPump,new double[]{4.699,max,max*0.25});
+
         return answer;
     }
 
     @Override
     public void setFlowRate(double givenFlowRate) throws Exception {
         flowRate = givenFlowRate;
-        double[] maxMin = getMaxMin(syringeDiameter);
+        double[] maxMin = getMaxMin(currentSubPump,syringeDiameter);
 
         if (flowRate > maxMin[0]) flowRate = maxMin[0];
         else if(flowRate < maxMin[1]) flowRate = maxMin[1];
@@ -96,7 +98,7 @@ public class LegoControl extends Pump {
             commandFlow = "" + commandFlowInt;
         }
         /* Pump serial command: sxynnn = for pump xy set speed nnn*/
-        sendCommand("s" + parseSubPump(subPumps[currentSubPump]) + commandFlow);
+        sendCommand("s" + parseSubPump(currentSubPump) + commandFlow);
     }
 
     @Override
@@ -131,7 +133,7 @@ public class LegoControl extends Pump {
         rxydttttt - Start pump xy in direction d for ttttt seconds
         d = 1 is forward, d = 2 is backwards
         */
-        sendCommand("r" + parseSubPump(subPumps[currentSubPump]) + action + target);
+        sendCommand("r" + parseSubPump(currentSubPump) + action + target);
     }
 
     @Override
@@ -141,12 +143,12 @@ public class LegoControl extends Pump {
 
     @Override
     public synchronized void stopPump() throws Exception {
-        sendCommand("a" + parseSubPump(subPumps[currentSubPump]));
+        sendCommand("a" + parseSubPump(currentSubPump));
     }
 
     @Override
-    public synchronized void stopPump(int index) throws Exception {
-        sendCommand("a" + parseSubPump(subPumps[index]));
+    public synchronized void stopPump(String subPump) throws Exception {
+        sendCommand("a" + parseSubPump(subPump));
     }
 
     //TODO: Create a status getter that automatically parses the lego style reply.

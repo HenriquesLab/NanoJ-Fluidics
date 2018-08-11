@@ -7,7 +7,7 @@ public final class HarvardEliteControl extends Pump {
     public HarvardEliteControl() {
         name = "Harvard Elite Pump 11";
         subPumps = new String[]{"Single"};
-        referenceRates = new double[]{26.594,1473,0.0013855};
+        referenceRates.put("Single",new double[]{26.594,1473,0.0013855});
     }
 
     @Override

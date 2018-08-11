@@ -16,6 +16,9 @@ public final class DummyControl extends Pump implements PumpInterface {
             name = "Virtual pump";
             subPumps = new String[]{"Sub 1", "Sub 2", "Sub 3"};
         }
+
+        for (String subPump: subPumps)
+            referenceRates.put(subPump,new double[]{4,1,0.25});
     }
 
     private String currentSubPump() {
@@ -69,13 +72,13 @@ public final class DummyControl extends Pump implements PumpInterface {
 
     @Override
     public void stopPump() {
-        setStatus("Stopped current pump: " + subPumps[currentSubPump]);
+        setStatus("Stopped current pump: " + currentSubPump);
         message(status);
     }
 
     @Override
-    public void stopPump(int pumpIndex) throws Exception {
-        setStatus("Stopped pump: " + subPumps[pumpIndex]);
+    public void stopPump(String subPump) throws Exception {
+        setStatus("Stopped pump: " + subPump);
         message(status);
     }
 
@@ -86,9 +89,7 @@ public final class DummyControl extends Pump implements PumpInterface {
     public String getStatus() { return status; }
 
     @Override
-    public double[] getMaxMin(double diameter) {
-        double max = 1 * diameter;
-        double min = 0.1 * diameter;
-        return new double[]{max,min};
+    public double[] getMaxMin(String subPump,double diameter) {
+        return new double[]{referenceRates.get(subPump)[1],referenceRates.get(subPump)[2]};
     }
 }

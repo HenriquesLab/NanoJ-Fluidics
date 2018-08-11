@@ -293,8 +293,14 @@ public class Step extends Observable implements Observer {
 
     public void updateStepInformation(HashMap<String,String> givenInformation) {
         String pump = givenInformation.get("pump");
-        if (pumpManager.isConnected(pump, true))
-            pumpList.setSelectedItem(pump);
+
+        for (int i = 0; i < pumpList.getItemCount(); i++) {
+            if (pump.equals((String) pumpList.getItemAt(i))) {
+                if (pumpManager.isConnected(i))
+                    pumpList.setSelectedItem(pump);
+                break;
+            }
+        }
 
         numberLabel.setText(givenInformation.get("number"));
         name.setText(givenInformation.get("name"));

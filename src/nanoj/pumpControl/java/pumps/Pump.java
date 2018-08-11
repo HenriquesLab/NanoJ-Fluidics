@@ -1,10 +1,13 @@
 package nanoj.pumpControl.java.pumps;
 
-import javafx.beans.Observable;
 import mmcorej.CMMCore;
+import nanoj.pumpControl.java.sequentialProtocol.GUI;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 
 public abstract class Pump extends java.util.Observable implements PumpInterface {
     protected CMMCore core;
@@ -19,9 +22,9 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
     protected String unitsOfFlowRate = unitsOfVolume + "/" + unitsOfTime;
     protected boolean connected = false;
     protected String[] subPumps= null;
-    protected int currentSubPump;
+    protected String currentSubPump;
     protected String name;
-    protected double[] referenceRates = new double[]{4,1,0.25};
+    protected LinkedHashMap<String, double[]> referenceRates = new LinkedHashMap<String, double[]>();
 
     public enum Action {
         Infuse,
@@ -70,16 +73,17 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
     }
 
     @Override
-    public void stopPump(int pumpIndex) throws Exception {
+    public void stopPump(String pump) throws Exception {
         stopPump();
     }
 
     @Override
-    public double[] getMaxMin(double diameter) {
-        double rat = diameter / referenceRates[0];
+    public double[] getMaxMin(String subPump, double diameter) {
+        double[] referenceRate = referenceRates.get(subPump);
+        double rat = diameter / referenceRate[0];
         BigDecimal ratio = new BigDecimal(Math.pow(rat,2));
-        BigDecimal max = new BigDecimal(referenceRates[1]).multiply(ratio);
-        BigDecimal min = new BigDecimal(referenceRates[2]).multiply(ratio);
+        BigDecimal max = new BigDecimal(referenceRate[1]).multiply(ratio);
+        BigDecimal min = new BigDecimal(referenceRate[2]).multiply(ratio);
         max = max.setScale(2, RoundingMode.HALF_UP);
         min = min.setScale(6, RoundingMode.HALF_UP);
         return new double[]{max.doubleValue(),min.doubleValue()};
@@ -96,13 +100,8 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
         }
     }
 
-    public boolean setCurrentSubPump(String subPump) {
-        int result = Arrays.binarySearch(subPumps, subPump);
-        if (result > -1) {
-            currentSubPump = result;
-            return true;
-        }
-        else return false;
+    public void setCurrentSubPump(String subPump) {
+        currentSubPump = subPump;
     }
 
     protected void setStatus(String text) {
@@ -111,9 +110,7 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
         notifyObservers(text);
     }
 
-    public String getCurrentSubPump() { return subPumps[currentSubPump]; }
-
-    public int getCurrentSubPumpIndex() { return currentSubPump; }
+    public String getCurrentSubPump() { return currentSubPump; }
 
     public void setUnitsOfTime(String units) {
         unitsOfTime = units;
@@ -135,8 +132,11 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
 
     public void setTimeOut(String timeOut) { this.timeOut = Long.parseLong(timeOut); }
 
-    public double[] getReferenceRates() {
-        return referenceRates;
+    public synchronized double[] getReferenceRate(String subPump) {
+        return referenceRates.get(subPump);
     }
 
+    public synchronized void updateReferenceRate(String subPump, double[] newRate) {
+        referenceRates.put(subPump,newRate);
+    }
 }

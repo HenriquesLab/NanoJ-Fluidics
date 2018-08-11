@@ -67,7 +67,7 @@ public class StepperControl extends Pump{
     }
 
     @Override
-    public double[] getMaxMin(double diameter) {
+    public double[] getMaxMin(String subPump, double diameter) {
         double max = 1 * diameter * 15;
         double min = 0.1 * diameter;
         return new double[]{max,min};

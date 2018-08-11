@@ -56,6 +56,7 @@ public class PumpConnections extends JPanel {
 
         portsList = new JComboBox(new Vector(NRSerialPort.getAvailableSerialPorts()));
         portsList.addItem(VIRTUAL_PORT);
+        portsList.addItem(VIRTUAL_PORT + " 2");
         portsList.setSelectedItem(prefs.get(PORT, VIRTUAL_PORT));
 
         setLayout( new PumpConnectionsLayout(this));

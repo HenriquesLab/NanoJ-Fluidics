@@ -22,6 +22,9 @@ public class ConnectedSubPump {
     }
 
     public String[] asCalibrationArray() {
-        return new String[]{name,subPump,port,""+pump.referenceRates[0],""+pump.referenceRates[1]};
+        return new String[]{name,subPump,port,
+                ""+pump.referenceRates.get(subPump)[0],
+                ""+pump.referenceRates.get(subPump)[1],
+                ""+pump.referenceRates.get(subPump)[2]};
     }
 }

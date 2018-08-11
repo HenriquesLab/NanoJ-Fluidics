@@ -19,17 +19,17 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         connectedPumps.add(pump);
     }
 
-    public void removePump(String pumpName) {
+    public void removePump(String pumpName,String port) {
         ArrayList<ConnectedSubPump> pumpsToRemove = new ArrayList<ConnectedSubPump>();
         for (ConnectedSubPump pump: list)
-            if (pump.name.equals(pumpName))
+            if (pump.name.equals(pumpName) && pump.port.equals(port))
                 pumpsToRemove.add(pump);
 
         for (ConnectedSubPump pumpToRemove: pumpsToRemove)
             list.remove(pumpToRemove);
 
         for (ConnectedSubPump pump: list)
-            if (pump.name.equals(pumpName)) {
+            if (pump.name.equals(pumpName) && pump.port.equals(port)) {
                 connectedPumps.remove(pump.pump);
                 break;
             }
@@ -43,7 +43,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         connectedPumps.remove(pump);
     }
 
-    public ConnectedSubPump getSubPump(String name, String subPump, String port) throws PumpNotFoundException {
+    public ConnectedSubPump getConnectedSubPump(String name, String subPump, String port) throws PumpNotFoundException {
         ConnectedSubPump result = null;
         for (ConnectedSubPump connectedSubPump : list)
             if (connectedSubPump.name.equals(name) &&
@@ -59,10 +59,10 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         else return result;
     }
 
-    public Pump getPump(String pumpName) throws PumpNotFoundException {
+    public Pump getPump(String pumpName, String port) throws PumpNotFoundException {
         Pump pump = null;
         for (ConnectedSubPump subPump: list)
-            if (subPump.name.equals(pumpName)) {
+            if (subPump.name.equals(pumpName) && subPump.port.equals(port)) {
                 pump = subPump.pump;
                 break;
             }
@@ -80,7 +80,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         return list.isEmpty();
     }
 
-    public ConnectedSubPump getSubPump(int index) throws IndexOutOfBoundsException {
+    public ConnectedSubPump getConnectedSubPump(int index) throws IndexOutOfBoundsException {
         if (notPresent(index))
             throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
         return list.get(index);
