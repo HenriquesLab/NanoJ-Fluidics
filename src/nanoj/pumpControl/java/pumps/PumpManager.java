@@ -4,12 +4,12 @@ import mmcorej.CMMCore;
 import java.util.*;
 import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList.PumpNotFoundException;
 
-public class PumpManager extends Observable {
+public class PumpManager extends Observable implements Observer {
     private CMMCore serialManager;
     private LinkedHashMap<String, Pump> availablePumps = new LinkedHashMap<String, Pump>();
     private ConnectedSubPumpsList connectedSubPumps = new ConnectedSubPumpsList();
-    private String status = NO_PUMP_CONNECTED;
     private boolean alive = true;
+    private String status;
 
     private long wait = 100;  // Wait time for status checker in milliSeconds
 
@@ -59,6 +59,8 @@ public class PumpManager extends Observable {
         }
 
         connectedSubPumps.addPump(newPump);
+
+        newPump.addObserver(this);
 
         setChanged();
         notifyObservers(NEW_PUMP_CONNECTED);
@@ -126,8 +128,6 @@ public class PumpManager extends Observable {
         return connectedSubPumps;
     }
 
-    public String getStatus() { return status; }
-
     public synchronized boolean isConnected(int pumpIndex) {
         return connectedSubPumps != null && connectedSubPumps.getSubPump(pumpIndex).pump.isConnected();
     }
@@ -155,7 +155,12 @@ public class PumpManager extends Observable {
     }
 
     private synchronized void getStatusFromPump(int pumpIndex) throws Exception {
-        status = connectedSubPumps.getSubPump(pumpIndex).pump.getStatus();
+        if (isConnected(pumpIndex))
+            status = connectedSubPumps.getSubPump(pumpIndex).pump.getStatus();
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public boolean anyPumpsConnected() {
@@ -168,5 +173,10 @@ public class PumpManager extends Observable {
 
     public String[] getAllFullNames() {
         return connectedSubPumps.getAllFullNames();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        status = (String) arg;
     }
 }

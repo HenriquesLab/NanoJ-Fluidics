@@ -1,5 +1,6 @@
 package nanoj.pumpControl.java.sequentialProtocol.tabs;
 
+import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 import nanoj.pumpControl.java.sequentialProtocol.Sequence;
 import nanoj.pumpControl.java.sequentialProtocol.SequenceManager;
@@ -17,8 +18,9 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
 
-public class SequentialLabelling extends JPanel {
+public class SequentialLabelling extends JPanel implements Observer {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
+    private PumpManager pumpManager = PumpManager.INSTANCE;
     GUI gui;
     public String name = "Sequential Protocol";
     
@@ -112,6 +114,8 @@ public class SequentialLabelling extends JPanel {
 
         sequenceManager.addObserver(new SequenceObserver());
 
+        pumpManager.addObserver(this);
+
         new SequentialLabellingLayout(this);
     }
 
@@ -129,6 +133,13 @@ public class SequentialLabelling extends JPanel {
         // Update each step on the panel with the information given
         for (int s = 0; s<newStepList.size(); s++) {
             sequence.get(s).updateStepInformation(newStepList.get(s));
+        }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (arg.equals(PumpManager.NEW_STATUS_AVAILABLE)) {
+            pumpStatusOnSeq.setText(pumpManager.getStatus());
         }
     }
 

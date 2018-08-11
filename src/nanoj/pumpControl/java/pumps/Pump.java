@@ -1,11 +1,12 @@
 package nanoj.pumpControl.java.pumps;
 
+import javafx.beans.Observable;
 import mmcorej.CMMCore;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 
-public abstract class Pump implements PumpInterface{
+public abstract class Pump extends java.util.Observable implements PumpInterface {
     protected CMMCore core;
     protected String portName;
     protected String status = "Not connected.";
@@ -102,6 +103,12 @@ public abstract class Pump implements PumpInterface{
             return true;
         }
         else return false;
+    }
+
+    protected void setStatus(String text) {
+        status = text;
+        setChanged();
+        notifyObservers(text);
     }
 
     public String getCurrentSubPump() { return subPumps[currentSubPump]; }

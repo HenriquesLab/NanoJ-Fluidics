@@ -16,8 +16,8 @@ import java.util.prefs.Preferences;
 
 public class DirectControl extends JPanel implements Observer, ActionListener {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
-    private GUI gui;
     private PumpManager pumpManager = PumpManager.INSTANCE;
+    private GUI gui;
 
     public String name = "Direct Pump Control";
 
@@ -100,6 +100,8 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
 
             rateSlider.setPumpSelection(pumpSelection.getSelectedIndex());
             rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringeComboBox.getSelectedIndex()));
+        } else if (arg.equals(PumpManager.NEW_STATUS_AVAILABLE)) {
+            pumpStatus.setText(pumpManager.getStatus());
         }
     }
 

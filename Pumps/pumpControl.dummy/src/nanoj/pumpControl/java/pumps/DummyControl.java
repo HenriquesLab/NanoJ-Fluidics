@@ -31,25 +31,24 @@ public final class DummyControl extends Pump implements PumpInterface {
         connected = true;
         portName = comPort;
         core.loadDevice(portName, "SerialManager", comPort);
-        status = "Connected to " + portName;
+        setStatus("Connected to " + portName);
         return status;
     }
 
     @Override
     public void setSyringeDiameter(double diameter) throws Exception{
-        status = currentSubPump() + "Set Syringe Diameter to " + diameter;
-        message(status);
+        setStatus(currentSubPump() + "Set Syringe Diameter to " + diameter);
     }
 
     @Override
     public void setFlowRate(double flowRate) throws Exception {
-        status = currentSubPump() + "Set Flow Rate to " + flowRate + " ul/s";;
+        setStatus(currentSubPump() + "Set Flow Rate to " + flowRate + " ul/s");
         message(status);
     }
 
     @Override
     public void setTargetVolume(double target) throws Exception{
-        status = currentSubPump() + "Set Syringe Volume to " + target + " ul";
+        setStatus(currentSubPump() + "Set Syringe Volume to " + target + " ul");
         message(status);
     }
 
@@ -58,25 +57,25 @@ public final class DummyControl extends Pump implements PumpInterface {
         String action;
         if(direction.equals(Action.Infuse)) action = "pushing.";
         else action = "withdrawing.";
-        status = currentSubPump() + "Started " + action;
+        setStatus(currentSubPump() + "Started " + action);
         message(status);
     }
 
     @Override
     public void stopAllPumps() throws Exception {
-        status = "Stopped ALL the pumps.";
+        setStatus("Stopped ALL the pumps.");
         message(status);
     }
 
     @Override
     public void stopPump() {
-        status = "Stopped current pump: " + subPumps[currentSubPump];
+        setStatus("Stopped current pump: " + subPumps[currentSubPump]);
         message(status);
     }
 
     @Override
     public void stopPump(int pumpIndex) throws Exception {
-        status = "Stopped pump: " + subPumps[pumpIndex];
+        setStatus("Stopped pump: " + subPumps[pumpIndex]);
         message(status);
     }
 
