@@ -7,6 +7,7 @@ import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,7 @@ import java.util.prefs.Preferences;
 
 public class PumpConnections extends JPanel {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
+    private PumpManager pumpManager = PumpManager.INSTANCE;
     private GUI gui;
     public String name = "Pump Connections";
 
@@ -23,16 +25,16 @@ public class PumpConnections extends JPanel {
     private static final String PORT = "com";
     private static final String PUMP = "pump";
 
-    public JComboBox availablePumpsList;
-    public DefaultTableModel connectedPumpsTableModel;
+    JComboBox availablePumpsList;
     
     JLabel pumpListLabel;
     JLabel connectLabel;
     JComboBox portsList;
-    public JButton connectButton;
-    public JButton disconnectButton;
+    JButton connectButton;
+    JButton disconnectButton;
     JLabel connectedPumpsLabel;
     private JTable connectedPumpsTable;
+    private ConnectionsTable connectedPumpsTableModel;
     JScrollPane connectedPumpsListPane;
 
     public PumpConnections(GUI gui) {
@@ -45,14 +47,11 @@ public class PumpConnections extends JPanel {
         connectButton = new JButton("Connect");
         disconnectButton = new JButton("Disconnect");
         connectedPumpsLabel = new JLabel("List of currently connected pumps");
-        connectedPumpsTableModel = new DefaultTableModel(
-                new String[][]{{PumpManager.NO_PUMP_CONNECTED,"",""}},
-                new String[]{"Pump","Sub-Pump","COM port"}
-        );
+        connectedPumpsTableModel = new ConnectionsTable();
         connectedPumpsTable = new JTable(connectedPumpsTableModel);
         connectedPumpsListPane = new JScrollPane(connectedPumpsTable);
 
-        availablePumpsList = new JComboBox(gui.pumpManager.getAvailablePumpsList());
+        availablePumpsList = new JComboBox(pumpManager.getAvailablePumpsList());
         availablePumpsList.setSelectedItem(prefs.get(PUMP, VIRTUAL_PUMP));
 
         portsList = new JComboBox(new Vector(NRSerialPort.getAvailableSerialPorts()));
@@ -78,7 +77,7 @@ public class PumpConnections extends JPanel {
             String port = (String) portsList.getSelectedItem();
             prefs.put(PORT, port);
             try {
-                String isItConnected = gui.pumpManager.connect((String) availablePumpsList.getSelectedItem(), port);
+                String isItConnected = pumpManager.connect((String) availablePumpsList.getSelectedItem(), port);
                 if (isItConnected.equals(PumpManager.PORT_ALREADY_CONNECTED)) {
                     gui.log.message("Tried to connect to " +
                             availablePumpsList.getSelectedItem() + " on port " +
@@ -90,16 +89,13 @@ public class PumpConnections extends JPanel {
                             port + ", but there was an error!");
                     return;
                 }
-                if (connectedPumpsTableModel.getRowCount() > 0) {
-                    for (int i = connectedPumpsTableModel.getRowCount() - 1; i > -1; i--) {
-                        connectedPumpsTableModel.removeRow(i);
-                    }
-                }
 
-                for (ConnectedSubPump pump: gui.pumpManager.getConnectedPumpsList())
-                    connectedPumpsTableModel.addRow(pump.asArray());
+                connectedPumpsTableModel.setRowCount(0);
 
-                gui.log.message("Connected to " + gui.pumpManager.getAvailablePumpsList()[availablePumpsList.getSelectedIndex()] +
+                for (ConnectedSubPump subPump: pumpManager.getConnectedPumpsList())
+                    connectedPumpsTableModel.addRow(subPump.asConnectionArray());
+
+                gui.log.message("Connected to " + pumpManager.getAvailablePumpsList()[availablePumpsList.getSelectedIndex()] +
                         " on port " + port);
             } catch (Exception e1) {
                 gui.log.message("Error, can not connect, check core log.");
@@ -120,7 +116,7 @@ public class PumpConnections extends JPanel {
             String port = null;
             try {
                 int selection = connectedPumpsTable.getSelectedRow();
-                success = gui.pumpManager.disconnect(selection);
+                success = pumpManager.disconnect(selection);
                 pump = (String) connectedPumpsTableModel.getValueAt(selection,0);
                 port = (String) connectedPumpsTableModel.getValueAt(selection,2);
             } catch (Exception e1) {
@@ -128,18 +124,28 @@ public class PumpConnections extends JPanel {
                 e1.printStackTrace();
             }
             if (success) {
-                if (connectedPumpsTableModel.getRowCount() > 0) {
-                    for (int i = connectedPumpsTableModel.getRowCount() - 1; i > -1; i--) {
-                        connectedPumpsTableModel.removeRow(i);
-                    }
-                }
+                connectedPumpsTableModel.setRowCount(0);
 
-                for (ConnectedSubPump subPump: gui.pumpManager.getConnectedPumpsList())
-                    connectedPumpsTableModel.addRow(subPump.asArray());
+                for (ConnectedSubPump subPump: pumpManager.getConnectedPumpsList())
+                    connectedPumpsTableModel.addRow(subPump.asConnectionArray());
 
                 gui.log.message("Disconnected from " + pump + " on port " + port + ".");
             }
         }
+    }
+
+    public class ConnectionsTable extends DefaultTableModel {
+
+        protected ConnectionsTable() {
+            super(
+                    new String[][]{{PumpManager.NO_PUMP_CONNECTED,"",""}},
+                    new String[]{"Pump","Sub-Pump","COM port"});
+        }
+
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+
     }
 
 }

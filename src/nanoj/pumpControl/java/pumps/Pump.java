@@ -21,7 +21,7 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
     protected String[] subPumps= null;
     protected int currentSubPump;
     protected String name;
-    protected double[] referenceRates;
+    protected double[] referenceRates = new double[]{4,1,0.25};
 
     public enum Action {
         Infuse,
@@ -134,5 +134,9 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
     public long getTimeOut() { return timeOut; }
 
     public void setTimeOut(String timeOut) { this.timeOut = Long.parseLong(timeOut); }
+
+    public double[] getReferenceRates() {
+        return referenceRates;
+    }
 
 }

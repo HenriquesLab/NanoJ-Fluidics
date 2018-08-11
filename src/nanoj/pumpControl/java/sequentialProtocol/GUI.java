@@ -3,6 +3,7 @@ package nanoj.pumpControl.java.sequentialProtocol;
 import mmcorej.CMMCore;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.DirectControl;
+import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpCalibration;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpConnections;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.SequentialLabelling;
 import org.apache.commons.lang3.SystemUtils;
@@ -49,6 +50,7 @@ public final class GUI {
     //Tab objects
     private PumpConnections pumpConnections;
     private DirectControl directControl;
+    private PumpCalibration pumpCalibration;
     private SequentialLabelling sequentialLabelling;
 
     public JButton stopPumpOnSeqButton;
@@ -96,6 +98,7 @@ public final class GUI {
         //Tab objects
         pumpConnections = new PumpConnections(this);
         directControl = new DirectControl(this);
+        pumpCalibration = new PumpCalibration(this);
         sequentialLabelling = new SequentialLabelling(this);
 
 
@@ -115,6 +118,7 @@ public final class GUI {
 
         topPane.addTab(pumpConnections.name, pumpConnections);
         topPane.addTab(directControl.name, directControl);
+        topPane.addTab(pumpCalibration.name, pumpCalibration);
         topPane.addTab(sequentialLabelling.name, sequentialLabelling);
 
         mainPanel.setTopComponent(topPane);

@@ -1,5 +1,7 @@
 package nanoj.pumpControl.java.sequentialProtocol.tabs;
 
+import nanoj.pumpControl.java.sequentialProtocol.GUI;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,5 +14,17 @@ public class PumpCalibrationLayout extends GroupLayout {
 
         setAutoCreateGaps(true);
         setAutoCreateContainerGaps(true);
+
+        setVerticalGroup(
+                createSequentialGroup()
+                        .addGroup(createParallelGroup().addComponent(panel.tableLabel))
+                        .addGroup(createParallelGroup().addComponent(panel.tableScrollPane))
+        );
+
+        setHorizontalGroup(
+                createParallelGroup()
+                        .addGroup(createParallelGroup().addComponent(panel.tableLabel))
+                        .addGroup(createParallelGroup().addComponent(panel.tableScrollPane))
+        );
     }
 }

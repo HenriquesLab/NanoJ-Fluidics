@@ -68,7 +68,7 @@ public class LegoControl extends Pump {
                 subPumps[a] = SHIELD + (s+1) + "," + PUMP + (p+1);
                 a++;
             }
-            
+
         return answer;
     }
 

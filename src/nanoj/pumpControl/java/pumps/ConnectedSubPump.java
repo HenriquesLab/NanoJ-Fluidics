@@ -1,23 +1,27 @@
 package nanoj.pumpControl.java.pumps;
 
 public class ConnectedSubPump {
+    public final Pump pump;
     public final String name;
     public final String port;
     public final String subPump;
-    public final Pump pump;
 
     public ConnectedSubPump(Pump pump, String subPump) {
-        this.name = pump.name;
-        this.subPump = subPump;
-        this.port = pump.portName;
         this.pump = pump;
+        this.name = pump.name;
+        this.port = pump.portName;
+        this.subPump = subPump;
     }
 
     public String getFullName() {
         return subPump + ", " + port;
     }
 
-    public String[] asArray() {
+    public String[] asConnectionArray() {
         return new String[]{name,subPump,port};
+    }
+
+    public String[] asCalibrationArray() {
+        return new String[]{name,subPump,port,""+pump.referenceRates[0],""+pump.referenceRates[1]};
     }
 }
