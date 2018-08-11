@@ -25,6 +25,7 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
     protected String currentSubPump;
     protected String name;
     protected LinkedHashMap<String, double[]> referenceRates = new LinkedHashMap<String, double[]>();
+    protected double[] defaultRate = new double[]{1,1,1};
 
     public enum Action {
         Infuse,
@@ -98,6 +99,10 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
         else {
             return subPumps;
         }
+    }
+
+    public double[] getDefaultRate() {
+        return defaultRate;
     }
 
     public void setCurrentSubPump(String subPump) {

@@ -73,26 +73,22 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
                 String key = subPump.name + subPump.subPump + subPump.port;
 
-                tableModel.setValueAt(
-                        ""+prefs.getDouble(
-                                CAL+DIAMETER+key,
-                                Double.parseDouble(subPump.asCalibrationArray()[DIAMETER])),
-                        index,
-                        DIAMETER);
+                double diameter = prefs.getDouble(CAL+DIAMETER+key,
+                        Double.parseDouble(subPump.asCalibrationArray()[DIAMETER]));
 
-                tableModel.setValueAt(
-                        ""+prefs.getDouble(
-                                CAL+MAX_FLOW_RATE+key,
-                                Double.parseDouble(subPump.asCalibrationArray()[MAX_FLOW_RATE])),
-                        index,
-                        MAX_FLOW_RATE);
+                tableModel.setValueAt(""+diameter,index,DIAMETER);
 
-                tableModel.setValueAt(
-                        ""+prefs.getDouble(
-                                CAL+MIN_FLOW_RATE+key,
-                                Double.parseDouble(subPump.asCalibrationArray()[MIN_FLOW_RATE])),
-                        index,
-                        MIN_FLOW_RATE);
+                double maxFlowRate = prefs.getDouble(CAL+MAX_FLOW_RATE+key,
+                        Double.parseDouble(subPump.asCalibrationArray()[MAX_FLOW_RATE]));
+
+                tableModel.setValueAt(""+maxFlowRate,index,MAX_FLOW_RATE);
+
+                double minFlowRate = prefs.getDouble(CAL+MIN_FLOW_RATE+key,
+                        Double.parseDouble(subPump.asCalibrationArray()[MIN_FLOW_RATE]));
+
+                tableModel.setValueAt(""+minFlowRate,index,MIN_FLOW_RATE);
+
+                pumpManager.updateReferenceRate(index,new double[]{diameter,maxFlowRate,minFlowRate});
 
                 index++;
             }
@@ -144,17 +140,19 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
             for (ConnectedSubPump subPump: pumpManager.getConnectedPumpsList()) {
                 String key = subPump.name+subPump.subPump+subPump.port;
 
-                double diameter =Double.parseDouble(subPump.asCalibrationArray()[DIAMETER]);
+                double diameter = subPump.pump.getDefaultRate()[0];
                 tableModel.setValueAt("" + diameter,index,DIAMETER);
                 prefs.putDouble(CAL+DIAMETER+key,diameter);
 
-                double maxFlowRate =Double.parseDouble(subPump.asCalibrationArray()[MAX_FLOW_RATE]);
+                double maxFlowRate = subPump.pump.getDefaultRate()[1];
                 tableModel.setValueAt("" + maxFlowRate,index,MAX_FLOW_RATE);
                 prefs.putDouble(CAL+MAX_FLOW_RATE+key,maxFlowRate);
 
-                double minFlowRate =Double.parseDouble(subPump.asCalibrationArray()[MIN_FLOW_RATE]);
+                double minFlowRate = subPump.pump.getDefaultRate()[2];
                 tableModel.setValueAt("" + minFlowRate,index,MIN_FLOW_RATE);
                 prefs.putDouble(CAL+MIN_FLOW_RATE+key,minFlowRate);
+
+                pumpManager.updateReferenceRate(index,new double[]{diameter,maxFlowRate,minFlowRate});
 
                 index++;
             }

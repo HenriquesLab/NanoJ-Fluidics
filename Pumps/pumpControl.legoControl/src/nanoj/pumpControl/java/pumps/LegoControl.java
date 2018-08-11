@@ -12,6 +12,9 @@ public class LegoControl extends Pump {
     public LegoControl() {
         name = "NanoJ Lego Control Hub";
         timeOut = 2000;
+
+        double max = 2.3;
+        defaultRate = new double[]{4.699,max,max*0.25};
     }
 
     @Override
@@ -67,9 +70,8 @@ public class LegoControl extends Pump {
                 a++;
             }
 
-        double max = 2.3;
         for (String subPump : subPumps)
-            referenceRates.put(subPump,new double[]{4.699,max,max*0.25});
+            referenceRates.put(subPump,defaultRate);
 
         return answer;
     }
