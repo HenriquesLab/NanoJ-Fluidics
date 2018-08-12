@@ -140,6 +140,8 @@ public class LegoControl extends Pump {
         rxydttttt - Start pump xy in direction d for ttttt seconds
         d = 1 is forward, d = 2 is backwards
         */
+
+        sendCommand("s" + parseSubPump(currentSubPump) + 255);
         sendCommand("r" + parseSubPump(currentSubPump) + action + target);
     }
 
