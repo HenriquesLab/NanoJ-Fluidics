@@ -16,6 +16,9 @@ public final class DummyControl extends Pump implements PumpInterface {
             name = "Virtual pump";
             subPumps = new String[]{"Sub 1", "Sub 2", "Sub 3"};
         }
+
+        for (String subPump: subPumps)
+            referenceRates.put(subPump,new double[]{4,1,0.25});
     }
 
     private String currentSubPump() {
@@ -29,54 +32,56 @@ public final class DummyControl extends Pump implements PumpInterface {
     @Override
     public String connectToPump(String comPort) throws Exception {
         connected = true;
-        portName = "Port " + comPort;
+        portName = comPort;
         core.loadDevice(portName, "SerialManager", comPort);
-        status = "Connected to " + portName;
+        setStatus("Connected to " + portName);
         return status;
     }
 
     @Override
     public void setSyringeDiameter(double diameter) throws Exception{
-        status = currentSubPump() + "Set Syringe Diameter to " + diameter;
-        message(status);
+        setStatus(currentSubPump() + "Set Syringe Diameter to " + diameter);
     }
 
     @Override
     public void setFlowRate(double flowRate) throws Exception {
-        status = currentSubPump() + "Set Flow Rate to " + flowRate + " ul/s";;
+        setStatus(currentSubPump() + "Set Flow Rate to " + flowRate + " ul/s");
         message(status);
     }
 
     @Override
     public void setTargetVolume(double target) throws Exception{
-        status = currentSubPump() + "Set Syringe Volume to " + target + " ul";
+        setStatus(currentSubPump() + "Set Syringe Volume to " + target + " ul");
         message(status);
     }
 
     @Override
-    public void startPumping(boolean direction) throws Exception {
+    public void startPumping(Action direction) throws Exception {
         String action;
-        if(direction) action = "pushing.";
+        if(direction.equals(Action.Infuse)) action = "pushing.";
         else action = "withdrawing.";
-        status = currentSubPump() + "Started " + action;
+        message("Reference diameter for sub pump is: " + referenceRates.get(currentSubPump)[0]);
+        message("Reference max rate for sub pump is: " + referenceRates.get(currentSubPump)[1]);
+        message("Reference min rate for sub pump is: " + referenceRates.get(currentSubPump)[2]);
+        setStatus(currentSubPump() + "Started " + action);
         message(status);
     }
 
     @Override
     public void stopAllPumps() throws Exception {
-        status = "Stopped ALL the pumps.";
+        setStatus("Stopped ALL the pumps.");
         message(status);
     }
 
     @Override
     public void stopPump() {
-        status = "Stopped current pump: " + subPumps[currentSubPump];
+        setStatus("Stopped current pump: " + currentSubPump);
         message(status);
     }
 
     @Override
-    public void stopPump(int pumpIndex) throws Exception {
-        status = "Stopped pump: " + subPumps[pumpIndex];
+    public void stopPump(String subPump) throws Exception {
+        setStatus("Stopped pump: " + subPump);
         message(status);
     }
 
@@ -86,10 +91,4 @@ public final class DummyControl extends Pump implements PumpInterface {
     @Override
     public String getStatus() { return status; }
 
-    @Override
-    public double[] getMaxMin(double diameter) {
-        double max = 1 * diameter;
-        double min = 0.1 * diameter;
-        return new double[]{max,min};
-    }
 }

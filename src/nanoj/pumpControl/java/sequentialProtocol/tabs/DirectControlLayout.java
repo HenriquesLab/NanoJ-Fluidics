@@ -5,9 +5,9 @@ import nanoj.pumpControl.java.sequentialProtocol.GUI;
 import javax.swing.*;
 import java.awt.*;
 
-class DirectControLayout extends GroupLayout {
+class DirectControlLayout extends GroupLayout {
     
-    DirectControLayout(Container host) {
+    DirectControlLayout(Container host) {
         super(host);
         DirectControl panel = (DirectControl) host;
 
@@ -37,13 +37,12 @@ class DirectControLayout extends GroupLayout {
                         .addGroup(
                                 createParallelGroup()
                                         .addComponent(panel.rateLabel)
-                                        .addComponent(panel.rateText)
                                         .addComponent(panel.rateSlider, GroupLayout.PREFERRED_SIZE, GUI.rowHeight, GroupLayout.PREFERRED_SIZE)
                         )
                         .addGroup(
                                 createParallelGroup()
                                         .addComponent(panel.targetLabel)
-                                        .addComponent(panel.targetField, GroupLayout.PREFERRED_SIZE, GUI.rowHeight, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(panel.targetVolume, GroupLayout.PREFERRED_SIZE, GUI.rowHeight, GroupLayout.PREFERRED_SIZE)
                         )
                         .addGroup(
                                 createParallelGroup()
@@ -83,10 +82,9 @@ class DirectControLayout extends GroupLayout {
                                                                         .addComponent(panel.syringeComboBox, GroupLayout.PREFERRED_SIZE, GUI.sizeSecondColumn, GroupLayout.PREFERRED_SIZE)
                                                                         .addGroup(
                                                                                 createSequentialGroup()
-                                                                                        .addComponent(panel.rateText, GroupLayout.PREFERRED_SIZE, (int) (GUI.sizeSecondColumn*0.2), GroupLayout.PREFERRED_SIZE)
-                                                                                        .addComponent(panel.rateSlider, GroupLayout.PREFERRED_SIZE, (int) (GUI.sizeSecondColumn*0.8), GroupLayout.PREFERRED_SIZE)
+                                                                                        .addComponent(panel.rateSlider, GroupLayout.PREFERRED_SIZE, GUI.sizeSecondColumn, GroupLayout.PREFERRED_SIZE)
                                                                         )
-                                                                        .addComponent(panel.targetField, GroupLayout.PREFERRED_SIZE, GUI.sizeSecondColumn, GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(panel.targetVolume, GroupLayout.PREFERRED_SIZE, GUI.sizeSecondColumn, GroupLayout.PREFERRED_SIZE)
                                                                         .addGroup(
                                                                                 createSequentialGroup()
                                                                                         .addComponent(panel.infuse)

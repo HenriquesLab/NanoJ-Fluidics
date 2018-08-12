@@ -12,8 +12,9 @@ public class LegoControl extends Pump {
     public LegoControl() {
         name = "NanoJ Lego Control Hub";
         timeOut = 2000;
+
         double max = 2.3;
-        referenceRates = new double[]{4.699,max,max*0.25};
+        defaultRate = new double[]{4.699,max,max*0.25};
     }
 
     @Override
@@ -22,7 +23,7 @@ public class LegoControl extends Pump {
 
         this.comPort = comPort;
         //First, unload any potential leftovers of failed connections
-        portName = "LegoPumps" + comPort;
+        portName = comPort;
         StrVector devices = core.getLoadedDevices();
         for (int i = 0; i < devices.size(); i++) {
             if (devices.get(i).equals(portName)) {
@@ -69,13 +70,16 @@ public class LegoControl extends Pump {
                 a++;
             }
 
+        for (String subPump : subPumps)
+            referenceRates.put(subPump,defaultRate);
+
         return answer;
     }
 
     @Override
     public void setFlowRate(double givenFlowRate) throws Exception {
         flowRate = givenFlowRate;
-        double[] maxMin = getMaxMin(syringeDiameter);
+        double[] maxMin = getMaxMin(currentSubPump,syringeDiameter);
 
         if (flowRate > maxMin[0]) flowRate = maxMin[0];
         else if(flowRate < maxMin[1]) flowRate = maxMin[1];
@@ -96,14 +100,14 @@ public class LegoControl extends Pump {
             commandFlow = "" + commandFlowInt;
         }
         /* Pump serial command: sxynnn = for pump xy set speed nnn*/
-        sendCommand("s" + parseSubPump(subPumps[currentSubPump]) + commandFlow);
+        sendCommand("s" + parseSubPump(currentSubPump) + commandFlow);
     }
 
     @Override
     public void setTargetVolume(double target) { targetVolume = target; } //Target volume should be given in ul
 
     @Override
-    public synchronized void startPumping(boolean direction) throws Exception {
+    public synchronized void startPumping(Action direction) throws Exception {
         // Target volume is in ul and flowrate in ul/sec but the arduino code
         // wants a duration in seconds. So we have to convert.
 
@@ -124,15 +128,14 @@ public class LegoControl extends Pump {
         else if(duration < 10000) {
             target = "0" + duration;
         }
-        if (direction) action = 1;
+        if(direction.equals(Action.Infuse)) action = 1;
         else action = 2;
-
 
         /*
         rxydttttt - Start pump xy in direction d for ttttt seconds
         d = 1 is forward, d = 2 is backwards
         */
-        sendCommand("r" + parseSubPump(subPumps[currentSubPump]) + action + target);
+        sendCommand("r" + parseSubPump(currentSubPump) + action + target);
     }
 
     @Override
@@ -142,12 +145,12 @@ public class LegoControl extends Pump {
 
     @Override
     public synchronized void stopPump() throws Exception {
-        sendCommand("a" + parseSubPump(subPumps[currentSubPump]));
+        sendCommand("a" + parseSubPump(currentSubPump));
     }
 
     @Override
-    public synchronized void stopPump(int index) throws Exception {
-        sendCommand("a" + parseSubPump(subPumps[index]));
+    public synchronized void stopPump(String subPump) throws Exception {
+        sendCommand("a" + parseSubPump(subPump));
     }
 
     //TODO: Create a status getter that automatically parses the lego style reply.
@@ -167,7 +170,7 @@ public class LegoControl extends Pump {
         */
 
         //First, unload any potential leftovers of failed connections
-        portName = "LegoPumps" + comPort;
+        portName = comPort;
         StrVector devices = core.getLoadedDevices();
         for(int i = 0; i<devices.size(); i++) {
             if (devices.get(i).equals(portName)) {
@@ -194,7 +197,11 @@ public class LegoControl extends Pump {
             throw e;
         }
         result = result.substring(0, result.length()-1);
-        log.message("Response from pump: " + result);
+
+        String prefix = "Response from pump: ";
+        log.message(prefix + result);
+        setStatus(prefix + result);
+
         return result;
 
     }

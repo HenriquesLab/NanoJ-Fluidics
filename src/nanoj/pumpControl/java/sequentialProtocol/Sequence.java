@@ -1,5 +1,7 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
+import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList;
+import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import org.micromanager.utils.ReportingUtils;
 
@@ -9,7 +11,6 @@ import java.util.Observer;
 
 public class Sequence extends ArrayList<Step> {
     private Observer stepObserver;
-    private String[] NO_PUMPS = new String[]{PumpManager.NO_PUMP_CONNECTED};
     private Step suckStep;
     private boolean suck;
 
@@ -24,12 +25,12 @@ public class Sequence extends ArrayList<Step> {
 
         this.stepObserver = changer;
 
-        this.suckStep = new Step(0, "suck", false,10, 0, 0, "7", 0,1,NO_PUMPS);
+        this.suckStep = new Step(0, "suck", false,10, 0, 0, "7", 0, Pump.Action.Withdraw);
         this.suckStep.setIsSuckStep();
 
-        add(new Step(1, "Start", true, 1, 0, 0,  "0.5", 1,0, NO_PUMPS));
-        add(new Step(2, "Middle", true, 1, 0, 1, "1", 1,0, NO_PUMPS));
-        add(new Step(3, "Finish", true,1, 0, 2,"100", 0,0, NO_PUMPS));
+        add(new Step(1, "Start", true, 1, 0, 1,  "0.5", 1,Pump.Action.Infuse));
+        add(new Step(2, "Middle", true, 1, 0, 3, "1", 1,Pump.Action.Infuse));
+        add(new Step(3, "Finish", true,1, 0, 6,"100", 0,Pump.Action.Infuse));
 
     }
 

@@ -16,6 +16,10 @@ public class SequenceManager extends Observable implements Runnable {
     public static final String SYRINGE_NOT_READY = "Syringe is not marked as ready.";
 
     public final static SequenceManager INSTANCE = new SequenceManager();
+
+    // Foreign objects
+    private PumpManager pumpManager = PumpManager.INSTANCE;
+
     private boolean monkeyReady = true;
     private Sequence sequence;
     private int suckDuration;
@@ -24,16 +28,10 @@ public class SequenceManager extends Observable implements Runnable {
     private boolean alive = true;
     private boolean syringeExchangeNeeded = false;
 
-    private PumpManager manager;
-
     private String waitingMessage = "Sequence not yet started.";
 
     private SequenceManager() {
-    } //The no-argument constructor is required for the singleton design pattern. Remember to setPumpManager.
-
-    public void setPumpManager(PumpManager pumpManager) {
-        this.manager = pumpManager;
-    }
+    } //The no-argument constructor is required for the singleton design pattern.
 
     @Override
     public void run(){
@@ -48,10 +46,10 @@ public class SequenceManager extends Observable implements Runnable {
                         try {
                             currentPump = sequence.getSuckStep().getSelectedPump();
 
-                            manager.startPumping(
+                            pumpManager.startPumping(
                                     currentPump,
                                     sequence.getSuckStep().getSyringeIndex(),
-                                    sequence.getSuckStep().getRate(),
+                                    sequence.getSuckStep().getFlowRate(),
                                     sequence.getSuckStep().getTargetVolume(),
                                     sequence.getSuckStep().getAction()
                             );
@@ -80,10 +78,10 @@ public class SequenceManager extends Observable implements Runnable {
 
                     try {
                         currentPump = sequence.get(current).getSelectedPump();
-                        manager.startPumping(
+                        pumpManager.startPumping(
                             currentPump,
                             sequence.get(current).getSyringeIndex(),
-                            sequence.get(current).getRate(),
+                            sequence.get(current).getFlowRate(),
                             sequence.get(current).getTargetVolume(),
                             sequence.get(current).getAction()
                         );

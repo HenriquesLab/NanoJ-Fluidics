@@ -6,7 +6,6 @@ import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
 public class StepperControl extends Pump{
     private GUI.Log log = GUI.Log.INSTANCE;
-    private String comPrefix = "StepperPumps";
     private String comPort;
 
     public StepperControl() {
@@ -19,7 +18,7 @@ public class StepperControl extends Pump{
     public String connectToPump(String comPort) throws Exception {
         this.comPort = comPort;
         //First, unload any potential leftovers of failed connections
-        portName = comPrefix + comPort;
+        portName = comPort;
         StrVector devices = core.getLoadedDevices();
         for (int i = 0; i < devices.size(); i++) {
             if (devices.get(i).equals(portName)) {
@@ -52,10 +51,10 @@ public class StepperControl extends Pump{
     }
 
     @Override
-    public void startPumping(boolean forward) throws Exception {
+    public void startPumping(Action forward) throws Exception {
 
         int direction = 2;
-        if (forward) direction = 1;
+        if(forward.equals(Action.Infuse)) direction = 1;
 
         int volume = (int) targetVolume;
 
@@ -67,12 +66,6 @@ public class StepperControl extends Pump{
         sendCommand("a");
     }
 
-    @Override
-    public double[] getMaxMin(double diameter) {
-        double max = 1 * diameter * 15;
-        double min = 0.1 * diameter;
-        return new double[]{max,min};
-    }
 
     @Override
     public String sendCommand(String command) throws Exception {
@@ -85,7 +78,7 @@ public class StepperControl extends Pump{
         */
 
         //First, unload any potential leftovers of failed connections
-        portName = comPrefix + comPort;
+        portName = comPort;
         StrVector devices = core.getLoadedDevices();
         for(int i = 0; i<devices.size(); i++) {
             if (devices.get(i).equals(portName)) {
@@ -112,7 +105,9 @@ public class StepperControl extends Pump{
             throw e;
         }
         result = result.substring(0, result.length()-1);
-        log.message("Response from pump: " + result);
+        String prefix = "Response from pump: ";
+        log.message(prefix + result);
+        setStatus(prefix + result);
         return result;
 
     }

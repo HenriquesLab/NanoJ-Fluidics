@@ -7,13 +7,14 @@ public final class HarvardEliteControl extends Pump {
     public HarvardEliteControl() {
         name = "Harvard Elite Pump 11";
         subPumps = new String[]{"Single"};
-        referenceRates = new double[]{26.594,1473,0.0013855};
+        defaultRate = new double[]{26.594,1473,0.0013855};
+        referenceRates.put("Single",defaultRate);
     }
 
     @Override
     public String connectToPump(String comPort) throws Exception {
         //First, unload any potential leftovers of failed connections
-        portName = "HarvardPort" + comPort;
+        portName = comPort;
         StrVector devices = core.getLoadedDevices();
         for(int i = 0; i<devices.size(); i++) {
             if (devices.get(i).equals(portName)) {
@@ -57,9 +58,9 @@ public final class HarvardEliteControl extends Pump {
     }
 
     @Override
-    public synchronized void startPumping(boolean direction) throws Exception{
+    public synchronized void startPumping(Action direction) throws Exception{
         String action;
-        if(direction) action = "irun";
+        if(direction.equals(Action.Infuse)) action = "irun";
         else action = "wrun";
         sendCommand(action);
     }
@@ -83,11 +84,12 @@ public final class HarvardEliteControl extends Pump {
 
     private String parseAnswer(String answer) {
         if (answer == null) answer = "Null answer!";
-        if (answer.contains(":")) answer = "Pump is idle.";
-        if (answer.contains(">")) answer = "Pump is infusing.";
-        if (answer.contains("<")) answer = "Pump is withdrawing.";
-        if (answer.contains("*")) answer = "Pump is stalled.";
-        if (answer.contains("T*")) answer = "Pump reached target volume.";
+        else if (answer.contains(":")) answer = "Pump is idle.";
+        else if (answer.contains(">")) answer = "Pump is infusing.";
+        else if (answer.contains("<")) answer = "Pump is withdrawing.";
+        else if (answer.contains("*")) answer = "Pump is stalled.";
+        else if (answer.contains("T*")) answer = "Pump reached target volume.";
+        setStatus(answer);
         return answer;
     }
 }
