@@ -112,6 +112,11 @@ public class LegoControl extends Pump {
         // wants a duration in seconds. So we have to convert.
 
         int duration = (int) Math.round(targetVolume/flowRate);
+        startPumping(duration,direction);
+    }
+
+    @Override
+    public void startPumping(int duration, Action direction) throws Exception {
         int action;
 
         String target = "";

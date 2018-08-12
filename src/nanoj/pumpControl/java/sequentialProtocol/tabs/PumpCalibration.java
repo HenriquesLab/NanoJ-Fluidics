@@ -1,6 +1,7 @@
 package nanoj.pumpControl.java.sequentialProtocol.tabs;
 
 import nanoj.pumpControl.java.pumps.ConnectedSubPump;
+import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 import nanoj.pumpControl.java.sequentialProtocol.StopButton;
@@ -29,17 +30,18 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
     private CalibrationTable tableModel;
     JScrollPane tableScrollPane;
 
-    protected JButton loadCalibration = new JButton("Load Previous Calibration from file");
-    protected JButton saveCalibration = new JButton("Save Current Calibration to file");
-    protected JButton resetCalibration = new JButton("Reset Calibration");
+    JButton loadCalibration = new JButton("Load Previous Calibration from file");
+    JButton saveCalibration = new JButton("Save Current Calibration to file");
+    JButton resetCalibration = new JButton("Reset Calibration");
 
-    protected JComboBox pumpList;
-    protected JTextField timeToPump;
-    protected JButton calibrateButton = new JButton("Start pumping");
-    protected StopButton stopButton;
+    JComboBox pumpList;
+    JLabel timeToPumpLabel = new JLabel("Time to pump (seconds)");
+    JTextField timeToPump = new JTextField("10");
+    JButton calibrateButton = new JButton("Start pumping");
+    StopButton stopButton;
 
     private static final String CAL = "Cal";
-    public static final String SAVE_LOCATION = "location";
+    private static final String SAVE_LOCATION = "location";
 
     private int NAME = 0;
     private int SUB_PUMP = 1;
@@ -55,9 +57,10 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
         this.gui = gui;
 
+        pumpList = new JComboBox(new String[]{PumpManager.NO_PUMP_CONNECTED});
         stopButton = new StopButton(gui,pumpList);
 
-        tableLabel = new JLabel("List of currently connected pumps. Diameter is in mm. Flow rates are in ul/sec.");
+        tableLabel = new JLabel("Currently connected pumps. Diameter is in mm. Flow rates are in ul/sec.");
         tableModel = new CalibrationTable();
         table = new JTable(tableModel);
         tableScrollPane = new JScrollPane(table);
@@ -65,6 +68,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
         loadCalibration.addActionListener(this);
         saveCalibration.addActionListener(this);
         resetCalibration.addActionListener(this);
+        calibrateButton.addActionListener(this);
 
         pumpManager.addObserver(this);
         tableModel.addTableModelListener(this);
@@ -75,12 +79,18 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
     @Override
     public void update(Observable o, Object arg) {
         if (arg.equals(PumpManager.NEW_PUMP_CONNECTED) || arg.equals(PumpManager.PUMP_DISCONNECTED)) {
-
             editing = true;
+
+            pumpList.removeAllItems();
+            if (pumpManager.noPumpsConnected()) {
+                pumpList.addItem(PumpManager.NO_PUMP_CONNECTED);
+            }
+
             tableModel.setRowCount(0);
 
             int index = 0;
             for (ConnectedSubPump subPump: pumpManager.getConnectedPumpsList()) {
+                pumpList.addItem(subPump.getFullName());
                 tableModel.addRow(subPump.asCalibrationArray());
 
                 String key = subPump.name + subPump.subPump + subPump.port;
@@ -207,8 +217,8 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                 }
             }
         }
-        else
-            if (e.getSource().equals(saveCalibration)) {
+
+        else if (e.getSource().equals(saveCalibration)) {
             // Get working directory from preferences
             File dir = new File(prefs.get(SAVE_LOCATION, System.getProperty("user.home")));
 
@@ -264,11 +274,9 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                 }
                 gui.log.message("Saved calibration.");
             }
-
         }
-        else
-            if (e.getSource().equals(resetCalibration)) {
 
+        else if (e.getSource().equals(resetCalibration)) {
             editing = true;
 
             int index = 0;
@@ -297,6 +305,26 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
             gui.log.message("Reset calibration of all pumps to default values.");
 
+        }
+
+        else if (e.getSource().equals(calibrateButton)) {
+            int index = pumpList.getSelectedIndex();
+            if (!pumpManager.isConnected(index)){
+                gui.log.message("Can't do anything until pump is connected.");
+                return;
+            }
+
+            if (index >= 0 && index < pumpManager.getConnectedPumpsList().size()) {
+                try {
+                    pumpManager.startPumping(
+                            index,
+                            Integer.parseInt(timeToPump.getText()),
+                            Pump.Action.Infuse);
+                } catch (Exception e1) {
+                    gui.log.message("Error while starting the pump.");
+                    e1.printStackTrace();
+                }
+            }
         }
     }
 

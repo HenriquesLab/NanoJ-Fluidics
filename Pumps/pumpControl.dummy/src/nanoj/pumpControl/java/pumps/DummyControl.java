@@ -58,12 +58,24 @@ public final class DummyControl extends Pump implements PumpInterface {
     @Override
     public void startPumping(Action direction) throws Exception {
         String action;
-        if(direction.equals(Action.Infuse)) action = "pushing.";
-        else action = "withdrawing.";
+        if(direction.equals(Action.Infuse)) action = "push.";
+        else action = "withdraw.";
         message("Reference diameter for sub pump is: " + referenceRates.get(currentSubPump)[0]);
         message("Reference max rate for sub pump is: " + referenceRates.get(currentSubPump)[1]);
         message("Reference min rate for sub pump is: " + referenceRates.get(currentSubPump)[2]);
-        setStatus(currentSubPump() + "Started " + action);
+        setStatus(currentSubPump() + " told to " + direction);
+        message(status);
+    }
+
+    @Override
+    public void startPumping(int seconds, Action direction) throws Exception {
+        String action;
+        if(direction.equals(Action.Infuse)) action = "push";
+        else action = "withdraw";
+        message("Reference diameter for sub pump is: " + referenceRates.get(currentSubPump)[0]);
+        message("Reference max rate for sub pump is: " + referenceRates.get(currentSubPump)[1]);
+        message("Reference min rate for sub pump is: " + referenceRates.get(currentSubPump)[2]);
+        setStatus(currentSubPump() + " told to " + action + " for " + seconds + " seconds.");
         message(status);
     }
 

@@ -24,20 +24,20 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
 
     private static final String TARGET = "target";
     
-    JLabel pumpStatusLabel;
-    public JLabel pumpStatus;
-    JLabel pumpSelectionLabel;
-    public JComboBox pumpSelection;
-    JLabel syringeLabel;
-    public JComboBox syringeComboBox;
-    JLabel rateLabel;
-    public FlowRateSlider rateSlider;
-    JLabel targetLabel;
-    JTextField targetVolume;
-    JLabel actionLabel;
-    JRadioButton infuse;
-    JRadioButton withdraw;
-    JButton startPumpButton;
+    JLabel pumpStatusLabel = new JLabel("Pump status:");
+    JLabel pumpStatus = new JLabel("Pump not started.");
+    JLabel pumpSelectionLabel = new JLabel("Select pump to control: ");
+    JComboBox pumpSelection;
+    JLabel syringeLabel = new JLabel("Syringe");
+    JComboBox syringeComboBox;
+    JLabel rateLabel = new JLabel("Rate ("+ PumpManager.FLOW_RATE_UNITS+")");
+    FlowRateSlider rateSlider = new FlowRateSlider();
+    JLabel targetLabel = new JLabel("Target Volume (" + PumpManager.VOLUME_UNITS + ")");
+    JTextField targetVolume = new JTextField(prefs.get(TARGET, "500"), 6);
+    JLabel actionLabel = new JLabel("Action to Perform");
+    JRadioButton infuse = new JRadioButton("Infuse", true);
+    JRadioButton withdraw = new JRadioButton("Withdraw");
+    JButton startPumpButton = new JButton("Pump!");
     StopButton stopPumpButton;
 
     private boolean editing = false;
@@ -45,20 +45,8 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
     public DirectControl(GUI gui) {
         super();
         this.gui = gui;
-        
-        pumpStatusLabel = new JLabel("Pump status:");
-        pumpStatus = new JLabel("Pump not started.");
-        pumpSelectionLabel = new JLabel("Select pump to control: ");
-        syringeLabel = new JLabel("Syringe");
-        rateLabel = new JLabel("Rate ("+ PumpManager.FLOW_RATE_UNITS+")");
-        rateSlider = new FlowRateSlider();
-        targetLabel = new JLabel("Target Volume (" + PumpManager.VOLUME_UNITS + ")");
-        targetVolume = new JTextField(prefs.get(TARGET, "500"), 6);
-        actionLabel = new JLabel("Action to Perform");
-        infuse = new JRadioButton("Infuse", true);
-        withdraw = new JRadioButton("Withdraw");
+
         ButtonGroup buttons = new ButtonGroup();
-        startPumpButton = new JButton("Pump!");
 
         syringeComboBox = new JComboBox(SyringeList.getBrandedNames(0));
         pumpSelection = new JComboBox(new String[]{PumpManager.NO_PUMP_CONNECTED});

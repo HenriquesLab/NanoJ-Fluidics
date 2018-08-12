@@ -66,6 +66,22 @@ public final class HarvardEliteControl extends Pump {
     }
 
     @Override
+    public void startPumping(int seconds, Action direction) throws Exception {
+        sendCommand("tvolume " + seconds + " " + unitsOfVolume);
+
+        String action;
+        if(direction.equals(Action.Infuse)) {
+            sendCommand("irate " + 1 + " " + unitsOfFlowRate);
+            action = "irun";
+        }
+        else {
+            sendCommand("wrate " + 1 + " " + unitsOfFlowRate);
+            action = "wrun";
+        }
+        sendCommand(action);
+    }
+
+    @Override
     public synchronized void stopPump() throws Exception {
         sendCommand("stop");
     }

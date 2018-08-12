@@ -67,6 +67,22 @@ public class PumpManager extends Observable implements Observer {
         return answer;
     }
 
+    public synchronized String startPumping(int pumpIndex, int seconds, Pump.Action direction) throws Exception {
+        String answer;
+
+        ConnectedSubPump connectedSubPump = connectedSubPumps.getConnectedSubPump(pumpIndex);
+        Pump pump = connectedSubPump.pump;
+
+        pump.setCurrentSubPump(connectedSubPump.subPump);
+        pump.startPumping(seconds,direction);
+
+        answer = direction.toString() + " for " + seconds;
+
+        setChanged();
+        notifyObservers(NEW_STATUS_AVAILABLE);
+        return answer;
+    }
+
     public synchronized String startPumping(int pumpIndex, int syringe, double flowRate,
                                double targetVolume, Pump.Action action) throws Exception {
         String answer;

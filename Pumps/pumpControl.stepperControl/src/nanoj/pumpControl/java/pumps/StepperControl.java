@@ -62,6 +62,12 @@ public class StepperControl extends Pump{
     }
 
     @Override
+    public void startPumping(int seconds, Action direction) throws Exception {
+        targetVolume = seconds;
+        startPumping(direction);
+    }
+
+    @Override
     public void stopPump() throws Exception {
         sendCommand("a");
     }
