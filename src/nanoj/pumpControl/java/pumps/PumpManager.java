@@ -132,7 +132,9 @@ public class PumpManager extends Observable implements Observer {
     }
 
     public synchronized boolean isConnected(int pumpIndex) {
-        return connectedSubPumps != null && connectedSubPumps.getConnectedSubPump(pumpIndex).pump.isConnected();
+        return connectedSubPumps != null &&
+                pumpIndex < connectedSubPumps.size() &&
+                connectedSubPumps.getConnectedSubPump(pumpIndex).pump.isConnected();
     }
 
     public synchronized boolean isConnected(String pumpName, String port, boolean fullName) {
