@@ -28,14 +28,13 @@ public final class GUI {
 
     // GUI objects and layout. These are standard Java SWING objects.
     private JFrame mainFrame;
-    private JSplitPane mainPanel;
 
-    private JScrollPane logPane;
     private JTabbedPane topPane;
 
     // These default dimensions are for macOS, the constructor then adapts for windows
     private Dimension connectionsDimensions = new Dimension(600, 270);
     private Dimension controlDimensions = new Dimension(500, 280);
+    private Dimension calibrationDimensions = new Dimension(1140, 415);
     private Dimension sequenceDimensions = new Dimension(1140, 415);
     private Dimension logDimensions = new Dimension(500, 100);
 
@@ -53,7 +52,7 @@ public final class GUI {
 
     public JButton stopPumpOnSeqButton;
 
-    public PanelListener panelListener = new PanelListener();
+    private PanelListener panelListener = new PanelListener();
 
     public static final GUI INSTANCE = new GUI();
 
@@ -72,7 +71,8 @@ public final class GUI {
         if (SystemUtils.IS_OS_WINDOWS) {
             connectionsDimensions = new Dimension(500, 270);
             controlDimensions = new Dimension(435, 240);
-            sequenceDimensions = new Dimension(850, 350);
+            calibrationDimensions = new Dimension(900, 350);
+            sequenceDimensions = new Dimension(900, 350);
             logDimensions = new Dimension(500, 100);
         }
     }
@@ -84,10 +84,10 @@ public final class GUI {
         pumpManager.loadPlugins();
         // GUI objects and layout.
         mainFrame = new JFrame("Pump Control and Sequential Protocol");
-        mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-        logPane = new JScrollPane(
-                log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane logPane = new JScrollPane(
+                log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         topPane = new JTabbedPane();
 
         // Stop button
@@ -192,16 +192,14 @@ public final class GUI {
     private class PanelListener implements ChangeListener, ComponentListener{
 
         void setSizes() {
-
-            if (topPane.getSelectedIndex() == 0) {
+            if (topPane.getSelectedIndex() == 0)
                 topPane.setPreferredSize(getConnectionsDimensions());
-            }
-            if (topPane.getSelectedIndex() == 1) {
+            if (topPane.getSelectedIndex() == 1)
                 topPane.setPreferredSize(getControlDimensions());
-            }
-            if (topPane.getSelectedIndex() == 2) {
+            if (topPane.getSelectedIndex() == 2)
+                topPane.setPreferredSize(getCalibrationDimensions());
+            if (topPane.getSelectedIndex() == 3)
                 topPane.setPreferredSize(getSequenceDimensions());
-            }
         }
 
         @Override
@@ -214,20 +212,17 @@ public final class GUI {
 
         @Override
         public void componentResized(ComponentEvent e) {
-            if (topPane.getSize().getHeight() == 0 || topPane.getSize().getWidth() == 0) return;
+            if (topPane.getSize().getHeight() == 0 || topPane.getSize().getWidth() == 0)
+                return;
 
-            if (topPane.getSelectedIndex() == 0) {
+            if (topPane.getSelectedIndex() == 0)
                 setConnectionsDimensions(topPane.getSize());
-            }
-            if (topPane.getSelectedIndex() == 1) {
+            if (topPane.getSelectedIndex() == 1)
                 setControlDimensions(topPane.getSize());
-            }
-            if (topPane.getSelectedIndex() == 2) {
-
-            }
-            if (topPane.getSelectedIndex() == 3) {
+            if (topPane.getSelectedIndex() == 2)
+                setCalibrationDimensions(topPane.getSize());
+            if (topPane.getSelectedIndex() == 3)
                 setSequenceDimensions(topPane.getSize());
-            }
 
             setSizes();
         }
@@ -250,6 +245,14 @@ public final class GUI {
 
     private synchronized void setConnectionsDimensions(Dimension connectionsDimensions) {
         this.connectionsDimensions = connectionsDimensions;
+    }
+
+    private synchronized Dimension getCalibrationDimensions() {
+        return calibrationDimensions;
+    }
+
+    private synchronized void setCalibrationDimensions(Dimension calibrationDimensions) {
+        this.calibrationDimensions = calibrationDimensions;
     }
 
     private synchronized Dimension getControlDimensions() {

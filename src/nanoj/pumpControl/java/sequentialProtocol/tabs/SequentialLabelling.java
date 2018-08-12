@@ -94,7 +94,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
         suckStepPanel = sequence.getSuckStep().getStepPanel();
         
         suckStepPanel.setVisible(suckBetweenSteps.isSelected());
-        suckBetweenSteps.addChangeListener(gui.panelListener);
+        suckBetweenSteps.addActionListener(this);
 
         numberOfSteps.setText("" + sequence.size());
 
@@ -148,7 +148,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(suckBetweenSteps)) {
-            prefs.putBoolean(SequentialLabelling.SUCK, suckBetweenSteps.isSelected());
+            prefs.putBoolean(SUCK, suckBetweenSteps.isSelected());
             suckStepPanel.setVisible(suckBetweenSteps.isSelected());
         }
     }
