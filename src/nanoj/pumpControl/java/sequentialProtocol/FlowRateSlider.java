@@ -20,11 +20,16 @@ public class FlowRateSlider extends JPanel implements ChangeListener {
     public FlowRateSlider() {
         super();
 
-        FlowLayout layout = new FlowLayout();
-        setLayout(layout);
+        setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
 
-        add(text);
-        add(slider);
+        constraints.weightx = 0.1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        add(text, constraints);
+
+        constraints.weightx = 0.9;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        add(slider,constraints);
 
         slider.addChangeListener(this);
     }

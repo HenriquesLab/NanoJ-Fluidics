@@ -107,8 +107,7 @@ public class Step extends Observable implements Observer {
         step.add(pumpList);
 
         rateSlider = new FlowRateSlider();
-        rateSlider.setMinimumSize(new Dimension(180,28));
-        rateSlider.setPreferredSize(new Dimension(220,28));
+        rateSlider.setPreferredSize(new Dimension(150,28));
         step.add(rateSlider);
 
         syringe.setSelectedIndex(givenSyringe);

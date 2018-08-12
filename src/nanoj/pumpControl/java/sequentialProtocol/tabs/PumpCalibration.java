@@ -49,7 +49,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
         this.gui = gui;
 
-        tableLabel = new JLabel("List of currently connected pumps. Flow rates are in ul/sec");
+        tableLabel = new JLabel("List of currently connected pumps. Diameter is in mm. Flow rates are in ul/sec.");
         tableModel = new CalibrationTable();
         table = new JTable(tableModel);
         tableScrollPane = new JScrollPane(table);

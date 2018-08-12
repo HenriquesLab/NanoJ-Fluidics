@@ -70,9 +70,9 @@ public final class GUI {
         // Adapt dimensions to the windows look and feel
         if (SystemUtils.IS_OS_WINDOWS) {
             connectionsDimensions = new Dimension(500, 270);
-            controlDimensions = new Dimension(435, 240);
-            calibrationDimensions = new Dimension(900, 350);
-            sequenceDimensions = new Dimension(900, 350);
+            controlDimensions = new Dimension(500, 240);
+            calibrationDimensions = new Dimension(600, 350);
+            sequenceDimensions = new Dimension(840, 425);
             logDimensions = new Dimension(500, 100);
         }
     }
