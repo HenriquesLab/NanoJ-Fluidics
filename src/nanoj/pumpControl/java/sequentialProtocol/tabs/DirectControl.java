@@ -40,7 +40,9 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
     JButton stopPumpButton;
 
     public StopPump stopPump;
-    
+
+    private boolean editing = false;
+
     public DirectControl(GUI gui) {
         super();
         this.gui = gui;
@@ -69,6 +71,7 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
 
         stopPump = new StopPump();
 
+        pumpSelection.addActionListener(this);
         syringeComboBox.addActionListener(this);
         startPumpButton.addActionListener(this);
         stopPumpButton.addActionListener(stopPump);
@@ -90,10 +93,12 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
                 pumpSelection.addItem(PumpManager.NO_PUMP_CONNECTED);
             }
             else {
+                editing = true;
                 pumpSelection.removeAllItems();
                 for (ConnectedSubPump pump: pumpManager.getConnectedPumpsList())
                     pumpSelection.addItem(pump.getFullName());
 
+                editing = false;
             }
 
             if (pumpManager.noPumpsConnected())
@@ -135,6 +140,13 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
                     e1.printStackTrace();
                 }
             } else gui.log.message("Can't do anything until pump is connected.");
+        }
+
+        else if (e.getSource().equals(pumpSelection)) {
+            if (pumpSelection.getItemCount() >= 0 &&
+                    pumpManager.anyPumpsConnected() &&
+                    !editing)
+                rateSlider.setPumpSelection(pumpSelection.getSelectedIndex());
         }
 
     }

@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
-public class Step extends Observable implements Observer {
+public class Step extends Observable implements Observer, ActionListener {
     /*
     When you add a step on the GUI, it creates a prototypical object of this type.
     It will be able to update itself when any change is  done and it will also be able to report back it's currently
@@ -52,6 +52,8 @@ public class Step extends Observable implements Observer {
     private JComboBox action = new JComboBox(Pump.Action.values());
     private boolean syringeExchangeRequired = false;
     private int number;
+
+    private boolean editing = false;
 
     // Constructors
     public Step() {
@@ -104,6 +106,7 @@ public class Step extends Observable implements Observer {
 
         pumpList = new JComboBox(pumps);
         pumpList.setPrototypeDisplayValue(PumpManager.NO_PUMP_CONNECTED);
+        pumpList.addActionListener(this);
         step.add(pumpList);
 
         rateSlider = new FlowRateSlider();
@@ -133,15 +136,19 @@ public class Step extends Observable implements Observer {
     public void update(Observable o, Object arg) {
         if (arg.equals(PumpManager.NEW_PUMP_CONNECTED) ||
                 arg.equals(PumpManager.PUMP_DISCONNECTED)) {
+
             if (pumpManager.noPumpsConnected()) {
                 pumpList.removeAllItems();
                 pumpList.addItem(PumpManager.NO_PUMP_CONNECTED);
             }
             else {
+                editing = true;
                 pumpList.removeAllItems();
                 for (ConnectedSubPump pump: pumpManager.getConnectedPumpsList())
                     pumpList.addItem(pump.getFullName());
 
+
+                editing = false;
             }
 
             if (pumpManager.noPumpsConnected())
@@ -158,6 +165,15 @@ public class Step extends Observable implements Observer {
 
     public int getRate() {
         return rateSlider.getSliderValue();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource().equals(pumpList))
+            if (pumpList.getItemCount() >= 0 &&
+                    pumpManager.anyPumpsConnected() &&
+                    !editing)
+            rateSlider.setPumpSelection(pumpList.getSelectedIndex());
     }
 
     // Inner Classes

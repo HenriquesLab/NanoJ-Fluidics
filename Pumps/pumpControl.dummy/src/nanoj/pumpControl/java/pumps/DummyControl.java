@@ -91,8 +91,4 @@ public final class DummyControl extends Pump implements PumpInterface {
     @Override
     public String getStatus() { return status; }
 
-    @Override
-    public double[] getMaxMin(String subPump,double diameter) {
-        return new double[]{referenceRates.get(subPump)[1],referenceRates.get(subPump)[2]};
-    }
 }
