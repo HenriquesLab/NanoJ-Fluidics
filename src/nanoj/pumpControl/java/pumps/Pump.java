@@ -1,12 +1,9 @@
 package nanoj.pumpControl.java.pumps;
 
 import mmcorej.CMMCore;
-import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 public abstract class Pump extends java.util.Observable implements PumpInterface {

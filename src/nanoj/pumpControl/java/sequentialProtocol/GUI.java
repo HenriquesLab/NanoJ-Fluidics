@@ -18,10 +18,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.prefs.Preferences;
 
 public final class GUI {
-    private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
     public PumpManager pumpManager;
     private boolean closeOnExit = false;
 
@@ -101,7 +99,6 @@ public final class GUI {
         pumpCalibration = new PumpCalibration(this);
         sequentialLabelling = new SequentialLabelling(this);
 
-
         mainFrame.addComponentListener(panelListener);
 
         topPane.getModel().addChangeListener(panelListener);
@@ -113,8 +110,6 @@ public final class GUI {
         logPane.setPreferredSize(logDimensions);
 
         log.set("NanoJ Sequential Labelling");
-
-        stopPumpOnSeqButton.addActionListener(directControl.stopPump);
 
         topPane.addTab(pumpConnections.name, pumpConnections);
         topPane.addTab(directControl.name, directControl);
@@ -131,10 +126,6 @@ public final class GUI {
         updateGUI();
 
         mainFrame.setVisible(true);
-
-        //Minor GUI initialization steps
-        sequentialLabelling.sequenceManager.defineSequence(sequentialLabelling.sequence);
-        sequentialLabelling.sequenceManager.isSyringeExchangeRequiredOnSequence();
     }
 
     public void dispose() {
@@ -219,12 +210,6 @@ public final class GUI {
                 setSizes();
                 updateGUI();
             }
-
-            if (e.getSource().equals(sequentialLabelling.suckBetweenSteps)) {
-                prefs.putBoolean(SequentialLabelling.SUCK, sequentialLabelling.suckBetweenSteps.isSelected());
-                sequentialLabelling.suckStepPanel.setVisible(
-                        sequentialLabelling.suckBetweenSteps.isSelected());
-            }
         }
 
         @Override
@@ -238,6 +223,9 @@ public final class GUI {
                 setControlDimensions(topPane.getSize());
             }
             if (topPane.getSelectedIndex() == 2) {
+
+            }
+            if (topPane.getSelectedIndex() == 3) {
                 setSequenceDimensions(topPane.getSize());
             }
 
@@ -245,19 +233,13 @@ public final class GUI {
         }
 
         @Override
-        public void componentMoved(ComponentEvent e) {
-
-        }
+        public void componentMoved(ComponentEvent e) { }
 
         @Override
-        public void componentShown(ComponentEvent e) {
-
-        }
+        public void componentShown(ComponentEvent e) { }
 
         @Override
-        public void componentHidden(ComponentEvent e) {
-
-        }
+        public void componentHidden(ComponentEvent e) { }
     }
 
     // Getters and Setters

@@ -18,7 +18,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
 
-public class SequentialLabelling extends JPanel implements Observer {
+public class SequentialLabelling extends JPanel implements Observer, ActionListener {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
     private PumpManager pumpManager = PumpManager.INSTANCE;
     GUI gui;
@@ -113,6 +113,8 @@ public class SequentialLabelling extends JPanel implements Observer {
         sequenceThread.start();
 
         sequenceManager.addObserver(new SequenceObserver());
+        sequenceManager.defineSequence(sequence);
+        sequenceManager.isSyringeExchangeRequiredOnSequence();
 
         pumpManager.addObserver(this);
 
@@ -140,6 +142,14 @@ public class SequentialLabelling extends JPanel implements Observer {
     public void update(Observable o, Object arg) {
         if (arg.equals(PumpManager.NEW_STATUS_AVAILABLE)) {
             pumpStatusOnSeq.setText(pumpManager.getStatus());
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource().equals(suckBetweenSteps)) {
+            prefs.putBoolean(SequentialLabelling.SUCK, suckBetweenSteps.isSelected());
+            suckStepPanel.setVisible(suckBetweenSteps.isSelected());
         }
     }
 

@@ -3,7 +3,6 @@ package nanoj.pumpControl.java.sequentialProtocol.tabs;
 import nanoj.pumpControl.java.pumps.ConnectedSubPump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
-import nanoj.pumpControl.java.sequentialProtocol.Step;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -14,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;

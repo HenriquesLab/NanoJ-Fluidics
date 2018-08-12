@@ -72,6 +72,7 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
         syringeComboBox.addActionListener(this);
         startPumpButton.addActionListener(this);
         stopPumpButton.addActionListener(stopPump);
+        gui.stopPumpOnSeqButton.addActionListener(stopPump);
 
         pumpManager.addObserver(this);
     }
