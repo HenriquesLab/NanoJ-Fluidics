@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Observable;
 
 public class SequenceManager extends Observable implements Runnable {
+    public static final String NEW_STEP_STARTED = "New step started.";
     public static final String MONKEY_CHANGED = "Monkey status changed.";
     public static final String SYRINGE_STATUS_CHANGED = "Syringe status changed.";
     public static final String WAITING_MESSAGE = "Waiting.";
@@ -53,6 +54,9 @@ public class SequenceManager extends Observable implements Runnable {
                                     sequence.getSuckStep().getTargetVolume(),
                                     sequence.getSuckStep().getAction()
                             );
+
+                            setChanged();
+                            notifyObservers(NEW_STEP_STARTED);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -85,6 +89,9 @@ public class SequenceManager extends Observable implements Runnable {
                             sequence.get(current).getTargetVolume(),
                             sequence.get(current).getAction()
                         );
+
+                        setChanged();
+                        notifyObservers(NEW_STEP_STARTED);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

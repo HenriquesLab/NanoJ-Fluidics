@@ -3,6 +3,7 @@ package nanoj.pumpControl.java.sequentialProtocol.tabs;
 import nanoj.pumpControl.java.pumps.ConnectedSubPump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
+import nanoj.pumpControl.java.sequentialProtocol.StopButton;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -32,6 +33,11 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
     protected JButton saveCalibration = new JButton("Save Current Calibration to file");
     protected JButton resetCalibration = new JButton("Reset Calibration");
 
+    protected JComboBox pumpList;
+    protected JTextField timeToPump;
+    protected JButton calibrateButton = new JButton("Start pumping");
+    protected StopButton stopButton;
+
     private static final String CAL = "Cal";
     public static final String SAVE_LOCATION = "location";
 
@@ -48,6 +54,8 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
         super();
 
         this.gui = gui;
+
+        stopButton = new StopButton(gui,pumpList);
 
         tableLabel = new JLabel("List of currently connected pumps. Diameter is in mm. Flow rates are in ul/sec.");
         tableModel = new CalibrationTable();

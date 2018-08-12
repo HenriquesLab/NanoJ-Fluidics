@@ -1,10 +1,7 @@
 package nanoj.pumpControl.java.sequentialProtocol.tabs;
 
 import nanoj.pumpControl.java.pumps.PumpManager;
-import nanoj.pumpControl.java.sequentialProtocol.GUI;
-import nanoj.pumpControl.java.sequentialProtocol.Sequence;
-import nanoj.pumpControl.java.sequentialProtocol.SequenceManager;
-import nanoj.pumpControl.java.sequentialProtocol.Step;
+import nanoj.pumpControl.java.sequentialProtocol.*;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -47,6 +44,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
     JButton removeStepButton;
     JButton startSeqButton;
     JButton stopSeqButton;
+    StopButton stopPumpButton;
     JLabel syringeReadyLabel;
     JButton syringeReadyButton;
     JLabel seqStatus;
@@ -82,6 +80,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
         removeStepButton = new JButton(REMOVE_STEP);
         startSeqButton = new JButton("Start!");
         stopSeqButton = new JButton("Stop sequence!");
+        stopPumpButton = new StopButton(gui);
         syringeReadyLabel = new JLabel("");
         syringeReadyLabel.setBackground(Color.RED);
         syringeReadyButton = new JButton("Syringe Ready");
@@ -196,6 +195,9 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                 gui.log.message(message);
                 seqStatus.setText(message);
             }
+
+            if (message.equals(SequenceManager.NEW_STEP_STARTED))
+                stopPumpButton.setCurrentPump(sequenceManager.getCurrentPump());
         }
     }
 

@@ -50,8 +50,6 @@ public final class GUI {
     private PumpCalibration pumpCalibration;
     private SequentialLabelling sequentialLabelling;
 
-    public JButton stopPumpOnSeqButton;
-
     private PanelListener panelListener = new PanelListener();
 
     public static final GUI INSTANCE = new GUI();
@@ -89,9 +87,6 @@ public final class GUI {
         JScrollPane logPane = new JScrollPane(
                 log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         topPane = new JTabbedPane();
-
-        // Stop button
-        stopPumpOnSeqButton =  new JButton("Stop Pump!");
 
         //Tab objects
         pumpConnections = new PumpConnections(this);

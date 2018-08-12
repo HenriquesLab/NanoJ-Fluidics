@@ -6,6 +6,7 @@ import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.pumps.SyringeList;
 import nanoj.pumpControl.java.sequentialProtocol.FlowRateSlider;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
+import nanoj.pumpControl.java.sequentialProtocol.StopButton;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -37,9 +38,7 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
     JRadioButton infuse;
     JRadioButton withdraw;
     JButton startPumpButton;
-    JButton stopPumpButton;
-
-    public StopPump stopPump;
+    StopButton stopPumpButton;
 
     private boolean editing = false;
 
@@ -60,22 +59,19 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
         withdraw = new JRadioButton("Withdraw");
         ButtonGroup buttons = new ButtonGroup();
         startPumpButton = new JButton("Pump!");
-        stopPumpButton = new JButton("Stop!");
 
         syringeComboBox = new JComboBox(SyringeList.getBrandedNames(0));
         pumpSelection = new JComboBox(new String[]{PumpManager.NO_PUMP_CONNECTED});
         buttons.add(infuse);
         buttons.add(withdraw);
 
-        setLayout(new DirectControlLayout(this));
+        stopPumpButton = new StopButton(gui,pumpSelection);
 
-        stopPump = new StopPump();
+        setLayout(new DirectControlLayout(this));
 
         pumpSelection.addActionListener(this);
         syringeComboBox.addActionListener(this);
         startPumpButton.addActionListener(this);
-        stopPumpButton.addActionListener(stopPump);
-        gui.stopPumpOnSeqButton.addActionListener(stopPump);
 
         pumpManager.addObserver(this);
     }
@@ -153,33 +149,5 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
 
     }
 
-    private class StopPump implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                int pump = gui.getSequenceManager().getCurrentPump();
-                if (e.getSource().equals(gui.stopPumpOnSeqButton)  && pump != -1) {
-                    if (!pumpManager.isConnected(pump)) {
-                        gui.log.message("Can't do anything until pump is connected.");
-                        return;
-                    }
-                    pumpSelection.setSelectedIndex(pump);
-                    gui.pumpManager.stopPumping(pump);
-                }
-                else {
-                    pump = pumpSelection.getSelectedIndex();
-                    if (!pumpManager.isConnected(pump)) {
-                        gui.log.message("Can't do anything until pump is connected.");
-                    }
-                    gui.pumpManager.stopPumping(pump);
-                }
-                gui.log.message("Told pump to stop!");
-            } catch (Exception e1) {
-                gui.log.message("Error, did not properly stop pump.");
-                e1.printStackTrace();
-            }
-        }
-    }
 
 }

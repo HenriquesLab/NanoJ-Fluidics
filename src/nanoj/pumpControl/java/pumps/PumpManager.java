@@ -96,7 +96,8 @@ public class PumpManager extends Observable implements Observer {
     }
 
     public synchronized void stopPumping(int pumpIndex) throws Exception {
-        connectedSubPumps.getConnectedSubPump(pumpIndex).pump.stopPump();
+        String subPump = connectedSubPumps.getConnectedSubPump(pumpIndex).subPump;
+        connectedSubPumps.getConnectedSubPump(pumpIndex).pump.stopPump(subPump);
         setChanged();
         notifyObservers(NEW_STATUS_AVAILABLE);
     }

@@ -36,7 +36,7 @@ class SequentialLabellingLayout extends GroupLayout {
                                         .addComponent(panel.removeStepButton)
                                         .addComponent(panel.startSeqButton)
                                         .addComponent(panel.stopSeqButton)
-                                        .addComponent(panel.gui.stopPumpOnSeqButton)
+                                        .addComponent(panel.stopPumpButton)
                                         .addComponent(panel.syringeReadyButton)
                         )
                         .addComponent(panel.syringeReadyLabel)
@@ -73,7 +73,7 @@ class SequentialLabellingLayout extends GroupLayout {
                                         .addComponent(panel.removeStepButton, GroupLayout.PREFERRED_SIZE, GUI.smallButtonWidth, GroupLayout.PREFERRED_SIZE)
                                         .addComponent(panel.startSeqButton)
                                         .addComponent(panel.stopSeqButton)
-                                        .addComponent(panel.gui.stopPumpOnSeqButton)
+                                        .addComponent(panel.stopPumpButton)
                                         .addComponent(panel.syringeReadyButton)
                         )
                         .addGroup(
