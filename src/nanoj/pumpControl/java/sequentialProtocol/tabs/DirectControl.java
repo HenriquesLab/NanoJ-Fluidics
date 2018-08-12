@@ -128,13 +128,15 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
                     else action = Pump.Action.Withdraw;
                     rateSlider.setPumpSelection(index);
                     rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringeComboBox.getSelectedIndex()));
+                    double volume = Double.parseDouble(targetVolume.getText());
                     gui.log.message("" + gui.pumpManager.startPumping(
                             index,
                             syringeComboBox.getSelectedIndex(),
                             rateSlider.getCurrentFlowRate(),
-                            Double.parseDouble(targetVolume.getText()),
+                            volume,
                             action
                     ));
+                    gui.log.message("Estimated pumping time: " + (volume/rateSlider.getCurrentFlowRate()) + " secs");
                 } catch (Exception e1) {
                     gui.log.message("Error, problem with starting the pump.");
                     e1.printStackTrace();
