@@ -3,13 +3,18 @@ package nanoj.pumpControl.java.sequentialProtocol.tabs;
 import nanoj.pumpControl.java.pumps.ConnectedSubPump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
+import nanoj.pumpControl.java.sequentialProtocol.Step;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
@@ -30,6 +35,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
     protected JButton resetCalibration = new JButton("Reset Calibration");
 
     private static final String CAL = "Cal";
+    public static final String SAVE_LOCATION = "location";
 
     private int NAME = 0;
     private int SUB_PUMP = 1;
@@ -128,10 +134,134 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(loadCalibration)) {
+            // Create .nsc file chooser
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(new FileNameExtensionFilter("NanoJ SeqLab Calibration file", "nsc"));
+            chooser.setDialogTitle("Choose Calibration file to load");
 
-        } else if (e.getSource().equals(saveCalibration)) {
+            // Get working directory from preferences
+            chooser.setCurrentDirectory(new File(prefs.get(SAVE_LOCATION, System.getProperty("user.home"))));
 
-        } else if (e.getSource().equals(resetCalibration)) {
+            // Get save location from user
+            int returnVal = chooser.showOpenDialog(loadCalibration);
+
+            // If successful, load protocol
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                // Save location in preferences so it is loaded next time the software is loaded
+                prefs.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
+
+                try {
+                    // Create file opener
+                    FileInputStream fileIn = new FileInputStream(chooser.getSelectedFile().getAbsolutePath());
+                    ObjectInputStream in = new ObjectInputStream(fileIn);
+
+                    ArrayList<String[]> input = (ArrayList<String[]>) in.readObject();
+
+                    editing = true;
+                    int index = 0;
+                    int matches = 0;
+                    for (ConnectedSubPump subPump: pumpManager.getConnectedPumpsList()) {
+                        for (String[] entry: input) {
+                            if (entry[NAME].equals(subPump.name) &&
+                                    entry[SUB_PUMP].equals(subPump.subPump) &&
+                                    entry[PORT].equals(subPump.port)) {
+                                tableModel.setValueAt(entry[DIAMETER],index,DIAMETER);
+                                tableModel.setValueAt(entry[MAX_FLOW_RATE],index,MAX_FLOW_RATE);
+                                tableModel.setValueAt(entry[MIN_FLOW_RATE],index,MIN_FLOW_RATE);
+                                matches++;
+                            }
+                        }
+                        index ++;
+                    }
+                    editing = false;
+
+                    if (matches == 0) {
+                        gui.log.message("WARNING: Loaded calibration file doesn't match any connected pump.");
+                    } else if (matches < index) {
+                        gui.log.message("WARNING: Loaded calibration only matched a few of the connected pump.");
+                    } else if (matches == index) {
+                        gui.log.message("Loaded calibration file.");
+                    } else if (matches > index) {
+                        gui.log.message("WARNING: Calibration matches more than the number of connected pumps?.");
+                    }
+
+                    // Close file
+                    in.close();
+                    fileIn.close();
+
+                } catch (FileNotFoundException f) {
+                    gui.log.message("Error, File Not Found.");
+                    f.printStackTrace();
+                } catch (IOException i) {
+                    gui.log.message("Error, can not read from location.");
+                    i.printStackTrace();
+                } catch (ClassNotFoundException c) {
+                    gui.log.message("Error, File type is incorrect.");
+                    c.printStackTrace();
+                }
+            }
+        }
+        else
+            if (e.getSource().equals(saveCalibration)) {
+            // Get working directory from preferences
+            File dir = new File(prefs.get(SAVE_LOCATION, System.getProperty("user.home")));
+
+            // Create .nsp file chooser
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(new FileNameExtensionFilter("NanoJ SeqLab Calibration file", "nsc"));
+            chooser.setDialogTitle("Choose where to save calibration file");
+            chooser.setCurrentDirectory(dir);
+
+            // Get save location from user
+            int returnVal = chooser.showSaveDialog(saveCalibration);
+
+            // If successful, save protocol
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                // Save location in preferences so it is loaded next time the software is loaded
+                prefs.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
+
+                // Make sure file has only one .nsc termination
+                if (!chooser.getSelectedFile().getAbsolutePath().endsWith(".nsc")) {
+                    dir = new File(chooser.getSelectedFile() + ".nsc");
+                } else dir = chooser.getSelectedFile();
+
+                try {
+                    // Open file streams
+                    FileOutputStream fileOut = new FileOutputStream(dir);
+                    ObjectOutputStream out = new ObjectOutputStream(fileOut);
+
+                    // Create output file information
+                    ArrayList<String[]> output = new ArrayList<String[]>();
+
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        String name = (String) tableModel.getValueAt(i,NAME);
+                        String subPump = (String) tableModel.getValueAt(i,SUB_PUMP);
+                        String port = (String) tableModel.getValueAt(i,PORT);
+                        String diameter = (String) tableModel.getValueAt(i,DIAMETER);
+                        String max = (String) tableModel.getValueAt(i,MAX_FLOW_RATE);
+                        String min = (String) tableModel.getValueAt(i,MIN_FLOW_RATE);
+
+                        output.add(new String[]{name,subPump,port,diameter,max,min});
+                    }
+
+                    //Write to file
+                    out.writeObject(output);
+                    out.close();
+                    fileOut.close();
+
+                } catch (FileNotFoundException f) {
+                    gui.log.message("Error, file not found.");
+                    f.printStackTrace();
+                } catch (IOException i) {
+                    gui.log.message("Error, can not write to target location.");
+                    i.printStackTrace();
+                }
+                gui.log.message("Saved calibration.");
+            }
+
+        }
+        else
+            if (e.getSource().equals(resetCalibration)) {
 
             editing = true;
 
@@ -158,6 +288,8 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
             }
 
             editing = false;
+
+            gui.log.message("Reset calibration of all pumps to default values.");
 
         }
     }
