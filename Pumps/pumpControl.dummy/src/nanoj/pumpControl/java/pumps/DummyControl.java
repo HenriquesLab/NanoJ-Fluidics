@@ -10,7 +10,7 @@ public final class DummyControl extends Pump implements PumpInterface {
         log = GUI.INSTANCE.log;
 
         if (demo) {
-            name = "NanoJ Lego Control Hub";
+            name = "NanoJ Lego Control Hub ";
             subPumps = new String[]{
                     "S1,P1",
                     "S1,P2",

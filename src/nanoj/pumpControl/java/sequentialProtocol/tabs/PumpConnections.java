@@ -21,7 +21,7 @@ public class PumpConnections extends JPanel {
     public String name = "Pump Connections";
 
     private static final String VIRTUAL_PUMP = "Virtual Pump";
-    private static final String VIRTUAL_PORT = "Virtual port";
+    private static final String VIRTUAL_PORT = "COM5";
     private static final String PORT = "com";
     private static final String PUMP = "pump";
 
@@ -56,7 +56,6 @@ public class PumpConnections extends JPanel {
 
         portsList = new JComboBox(new Vector(NRSerialPort.getAvailableSerialPorts()));
         portsList.addItem(VIRTUAL_PORT);
-        portsList.addItem(VIRTUAL_PORT + " 2");
         portsList.setSelectedItem(prefs.get(PORT, VIRTUAL_PORT));
 
         setLayout( new PumpConnectionsLayout(this));
