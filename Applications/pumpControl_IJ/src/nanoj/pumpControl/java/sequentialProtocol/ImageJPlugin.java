@@ -27,7 +27,7 @@ public class ImageJPlugin implements PlugIn {
 
         try {
             userInterface = GUI.INSTANCE;
-            userInterface.setCloseOnExit(true);
+            userInterface.setCloseOnExit(false);
             userInterface.create(core);
         } catch (Exception e) {
             e.printStackTrace();
