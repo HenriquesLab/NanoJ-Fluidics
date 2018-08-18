@@ -27,6 +27,7 @@ class PumpConnectionsLayout extends GroupLayout {
                         )
                         .addGroup(createParallelGroup().addComponent(panel.connectedPumpsLabel))
                         .addGroup(createParallelGroup().addComponent(panel.connectedPumpsListPane))
+                        .addGroup(createParallelGroup().addComponent(panel.version))
         );
 
         setHorizontalGroup(
@@ -47,6 +48,7 @@ class PumpConnectionsLayout extends GroupLayout {
                         )
                         .addGroup(createParallelGroup().addComponent(panel.connectedPumpsLabel))
                         .addGroup(createParallelGroup().addComponent(panel.connectedPumpsListPane))
+                        .addGroup(createParallelGroup().addComponent(panel.version))
         );
     }
 }

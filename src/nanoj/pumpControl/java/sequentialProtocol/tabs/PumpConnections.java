@@ -26,13 +26,14 @@ public class PumpConnections extends JPanel {
     private static final String PUMP = "pump";
 
     JComboBox availablePumpsList;
-    
-    JLabel pumpListLabel;
-    JLabel connectLabel;
+
+    JLabel version = new JLabel("NanoJ Sequential Labelling version: 1.1.2");
+    JLabel pumpListLabel = new JLabel("Pump type");
+    JLabel connectLabel = new JLabel("Serial port");
     JComboBox portsList;
-    JButton connectButton;
-    JButton disconnectButton;
-    JLabel connectedPumpsLabel;
+    JButton connectButton = new JButton("Connect");
+    JButton disconnectButton = new JButton("Disconnect");
+    JLabel connectedPumpsLabel = new JLabel("List of currently connected pumps");
     private JTable connectedPumpsTable;
     private ConnectionsTable connectedPumpsTableModel;
     JScrollPane connectedPumpsListPane;
@@ -41,12 +42,6 @@ public class PumpConnections extends JPanel {
         super();
         this.gui = gui;
 
-        pumpListLabel = new JLabel("Pump type");
-        connectLabel = new JLabel("Serial port");
-        portsList = new JComboBox();
-        connectButton = new JButton("Connect");
-        disconnectButton = new JButton("Disconnect");
-        connectedPumpsLabel = new JLabel("List of currently connected pumps");
         connectedPumpsTableModel = new ConnectionsTable();
         connectedPumpsTable = new JTable(connectedPumpsTableModel);
         connectedPumpsListPane = new JScrollPane(connectedPumpsTable);
