@@ -21,7 +21,7 @@ public class PumpConnections extends JPanel {
     public String name = "Pump Connections";
 
     private static final String VIRTUAL_PUMP = "Virtual Pump";
-    private static final String VIRTUAL_PORT = "COM5";
+    private static final String VIRTUAL_PORT = "Virtual Port";
     private static final String PORT = "com";
     private static final String PUMP = "pump";
 
