@@ -36,11 +36,15 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     }
 
     public void removePump(Pump pump) {
+        ArrayList<ConnectedSubPump> found = new ArrayList<ConnectedSubPump>();
         for (ConnectedSubPump subPump: list)
-            if (subPump.name.equals(pump.name))
-                list.remove(subPump);
+            if (subPump.pump.equals(pump))
+                found.add(subPump);
 
-        connectedPumps.remove(pump);
+        for (ConnectedSubPump foundPump : found)
+            list.remove(foundPump);
+
+        connectedPumps.remove(found.get(0).pump);
     }
 
     public ConnectedSubPump getConnectedSubPump(String name, String subPump, String port) throws PumpNotFoundException {

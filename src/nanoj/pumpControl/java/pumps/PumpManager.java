@@ -124,6 +124,24 @@ public class PumpManager extends Observable implements Observer {
         notifyObservers(NEW_STATUS_AVAILABLE);
     }
 
+    public synchronized boolean disconnect(String port) throws Exception {
+        boolean success = false;
+        Pump pump = null;
+        for (ConnectedSubPump subPump: connectedSubPumps)
+            if (subPump.port.equals(port)) {
+                pump = subPump.pump;
+                success = subPump.pump.disconnect();
+                break;
+            }
+
+        if (success)
+            connectedSubPumps.removePump(pump);
+
+        setChanged();
+        notifyObservers(PUMP_DISCONNECTED);
+        return success;
+    }
+
     public synchronized boolean disconnect(int index) throws Exception {
         boolean success = connectedSubPumps.getConnectedSubPump(index).pump.disconnect();
         String name = connectedSubPumps.getConnectedSubPump(index).name;
@@ -145,6 +163,28 @@ public class PumpManager extends Observable implements Observer {
 
     public ConnectedSubPumpsList getConnectedPumpsList() {
         return connectedSubPumps;
+    }
+
+    public Pump getPumpOnPort(String port) {
+        Pump pump = null;
+        for (ConnectedSubPump subPump: connectedSubPumps)
+            if (subPump.port.equals(port)) {
+                pump = subPump.pump;
+                break;
+            }
+
+        return pump;
+    }
+
+    public String getPumpNameOnPort(String port) {
+        String pump = "Not found";
+        for (ConnectedSubPump subPump: connectedSubPumps)
+            if (subPump.port.equals(port)) {
+                pump = subPump.name;
+                break;
+            }
+
+        return pump;
     }
 
     public synchronized boolean isConnected(int pumpIndex) {
