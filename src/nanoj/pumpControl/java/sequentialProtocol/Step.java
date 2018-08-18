@@ -1,19 +1,13 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import nanoj.pumpControl.java.pumps.*;
 import org.micromanager.utils.ReportingUtils;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
