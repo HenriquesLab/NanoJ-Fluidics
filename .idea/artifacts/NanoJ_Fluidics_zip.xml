@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="NanoJ-Fluidics.zip">
+    <output-path>$PROJECT_DIR$/PackagedBinaries</output-path>
+    <root id="root">
+      <element id="archive" name="NanoJ-Fluidics.zip">
+        <element id="directory" name="NanoJ-Fluidics">
+          <element id="directory" name="Libraries">
+            <element id="dir-copy" path="$PROJECT_DIR$/Libraries" />
+          </element>
+          <element id="directory" name="PumpPlugins">
+            <element id="artifact" artifact-name="pumpControl.dummy" />
+            <element id="artifact" artifact-name="pumpControl.harvardElite" />
+            <element id="artifact" artifact-name="pumpControl.legoControl" />
+          </element>
+          <element id="artifact" artifact-name="NanoJ-Fluidics" />
+          <element id="file-copy" path="$PROJECT_DIR$/NanoJ-Fluidics.bat" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,29 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="NanoJ-Fluidics_IJ.zip">
+    <output-path>$PROJECT_DIR$/PackagedBinaries</output-path>
+    <root id="root">
+      <element id="archive" name="NanoJ-Fluidics_IJ.zip">
+        <element id="directory" name="jars">
+          <element id="file-copy" path="$PROJECT_DIR$/Libraries/jna-4.2.2.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/Libraries/commons-net-3.3.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/Libraries/jna-platform-4.2.2.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/Libraries/MMCoreJ.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/Libraries/MMJ_.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/Libraries/nrjavaserial-3.13.0.jar" />
+        </element>
+        <element id="directory" name="plugins">
+          <element id="directory" name="PumpPlugins">
+            <element id="artifact" artifact-name="pumpControl.dummy" />
+            <element id="artifact" artifact-name="pumpControl.harvardElite" />
+            <element id="artifact" artifact-name="pumpControl.legoControl" />
+          </element>
+          <element id="artifact" artifact-name="NanoJ-Fluidics_IJ" />
+        </element>
+        <element id="file-copy" path="$PROJECT_DIR$/Libraries/libMMCoreJ_wrap.jnilib" />
+        <element id="file-copy" path="$PROJECT_DIR$/Libraries/libmmgr_dal_SerialManager" />
+        <element id="file-copy" path="$PROJECT_DIR$/Libraries/MMCoreJ_wrap.dll" />
+        <element id="file-copy" path="$PROJECT_DIR$/Libraries/mmgr_dal_SerialManager.dll" />
+      </element>
+    </root>
+  </artifact>
+</component>
