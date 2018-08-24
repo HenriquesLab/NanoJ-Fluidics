@@ -1,6 +1,6 @@
-Note: visit the [*Wiki*][10] or [*Forum*][12] for latest updates.
-
 # NanoJ-Fluidics: open-source fluid exchange in microscopy
+
+Note: visit the [**Wiki**][10] or [**Forum**][12] for latest updates.
 
 ![][8]
 
