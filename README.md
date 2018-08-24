@@ -1,3 +1,5 @@
+Note: visit the [*Wiki*][10] or [*Forum*][12] for latest updates.
+
 # NanoJ-Fluidics: open-source fluid exchange in microscopy
 
 ![][8]
@@ -26,3 +28,4 @@ NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [L
   [9]: http://www.neurocytolab.org/
   [10]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki
   [11]: https://www.biorxiv.org/content/early/2018/05/14/320416
+  [12]: https://gitter.im/NanoJ-Fluidics
