@@ -17,6 +17,11 @@ This [Wiki][10] provides all the information necessary for researchers to reprod
 ## Developers
 NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [Leterrier][9] laboratories. 
 
+## Developers
+NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [Leterrier][9] laboratories, with contributions from the community:
+  * [Matthew Meyer][0mgem0] (La Jolla Institute of Allergy & Immunology's Microscopy Core): 3D printed syringe pump body, v-slot adaptor, other parts (see [section](https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Pumpy-3D-Printing-MMeyer)).
+  * [Leo Saunders][MySaundersleo] (University of Colorado Denver): 3D printed syringe pump body (see [section](https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Pumpy-3D-Printing-LSaunders)).
+
   [1]: http://www.ucl.ac.uk/lmcb/users/ricardo-henriques
   [2]: http://www.ucl.ac.uk/lmcb/
   [3]: http://www.ucl.ac.uk/
@@ -29,3 +34,6 @@ NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [L
   [10]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki
   [11]: https://www.biorxiv.org/content/early/2018/05/14/320416
   [12]: https://gitter.im/NanoJ-Fluidics
+  [3DPrint]: Pumpy-3D-Printing
+  [0mgem0]: https://twitter.com/0mgem0
+  [MySaundersleo]: https://twitter.com/MySaundersleo
