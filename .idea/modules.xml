@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NanoJ-Fluidics.iml" filepath="$PROJECT_DIR$/NanoJ-Fluidics.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Pumps/pumpControl.dummy/pumpControl.dummy.iml" filepath="$PROJECT_DIR$/Pumps/pumpControl.dummy/pumpControl.dummy.iml" />
       <module fileurl="file://$PROJECT_DIR$/Pumps/pumpControl.harvardElite/pumpControl.harvardElite.iml" filepath="$PROJECT_DIR$/Pumps/pumpControl.harvardElite/pumpControl.harvardElite.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Pumps/pumpControl.legoControl/pumpControl.legoControl.iml" filepath="$PROJECT_DIR$/Pumps/pumpControl.legoControl/pumpControl.legoControl.iml" />
       <module fileurl="file://$PROJECT_DIR$/Pumps/pumpControl.stepperControl/pumpControl.stepperControl.iml" filepath="$PROJECT_DIR$/Pumps/pumpControl.stepperControl/pumpControl.stepperControl.iml" />
       <module fileurl="file://$PROJECT_DIR$/Applications/pumpControl_IJ/pumpControl_IJ.iml" filepath="$PROJECT_DIR$/Applications/pumpControl_IJ/pumpControl_IJ.iml" />
       <module fileurl="file://$PROJECT_DIR$/Applications/pumpControl_MM/pumpControl_MM.iml" filepath="$PROJECT_DIR$/Applications/pumpControl_MM/pumpControl_MM.iml" />

@@ -141,4 +141,8 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
     public synchronized void updateReferenceRate(String subPump, double[] newRate) {
         referenceRates.put(subPump,newRate);
     }
+
+    public String getName() {
+        return name;
+    }
 }

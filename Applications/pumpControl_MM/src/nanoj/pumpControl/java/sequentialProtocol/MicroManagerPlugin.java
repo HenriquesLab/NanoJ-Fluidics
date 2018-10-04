@@ -5,6 +5,7 @@ import nanoj.pumpControl.java.Loader;
 import org.micromanager.MMStudio;
 import org.micromanager.api.MMPlugin;
 import org.micromanager.api.ScriptInterface;
+import org.micromanager.utils.ReportingUtils;
 
 import java.io.File;
 import java.net.URL;
@@ -34,7 +35,7 @@ public class MicroManagerPlugin implements MMPlugin {
             userInterface.create(core);
         } catch (Exception e) {
             IJ.log("Error, problem when initiating GUI.");
-            e.printStackTrace();
+            ReportingUtils.logError(e);
         }
     }
 

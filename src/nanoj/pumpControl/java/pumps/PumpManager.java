@@ -42,6 +42,12 @@ public class PumpManager extends Observable implements Observer {
         for (Pump pump : serviceLoader) {
             availablePumps.put(pump.getPumpName(), pump);
         }
+
+        Pump dummy = new DummyControl();
+        availablePumps.put(dummy.getName(), dummy);
+
+        Pump lego = new LegoControl();
+        availablePumps.put(lego.getName(), lego);
     }
 
     public void setCore(CMMCore core) { serialManager = core; }

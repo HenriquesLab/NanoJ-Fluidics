@@ -15,8 +15,6 @@
         <element id="directory" name="mmplugins">
           <element id="artifact" artifact-name="NanoJ-Fluidics_MM" />
           <element id="directory" name="PumpPlugins">
-            <element id="artifact" artifact-name="pumpControl.legoControl" />
-            <element id="artifact" artifact-name="pumpControl.dummy" />
             <element id="artifact" artifact-name="pumpControl.harvardElite" />
           </element>
         </element>

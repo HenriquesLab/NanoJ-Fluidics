@@ -8,9 +8,7 @@
             <element id="dir-copy" path="$PROJECT_DIR$/Libraries" />
           </element>
           <element id="directory" name="PumpPlugins">
-            <element id="artifact" artifact-name="pumpControl.dummy" />
             <element id="artifact" artifact-name="pumpControl.harvardElite" />
-            <element id="artifact" artifact-name="pumpControl.legoControl" />
           </element>
           <element id="artifact" artifact-name="NanoJ-Fluidics" />
           <element id="file-copy" path="$PROJECT_DIR$/NanoJ-Fluidics.bat" />
