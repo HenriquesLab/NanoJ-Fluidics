@@ -27,7 +27,7 @@ public class PumpConnections extends JPanel {
 
     JComboBox availablePumpsList;
 
-    JLabel version = new JLabel("NanoJ Sequential Labelling version: 1.1.2");
+    JLabel version = new JLabel("NanoJ Sequential Labelling version: 1.1.3");
     JLabel pumpListLabel = new JLabel("Pump type");
     JLabel connectLabel = new JLabel("Serial port");
     JComboBox portsList;
