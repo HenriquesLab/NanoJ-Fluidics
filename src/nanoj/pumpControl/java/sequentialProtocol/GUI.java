@@ -76,6 +76,9 @@ public final class GUI {
     }
 
     void create(CMMCore core) throws Exception {
+        if (mainFrame != null && mainFrame.isVisible())
+            return;
+
         //Initiate PumpManager
         pumpManager = PumpManager.INSTANCE;
         pumpManager.setCore(core);
