@@ -1,0 +1,30 @@
+import nanoj.pumpControl.java.sequentialProtocol.GUI;
+
+seqProt = GUI.INSTANCE;
+
+/* 
+ *  You may start the NanoJ-Fluidics GUI and design the protocol through it.
+ *  Once the GUI has connected to pumps and the protocol specified, you can:
+
+print( seqProt.startSequence() );                      // Start the entire sequence
+print( seqProt.startSequence(2,4) );                   // Or just a portion of the sequence, e.g. from steps 2 to 4
+print( seqProt.stopSequence() );                       // Stop the sequence
+print( "Running: " + seqProt.sequenceRunning() );      // Get the status of the sequence (as a boolean)
+print( "Current step: " + seqProt.getCurrentStep() );  // Get what is the current step (-1 if not running)
+print( seqProt.stopAllPumps() );                       // If something goes wrong you can stop all pumps
+print( seqProt.stopPump(1) );                          // Or a specific pump (value from 1 to N connected pump).
+*/
+
+// Example script
+
+print( seqProt.startSequence(2,4) );
+ 
+int previoustStep = 0;
+
+while(seqProt.sequenceRunning())
+	if(previoustStep != seqProt.getCurrentStep()) {
+		print("Current step: " + seqProt.getCurrentStep());
+		previoustStep = seqProt.getCurrentStep();
+	}
+
+print("Finished.");
