@@ -162,7 +162,11 @@ public final class GUI {
         return message;
     }
 
-    public boolean isRunning() { return sequentialLabelling.sequenceManager.isStarted(); }
+    public int getCurrentStep() {
+        return getSequenceManager().getCurrentStep()+1;
+    }
+
+    public boolean sequenceRunning() { return sequentialLabelling.sequenceManager.isStarted(); }
 
     public void updateGUI() {
         mainFrame.validate();

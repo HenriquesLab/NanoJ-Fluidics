@@ -145,6 +145,7 @@ public class SequenceManager extends Observable implements Runnable {
                         }
                     }
                 }
+                currentStep = -1;
                 setChanged();
                 notifyObservers(SEQUENCE_FINISHED);
             }
@@ -236,6 +237,10 @@ public class SequenceManager extends Observable implements Runnable {
         if (started) {
             return currentPump;
         } else return -1;
+    }
+
+    public int getCurrentStep() {
+        return currentStep;
     }
 
     public void defineSequence(Sequence givenSteps) { sequence = givenSteps; }
