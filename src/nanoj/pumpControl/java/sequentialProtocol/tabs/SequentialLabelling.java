@@ -29,6 +29,8 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
     public static final String SUCK = "suck";
     public static final String SAVE_LOCATION = "location";
 
+    public SequentialListener listener = new SequentialListener();
+
     JPanel topPanel;
     JPanel stepsPanel;
     JScrollPane scrollPane;
@@ -102,8 +104,8 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
         numberOfSteps.addActionListener(stepChanger);
         addStepButton.addActionListener(stepChanger);
         removeStepButton.addActionListener(stepChanger);
-        startSeqButton.addActionListener(new StartSequence());
-        stopSeqButton.addActionListener(new StopSequence());
+        startSeqButton.addActionListener(listener);
+        stopSeqButton.addActionListener(listener);
         syringeReadyButton.addActionListener(new ToggleMonkeyState());
         
         //Initiate SequenceManager
@@ -450,21 +452,42 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
         }
     }
 
-    private class StartSequence implements ActionListener {
+    public class SequentialListener implements ActionListener {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
+        public String start() {
+            if (pumpManager.noPumpsConnected()) {
+                return "Can't do anything until a pump is connected.";
+            }
+
             prefs.putBoolean(SUCK, suckBetweenSteps.isSelected());
             sequence.setSuck(suckBetweenSteps.isSelected());
             sequenceManager.start(sequence);
+            return "Starting Sequence!";
         }
-    }
 
-    private class StopSequence implements ActionListener {
+        public String start(int startStep, int endStep) {
+            if (pumpManager.noPumpsConnected()) {
+                return "Can't do anything until a pump is connected.";
+            }
+
+            prefs.putBoolean(SUCK, suckBetweenSteps.isSelected());
+            sequence.setSuck(suckBetweenSteps.isSelected());
+            sequenceManager.start(sequence, startStep, endStep);
+            return "Starting Sequence!";
+        }
+
+        public String stop() {
+            sequenceManager.stop();
+            return "Stopping Sequence.";
+        }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            sequenceManager.stop();
+            if (e.getSource().equals(startSeqButton))
+                start();
+            else if (e.getSource().equals(stopSeqButton))
+                stop();
+
         }
     }
     

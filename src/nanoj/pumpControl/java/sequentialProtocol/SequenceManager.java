@@ -24,25 +24,29 @@ public class SequenceManager extends Observable implements Runnable {
     private boolean monkeyReady = true;
     private Sequence sequence;
     private int suckDuration;
+    private int startStep = 0;
+    private int endStep = 0;
     private int currentPump = 0;
+    private int currentStep = -1;
     private boolean started = false;
     private boolean alive = true;
     private boolean syringeExchangeNeeded = false;
 
     private String waitingMessage = "Sequence not yet started.";
 
-    private SequenceManager() {
-    } //The no-argument constructor is required for the singleton design pattern.
+    private SequenceManager() { }
 
     @Override
     public void run(){
         while (alive) {
             if (started) {
-                for (int current = 0; current < sequence.size(); current++) {
+                for (currentStep = startStep; currentStep < endStep+1; currentStep++) {
                     if (!started) break;
 
+                    Step step = sequence.get(currentStep);
+
                     //Tell suck pump to start
-                    if (sequence.isSuckTrue() && sequence.get(current).suckBefore()) {
+                    if (sequence.isSuckTrue() && step.suckBefore()) {
                         suckDuration = sequence.getSuckStep().getDuration();
                         try {
                             currentPump = sequence.getSuckStep().getSelectedPump();
@@ -81,13 +85,13 @@ public class SequenceManager extends Observable implements Runnable {
                     }
 
                     try {
-                        currentPump = sequence.get(current).getSelectedPump();
+                        currentPump = step.getSelectedPump();
                         pumpManager.startPumping(
-                            currentPump,
-                            sequence.get(current).getSyringeIndex(),
-                            sequence.get(current).getFlowRate(),
-                            sequence.get(current).getTargetVolume(),
-                            sequence.get(current).getAction()
+                                currentPump,
+                                step.getSyringeIndex(),
+                                step.getFlowRate(),
+                                step.getTargetVolume(),
+                                step.getAction()
                         );
 
                         setChanged();
@@ -101,38 +105,39 @@ public class SequenceManager extends Observable implements Runnable {
 
                     // If this isn't the last step, then set the "syringe ready" status to false. This makes
                     // the sequence wait until the user has confirmed the syringe exchange.
-                    if (current != sequence.size() - 1) setMonkeyReady(false);
+                    if (currentStep != endStep) setMonkeyReady(false);
                         // If it IS the last step, then we can stop now.
                     else {
                         stop();
                         break;
                     }
 
-                    syringeExchangeNeeded = sequence.get(current+1).isSyringeExchangeRequired();
+                    syringeExchangeNeeded = sequence.get(currentStep+1).isSyringeExchangeRequired();
 
                     setChanged();
                     notifyObservers(SYRINGE_STATUS_CHANGED);
 
                     // While the time between steps hasn't passed OR the syringe hasn't been readied...
-                    while ((System.currentTimeMillis() / 1000 - startTime) < sequence.get(current).getDuration() || !monkeyReady && syringeExchangeNeeded) {
+                    while ((System.currentTimeMillis() / 1000 - startTime) < step.getDuration() ||
+                            !monkeyReady && syringeExchangeNeeded) {
                         //Stop sequence if the "Stop" button was pressed.
                         if (!started) break;
 
                         //Calculate how much time there is still to go in seconds.
-                        int timeToGo = (sequence.get(current).getDuration() - (int) (System.currentTimeMillis() / 1000 - startTime));
+                        int timeToGo = (step.getDuration() - (int) (System.currentTimeMillis() / 1000 - startTime));
                         // This and the next "else if" let you know how long the pump has been waiting for the syringe
                         //  in minutes after the first minute waiting for the syringe ready signal
-                        if (timeToGo < -60) setWaitingMessage("Step: " + sequence.get(current).getNumber() + ", "
-                                + sequence.get(current).getName() + ". Waiting for syringe for the past " + - (1 + (timeToGo / 60)) + " minutes.");
+                        if (timeToGo < -60) setWaitingMessage("Step: " + step.getNumber() + ", "
+                                + step.getName() + ". Waiting for syringe for the past " + - (1 + (timeToGo / 60)) + " minutes.");
                             //  but before that it's in seconds.
-                        else if (timeToGo < 0) setWaitingMessage("Step: " + sequence.get(current).getNumber() + ", "
-                                + sequence.get(current).getName() + ". Waiting for syringe for the past " + -timeToGo + " seconds.");
+                        else if (timeToGo < 0) setWaitingMessage("Step: " + step.getNumber() + ", "
+                                + step.getName() + ". Waiting for syringe for the past " + -timeToGo + " seconds.");
                             //  And before that it's seconds to set duration
-                        else if (timeToGo < 60) setWaitingMessage("Step: " + sequence.get(current).getNumber() + ", "
-                                + sequence.get(current).getName() + ". Waiting for: " + timeToGo + " seconds.");
+                        else if (timeToGo < 60) setWaitingMessage("Step: " + step.getNumber() + ", "
+                                + step.getName() + ". Waiting for: " + timeToGo + " seconds.");
                             //  and before that it's minutes to set duration
-                        else if (timeToGo >= 60) setWaitingMessage("Step: " + sequence.get(current).getNumber() + ", "
-                                + sequence.get(current).getName() + ". Waiting for: " + (1 + (timeToGo / 60)) + " more minutes.");
+                        else if (timeToGo >= 60) setWaitingMessage("Step: " + step.getNumber() + ", "
+                                + step.getName() + ". Waiting for: " + (1 + (timeToGo / 60)) + " more minutes.");
                         try {
                             Thread.sleep(300);
                         } catch (InterruptedException e) {
@@ -154,6 +159,16 @@ public class SequenceManager extends Observable implements Runnable {
     public synchronized void start(Sequence givenSteps) {
         this.sequence = givenSteps;
         isSyringeExchangeRequiredOnSequence();
+        startStep = 0;
+        endStep = givenSteps.size();
+        started = true;
+    }
+
+    public synchronized void start(Sequence givenSteps, int start, int end) {
+        this.sequence = givenSteps;
+        isSyringeExchangeRequiredOnSequence();
+        startStep = start;
+        endStep = end;
         started = true;
     }
 

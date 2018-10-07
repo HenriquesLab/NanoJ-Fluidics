@@ -145,12 +145,21 @@ public final class GUI {
     }
 
     public String startSequence() {
-        if (pumpManager.noPumpsConnected()) {
-            sequentialLabelling.sequence.setSuck(sequentialLabelling.suckBetweenSteps.isSelected());
-            sequentialLabelling.sequenceManager.start(sequentialLabelling.sequence);
-            return "Started sequence!";
-        }
-        else return "Can't do anything until a pump is connected.";
+        String message = sequentialLabelling.listener.start();
+        log.message(message);
+        return message;
+    }
+
+    public String startSequence(int startStep, int endStep) {
+        String message = sequentialLabelling.listener.start(startStep-1, endStep-1);
+        log.message(message);
+        return message;
+    }
+
+    public String stopSequence() {
+        String message = sequentialLabelling.listener.stop();
+        log.message(message);
+        return message;
     }
 
     public boolean isRunning() { return sequentialLabelling.sequenceManager.isStarted(); }
