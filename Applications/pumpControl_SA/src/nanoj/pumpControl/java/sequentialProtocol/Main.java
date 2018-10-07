@@ -1,4 +1,4 @@
-package nanoJ.pumpControl.java;
+package nanoj.pumpControl.java.sequentialProtocol;
 
 import mmcorej.CMMCore;
 import nanoj.pumpControl.java.Loader;

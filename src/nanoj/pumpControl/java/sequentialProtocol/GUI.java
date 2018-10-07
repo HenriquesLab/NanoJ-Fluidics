@@ -75,7 +75,7 @@ public final class GUI {
         }
     }
 
-    public void create(CMMCore core) throws Exception {
+    void create(CMMCore core) throws Exception {
         //Initiate PumpManager
         pumpManager = PumpManager.INSTANCE;
         pumpManager.setCore(core);

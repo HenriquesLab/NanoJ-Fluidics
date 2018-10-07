@@ -1,7 +1,6 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
 import ij.IJ;
-import nanoj.pumpControl.java.Loader;
 import org.micromanager.MMStudio;
 import org.micromanager.api.MMPlugin;
 import org.micromanager.api.ScriptInterface;
