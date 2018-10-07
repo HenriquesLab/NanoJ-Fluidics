@@ -162,6 +162,20 @@ public final class GUI {
         return message;
     }
 
+    public String stopAllPumps() throws Exception {
+        if (pumpManager.noPumpsConnected()) return "No pump connected.";
+        pumpManager.stopAllPumps();
+        return "Stopping all pumps!";
+    }
+
+    public String stopPump(int pump) throws Exception {
+        if (pumpManager.noPumpsConnected()) return "No pump connected.";
+        else if (pump > pumpManager.getConnectedPumpsList().size() || pump < 1)
+            return "Index is not valid. Has to be between 1 and N connected pumps.";
+        else return "Stopping pump " + pumpManager.stopPumping(pump-1);
+    }
+
+
     public int getCurrentStep() {
         return getSequenceManager().getCurrentStep()+1;
     }

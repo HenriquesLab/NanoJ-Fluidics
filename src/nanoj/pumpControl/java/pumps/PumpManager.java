@@ -117,11 +117,12 @@ public class PumpManager extends Observable implements Observer {
             pump.stopAllPumps();
     }
 
-    public synchronized void stopPumping(int pumpIndex) throws Exception {
+    public synchronized String stopPumping(int pumpIndex) throws Exception {
         String subPump = connectedSubPumps.getConnectedSubPump(pumpIndex).subPump;
         connectedSubPumps.getConnectedSubPump(pumpIndex).pump.stopPump(subPump);
         setChanged();
         notifyObservers(NEW_STATUS_AVAILABLE);
+        return connectedSubPumps.getConnectedSubPump(pumpIndex).getFullName();
     }
 
     public synchronized void stopPumping(String pumpName, String subPump, String port) throws Exception {
