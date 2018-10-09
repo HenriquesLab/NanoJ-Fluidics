@@ -46,6 +46,7 @@ class SequentialLabellingLayout extends GroupLayout {
                                         .addComponent(panel.pumpStatusOnSeqLabel)
                                         .addComponent(panel.pumpStatusOnSeq)
                         )
+                        .addComponent(panel.legend)
                         .addGroup(
                                 topPanelLayout.createParallelGroup()
                                         .addComponent(panel.suckBetweenStepsLabel)
@@ -86,7 +87,9 @@ class SequentialLabellingLayout extends GroupLayout {
                                 topPanelLayout.createSequentialGroup()
                                         .addComponent(panel.pumpStatusOnSeqLabel)
                                         .addComponent(panel.pumpStatusOnSeq)
+
                         )
+                        .addComponent(panel.legend)
                         .addGroup(
                                 topPanelLayout.createSequentialGroup()
                                         .addComponent(panel.suckBetweenStepsLabel)

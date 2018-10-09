@@ -178,23 +178,14 @@ public class SequenceManager extends Observable implements Runnable {
     }
 
     public void isSyringeExchangeRequiredOnSequence() {
-        ArrayList<Boolean> exchangeRequired = new ArrayList<Boolean>(sequence.size());
-        //Determine which steps will require a syringe exchange
-        ArrayList<String> pumpsPerStep = new ArrayList<String>(sequence.size());
+        syringeExchangeNeeded = false;
         for (Step step: sequence) {
-            pumpsPerStep.add("" + step.getSelectedPump());
-        }
-        for (int p = 0; p < pumpsPerStep.size(); p++) {
-            String pump = pumpsPerStep.get(p);
-            if (p != pumpsPerStep.indexOf(pump)) {
-                exchangeRequired.add(Collections.frequency(pumpsPerStep, pump) > 1);
-                sequence.get(p).setSyringeExchangeRequired(true);
-            } else {
-                sequence.get(p).setSyringeExchangeRequired(false);
+            if (step.isSyringeExchangeRequired()) {
+                syringeExchangeNeeded = true;
+                break;
             }
         }
-        if (syringeExchangeNeeded != exchangeRequired.contains(true))
-            syringeExchangeNeeded = exchangeRequired.contains(true);
+
         setChanged();
         notifyObservers(SYRINGE_STATUS_CHANGED);
     }

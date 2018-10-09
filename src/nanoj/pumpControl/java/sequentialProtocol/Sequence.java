@@ -25,12 +25,12 @@ public class Sequence extends ArrayList<Step> {
 
         this.stepObserver = changer;
 
-        this.suckStep = new Step(0, "suck", false,10, 0, 0, "7", 0, Pump.Action.Withdraw);
+        this.suckStep = new Step(0, "suck", false,false,10, 0, 0, "7", 0, Pump.Action.Withdraw);
         this.suckStep.setIsSuckStep();
 
-        add(new Step(1, "Start", true, 1, 0, 1,  "0.5", 1,Pump.Action.Infuse));
-        add(new Step(2, "Middle", true, 1, 0, 3, "1", 1,Pump.Action.Infuse));
-        add(new Step(3, "Finish", true,1, 0, 6,"100", 0,Pump.Action.Infuse));
+        add(new Step(1, "Start", true, false, 1, 0, 1,  "0.5", 1,Pump.Action.Infuse));
+        add(new Step(2, "Middle", true, false,1, 0, 3, "1", 1,Pump.Action.Infuse));
+        add(new Step(3, "Finish", true,false,1, 0, 6,"100", 0,Pump.Action.Infuse));
 
     }
 

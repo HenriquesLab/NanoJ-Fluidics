@@ -29,22 +29,23 @@ public class Step extends Observable implements Observer, ActionListener {
     public static final String DOWN_TEXT = "Replace next step with this one";
     public static final String DUPLICATE_TEXT = "Duplicate this step";
     public static final String EXPIRE_TEXT = "Remove step";
+    public static final String EXCHANGE_STATUS_CHANGED = "Exchange status changed";
 
     private String[] syringes = SyringeList.getBrandedNames(3);
     private FlowLayout step_layout = new FlowLayout(FlowLayout.LEADING);
     private JPanel step = new JPanel(step_layout);
     private JLabel numberLabel = new JLabel("");
     private JTextField name;
-    private JCheckBox suck = new JCheckBox("",false);
+    private JCheckBox suck = new JCheckBox("Wd",false);
     private JTextField time;
     private JComboBox timeUnitsList;
+    private JCheckBox exchange = new JCheckBox("Ex");
     private JComboBox pumpList;
     private JComboBox syringe = new JComboBox(syringes);
     private FlowRateSlider rateSlider;
     private JTextField volume;
     private JComboBox volumeUnitsList;
     private JComboBox action = new JComboBox(Pump.Action.values());
-    private boolean syringeExchangeRequired = false;
     private int number;
 
     private boolean editing = false;
@@ -55,11 +56,11 @@ public class Step extends Observable implements Observer, ActionListener {
     }
 
     public Step(int num) {
-        this(num,"Name",true,1,0, 0,"500",0, Pump.Action.Infuse);
+        this(num,"Name",true,false,1,0, 0,"500",0, Pump.Action.Infuse);
     }
 
-    Step(int num, String givenName, boolean givenSuck, int givenTime, int givenTimeUnits,
-         int givenSyringe, String givenVolume, int givenVolumeUnits, Pump.Action givenAction)
+    Step(int num, String name, boolean suck, boolean exchange, int time, int timeUnits,
+         int syringe, String volume, int volumeUnits, Pump.Action action)
     {
 
         try {
@@ -76,27 +77,31 @@ public class Step extends Observable implements Observer, ActionListener {
             step.add(numberLabel);
         }
 
-        name = new JTextField(givenName, 7);
-        step.add(name);
+        this.name = new JTextField(name, 7);
+        step.add(this.name);
 
-        suck.setSelected(givenSuck);
-        suck.setToolTipText("Withdraw before this step?");
-        step.add(suck);
+        this.suck.setSelected(suck);
+        this.suck.setToolTipText("Withdraw before this step?");
+        step.add(this.suck);
 
-        time = new JTextField(Integer.toString(givenTime), 2);
+        this.time = new JTextField(Integer.toString(time), 2);
         Listener listener = new Listener();
-        time.addActionListener(listener);
-        step.add(time);
+        this.time.addActionListener(listener);
+        step.add(this.time);
 
         timeUnitsList = new JComboBox(TIME_UNITS);
-        timeUnitsList.setSelectedIndex(givenTimeUnits);
+        timeUnitsList.setSelectedIndex(timeUnits);
         step.add(timeUnitsList);
 
         String pumps[];
         if (pumpManager.noPumpsConnected())
-             pumps = new String[]{PumpManager.NO_PUMP_CONNECTED};
+            pumps = new String[]{PumpManager.NO_PUMP_CONNECTED};
         else
             pumps = pumpManager.getAllFullNames();
+
+        this.exchange.setSelected(exchange);
+        this.exchange.addActionListener(this);
+        step.add(this.exchange);
 
         pumpList = new JComboBox(pumps);
         pumpList.setPrototypeDisplayValue(PumpManager.NO_PUMP_CONNECTED);
@@ -107,19 +112,19 @@ public class Step extends Observable implements Observer, ActionListener {
         rateSlider.setPreferredSize(new Dimension(150,28));
         step.add(rateSlider);
 
-        syringe.setSelectedIndex(givenSyringe);
-        syringe.addActionListener(listener);
-        step.add(syringe);
+        this.syringe.setSelectedIndex(syringe);
+        this.syringe.addActionListener(listener);
+        step.add(this.syringe);
 
-        volume = new JTextField(givenVolume, 3);
-        step.add(volume);
+        this.volume = new JTextField(volume, 3);
+        step.add(this.volume);
 
         volumeUnitsList = new JComboBox(VOLUME_UNITS);
-        volumeUnitsList.setSelectedIndex(givenVolumeUnits);
+        volumeUnitsList.setSelectedIndex(volumeUnits);
         step.add(volumeUnitsList);
 
-        action.setSelectedItem(givenAction);
-        step.add(action);
+        this.action.setSelectedItem(action);
+        step.add(this.action);
 
         listener.updateSyringeInformation();
 
@@ -163,11 +168,16 @@ public class Step extends Observable implements Observer, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource().equals(pumpList))
+        if (e.getSource().equals(pumpList)) {
             if (pumpList.getItemCount() >= 0 &&
                     pumpManager.anyPumpsConnected() &&
                     !editing)
-            rateSlider.setPumpSelection(pumpList.getSelectedIndex());
+                rateSlider.setPumpSelection(pumpList.getSelectedIndex());
+        }
+        else if (e.getSource().equals(exchange)) {
+            setChanged();
+            notifyObservers(EXCHANGE_STATUS_CHANGED);
+        }
     }
 
     // Inner Classes
@@ -283,6 +293,7 @@ public class Step extends Observable implements Observer, ActionListener {
     public HashMap<String,String> getStepInformation() {
         HashMap<String,String> info = new HashMap<String,String>();
         info.put("number", numberLabel.getText());
+        info.put("exchange", "" + exchange.isSelected());
         info.put("pump", (String) pumpList.getSelectedItem());
         info.put("name",name.getText());
         info.put("suck", "" + suck.isSelected());
@@ -311,6 +322,7 @@ public class Step extends Observable implements Observer, ActionListener {
             }
         }
 
+        exchange.setSelected(Boolean.parseBoolean(givenInformation.get("exchange")));
         numberLabel.setText(givenInformation.get("number"));
         name.setText(givenInformation.get("name"));
         suck.setSelected(Boolean.parseBoolean(givenInformation.get("suck")));
@@ -385,12 +397,8 @@ public class Step extends Observable implements Observer, ActionListener {
         return Pump.Action.valueOf(action.getSelectedItem().toString());
     }
 
-    public void setSyringeExchangeRequired(boolean value ) {
-        syringeExchangeRequired = value;
-    }
-
     public boolean isSyringeExchangeRequired() {
-        return syringeExchangeRequired;
+        return exchange.isSelected();
     }
 
 

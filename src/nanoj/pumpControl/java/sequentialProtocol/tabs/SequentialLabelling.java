@@ -15,6 +15,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
 
+import static nanoj.pumpControl.java.sequentialProtocol.SequenceManager.SYRINGE_STATUS_CHANGED;
+
 public class SequentialLabelling extends JPanel implements Observer, ActionListener {
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
     private PumpManager pumpManager = PumpManager.INSTANCE;
@@ -52,6 +54,8 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
     JLabel seqStatus;
     JLabel pumpStatusOnSeqLabel;
     public JLabel pumpStatusOnSeq;
+    JLabel legend = new JLabel("Step legend: Wd = Withdraw before step starts; " +
+            "Ex = Wait for syringe exchange before step starts.");
     JLabel suckBetweenStepsLabel;
     public JCheckBox suckBetweenSteps;
     JLabel suckStepLabel;
@@ -171,7 +175,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
 
                 if(sequenceManager.isSyringeExchangeNeeded() && !sequenceManager.isStarted()) {
                     syringeReadyButton.setEnabled(false);
-                    syringeReadyLabel.setText("One or more pumps will be used in more than one step; click " +
+                    syringeReadyLabel.setText("One or more pumps will require a syringe exchange; click " +
                             "'Syringe ready' when syringe has been exchanged.");
                 } else if(sequenceManager.isSyringeExchangeNeeded() && sequenceManager.isStarted()) {
                     syringeReadyButton.setEnabled(true);
@@ -182,7 +186,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                     syringeReadyLabel.setText("This step doesn't require a syringe exchange.");
                 } else {
                     syringeReadyButton.setEnabled(false);
-                    syringeReadyLabel.setText("There is a different pump for each step, syringe exchange isn't needed.");
+                    syringeReadyLabel.setText("Syringe exchange won't be required.");
                 }
             }
 
@@ -219,7 +223,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                 numberOfSteps.setText(Integer.toString(number));
             }
 
-            if (e.getActionCommand().equals(REMOVE_STEP)) {
+            else if (e.getActionCommand().equals(REMOVE_STEP)) {
                 int number = Integer.parseInt(numberOfSteps.getText());
 
                 // Sanity check: you can't have negative or 0 steps, so only works
@@ -288,7 +292,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                 gui.updateGUI();
             }
 
-            if (arg.equals(Step.UP_TEXT)) {
+            else if (arg.equals(Step.UP_TEXT)) {
                 int index = step.getNumber() - 1;
                 if (index < 1) return;
 
@@ -305,7 +309,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                 gui.updateGUI();
             }
 
-            if (arg.equals(Step.DUPLICATE_TEXT)) {
+            else if (arg.equals(Step.DUPLICATE_TEXT)) {
                 int index = step.getNumber();
                 Step newStep = new Step();
                 newStep.updateStepInformation(step.getStepInformation());
@@ -324,7 +328,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                 gui.updateGUI();
             }
 
-            if (arg.equals(Step.EXPIRE_TEXT)) {
+            else if (arg.equals(Step.EXPIRE_TEXT)) {
                 int index = step.getNumber()-1;
                 sequence.remove(index);
                 stepsPanel.remove(index);
@@ -335,6 +339,11 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
 
                 numberOfSteps.setText(sequence.size() + "");
 
+                gui.updateGUI();
+            }
+
+            else if (arg.equals(Step.EXCHANGE_STATUS_CHANGED)){
+                sequenceManager.isSyringeExchangeRequiredOnSequence();
                 gui.updateGUI();
             }
         }
