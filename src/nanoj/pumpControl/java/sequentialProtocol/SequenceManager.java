@@ -40,7 +40,7 @@ public class SequenceManager extends Observable implements Runnable {
     public void run(){
         while (alive) {
             if (started) {
-                for (currentStep = startStep; currentStep < endStep+1; currentStep++) {
+                for (currentStep = startStep; currentStep < endStep; currentStep++) {
                     if (!started) break;
 
                     Step step = sequence.get(currentStep);
@@ -105,14 +105,16 @@ public class SequenceManager extends Observable implements Runnable {
 
                     // If this isn't the last step, then set the "syringe ready" status to false. This makes
                     // the sequence wait until the user has confirmed the syringe exchange.
-                    if (currentStep != endStep) setMonkeyReady(false);
+                    if (currentStep < endStep) setMonkeyReady(false);
                         // If it IS the last step, then we can stop now.
                     else {
                         stop();
+                        setWaitingMessage("Sequence finished.");
                         break;
                     }
 
-                    syringeExchangeNeeded = sequence.get(currentStep+1).isSyringeExchangeRequired();
+                    if (currentStep < endStep-1)
+                        syringeExchangeNeeded = sequence.get(currentStep+1).isSyringeExchangeRequired();
 
                     setChanged();
                     notifyObservers(SYRINGE_STATUS_CHANGED);
@@ -146,6 +148,8 @@ public class SequenceManager extends Observable implements Runnable {
                     }
                 }
                 currentStep = -1;
+                endStep = 0;
+                started = false;
                 setChanged();
                 notifyObservers(SEQUENCE_FINISHED);
             }
