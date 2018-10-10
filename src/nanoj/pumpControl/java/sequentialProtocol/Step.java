@@ -404,6 +404,7 @@ public class Step extends Observable implements Observer, ActionListener {
     }
 
     public void setIsSuckStep() {
+        step.remove(exchange);
         step.remove(suck);
         step.remove(name);
     }
