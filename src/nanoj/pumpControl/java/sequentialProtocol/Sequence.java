@@ -3,6 +3,7 @@ package nanoj.pumpControl.java.sequentialProtocol;
 import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList;
 import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.PumpManager;
+import nanoj.pumpControl.java.pumps.Syringe;
 import org.micromanager.utils.ReportingUtils;
 
 import javax.swing.*;
@@ -25,12 +26,12 @@ public class Sequence extends ArrayList<Step> {
 
         this.stepObserver = changer;
 
-        this.suckStep = new Step(0, "suck", false,false,10, 0, 0, "7", 0, Pump.Action.Withdraw);
+        this.suckStep = new Step(0, "suck", false,false,10, Step.TimeUnit.SECS, Syringe.PERISTALTIC, 7, Step.VolumeUnit.UL, Pump.Action.Withdraw);
         this.suckStep.setIsSuckStep();
 
-        add(new Step(1, "Start", true, false, 1, 0, 1,  "0.5", 1,Pump.Action.Infuse));
-        add(new Step(2, "Middle", true, false,1, 0, 3, "1", 1,Pump.Action.Infuse));
-        add(new Step(3, "Finish", true,false,1, 0, 6,"100", 0,Pump.Action.Infuse));
+        add(new Step(1, "Start", true, false, 1, Step.TimeUnit.SECS, Syringe.BD50,  0.5, Step.VolumeUnit.ML,Pump.Action.Infuse));
+        add(new Step(2, "Middle", true, false,1, Step.TimeUnit.SECS, Syringe.BD10, 1, Step.VolumeUnit.ML,Pump.Action.Infuse));
+        add(new Step(3, "Finish", true,false,1, Step.TimeUnit.SECS, Syringe.BD1,100, Step.VolumeUnit.UL,Pump.Action.Infuse));
 
     }
 

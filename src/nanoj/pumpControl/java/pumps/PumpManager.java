@@ -89,7 +89,7 @@ public class PumpManager extends Observable implements Observer {
         return answer;
     }
 
-    public synchronized String startPumping(int pumpIndex, int syringe, double flowRate,
+    public synchronized String startPumping(int pumpIndex, Syringe syringe, double flowRate,
                                double targetVolume, Pump.Action action) throws Exception {
         String answer;
 
@@ -99,13 +99,13 @@ public class PumpManager extends Observable implements Observer {
         pump.setUnitsOfVolume(VOLUME_UNITS);
         pump.setUnitsOfTime(TIME_UNITS);
         pump.setCurrentSubPump(connectedSubPump.subPump);
-        pump.setSyringeDiameter(SyringeList.getDiameter(syringe));
+        pump.setSyringeDiameter(syringe.diameter);
         pump.setFlowRate(flowRate);
         pump.setTargetVolume(targetVolume);
         pump.startPumping(action);
 
         answer = action.toString() + " " + targetVolume+" "+pump.getUnitsOfVolume()+ " at " +flowRate+" "
-                + pump.getUnitsOfFlowRate() + " with " + SyringeList.getVolumeWUnits(syringe) + " syringe.";
+                + pump.getUnitsOfFlowRate() + " with " + syringe.getVolumeWUnits() + " syringe.";
 
         setChanged();
         notifyObservers(NEW_STATUS_AVAILABLE);

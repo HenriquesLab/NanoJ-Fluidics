@@ -3,7 +3,7 @@ package nanoj.pumpControl.java.sequentialProtocol.tabs;
 import nanoj.pumpControl.java.pumps.ConnectedSubPump;
 import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.PumpManager;
-import nanoj.pumpControl.java.pumps.SyringeList;
+import nanoj.pumpControl.java.pumps.Syringe;
 import nanoj.pumpControl.java.sequentialProtocol.FlowRateSlider;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 import nanoj.pumpControl.java.sequentialProtocol.StopButton;
@@ -48,7 +48,7 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
 
         ButtonGroup buttons = new ButtonGroup();
 
-        syringeComboBox = new JComboBox(SyringeList.getBrandedNames(0));
+        syringeComboBox = new JComboBox(Syringe.getAllBrandedNames());
         pumpSelection = new JComboBox(new String[]{PumpManager.NO_PUMP_CONNECTED});
         buttons.add(infuse);
         buttons.add(withdraw);
@@ -89,7 +89,7 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
                 return;
 
             rateSlider.setPumpSelection(pumpSelection.getSelectedIndex());
-            rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringeComboBox.getSelectedIndex()));
+            rateSlider.setSyringeDiameter(Syringe.values()[syringeComboBox.getSelectedIndex()].diameter);
         } else if (arg.equals(PumpManager.NEW_STATUS_AVAILABLE)) {
             pumpStatus.setText(pumpManager.getStatus());
         }
@@ -99,7 +99,7 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource().equals(syringeComboBox) && pumpManager.anyPumpsConnected())
-            rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringeComboBox.getSelectedIndex()));
+            rateSlider.setSyringeDiameter(Syringe.values()[syringeComboBox.getSelectedIndex()].diameter);
 
         else if (e.getSource().equals(startPumpButton)) {
             int index = pumpSelection.getSelectedIndex();
@@ -111,11 +111,11 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
                         action = Pump.Action.Infuse;
                     else action = Pump.Action.Withdraw;
                     rateSlider.setPumpSelection(index);
-                    rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringeComboBox.getSelectedIndex()));
+                    rateSlider.setSyringeDiameter(Syringe.values()[syringeComboBox.getSelectedIndex()].diameter);
                     double volume = Double.parseDouble(targetVolume.getText());
                     gui.log.message("" + gui.pumpManager.startPumping(
                             index,
-                            syringeComboBox.getSelectedIndex(),
+                            Syringe.values()[syringeComboBox.getSelectedIndex()],
                             rateSlider.getCurrentFlowRate(),
                             volume,
                             action

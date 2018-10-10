@@ -5,9 +5,7 @@ import org.micromanager.utils.ReportingUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
@@ -23,15 +21,40 @@ public class Step extends Observable implements Observer, ActionListener {
     private PumpManager pumpManager = PumpManager.INSTANCE;
 
     // Labels
-    public static final String[] TIME_UNITS = {"secs","mins","hours"};
-    public static final String[] VOLUME_UNITS = {"ul","ml"};
+
+    public enum TimeUnit {
+        SECS("secs"),
+        MINS("mins"),
+        HOURS("hours");
+
+        public final String name;
+        TimeUnit(String text) {
+            this.name = text;
+        }
+        public String toString() {
+            return name;
+        }
+    }
+
+    public enum VolumeUnit {
+        UL("ul"),
+        ML("ml");
+
+        public final String name;
+        VolumeUnit(String text) {
+            this.name = text;
+        }
+        public String toString() {
+            return name;
+        }
+    }
+
     public static final String UP_TEXT = "Replace previous step with this one";
     public static final String DOWN_TEXT = "Replace next step with this one";
     public static final String DUPLICATE_TEXT = "Duplicate this step";
     public static final String EXPIRE_TEXT = "Remove step";
     public static final String EXCHANGE_STATUS_CHANGED = "Exchange status changed";
 
-    private String[] syringes = SyringeList.getBrandedNames(3);
     private FlowLayout step_layout = new FlowLayout(FlowLayout.LEADING);
     private JPanel step = new JPanel(step_layout);
     private JLabel numberLabel = new JLabel("");
@@ -41,7 +64,7 @@ public class Step extends Observable implements Observer, ActionListener {
     private JComboBox timeUnitsList;
     private JCheckBox exchange = new JCheckBox("Ex");
     private JComboBox pumpList;
-    private JComboBox syringe = new JComboBox(syringes);
+    private JComboBox syringeList = new JComboBox(Syringe.getAllBrandedNames());
     private FlowRateSlider rateSlider;
     private JTextField volume;
     private JComboBox volumeUnitsList;
@@ -56,11 +79,11 @@ public class Step extends Observable implements Observer, ActionListener {
     }
 
     public Step(int num) {
-        this(num,"Name",true,false,1,0, 0,"500",0, Pump.Action.Infuse);
+        this(num,"Name",true,false,1,TimeUnit.SECS, Syringe.PERISTALTIC,500,VolumeUnit.ML, Pump.Action.Infuse);
     }
 
-    Step(int num, String name, boolean suck, boolean exchange, int time, int timeUnits,
-         int syringe, String volume, int volumeUnits, Pump.Action action)
+    Step(int num, String name, boolean suck, boolean exchange, int time, TimeUnit timeUnit,
+         Syringe syringe, double volume, VolumeUnit volumeUnit, Pump.Action action)
     {
 
         try {
@@ -87,10 +110,11 @@ public class Step extends Observable implements Observer, ActionListener {
         this.time = new JTextField(Integer.toString(time), 2);
         Listener listener = new Listener();
         this.time.addActionListener(listener);
+        this.time.addFocusListener(listener);
         step.add(this.time);
 
-        timeUnitsList = new JComboBox(TIME_UNITS);
-        timeUnitsList.setSelectedIndex(timeUnits);
+        timeUnitsList = new JComboBox(TimeUnit.values());
+        timeUnitsList.setSelectedIndex(timeUnit.ordinal());
         step.add(timeUnitsList);
 
         String pumps[];
@@ -112,15 +136,15 @@ public class Step extends Observable implements Observer, ActionListener {
         rateSlider.setPreferredSize(new Dimension(150,28));
         step.add(rateSlider);
 
-        this.syringe.setSelectedIndex(syringe);
-        this.syringe.addActionListener(listener);
-        step.add(this.syringe);
+        syringeList.setSelectedIndex(syringe.ordinal());
+        syringeList.addActionListener(listener);
+        step.add(syringeList);
 
-        this.volume = new JTextField(volume, 3);
+        this.volume = new JTextField(""+volume, 3);
         step.add(this.volume);
 
-        volumeUnitsList = new JComboBox(VOLUME_UNITS);
-        volumeUnitsList.setSelectedIndex(volumeUnits);
+        volumeUnitsList = new JComboBox(VolumeUnit.values());
+        volumeUnitsList.setSelectedIndex(volumeUnit.ordinal());
         step.add(volumeUnitsList);
 
         this.action.setSelectedItem(action);
@@ -154,7 +178,7 @@ public class Step extends Observable implements Observer, ActionListener {
                 return;
 
             rateSlider.setPumpSelection(pumpList.getSelectedIndex());
-            rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringe.getSelectedIndex()));
+            rateSlider.setSyringeDiameter(Syringe.values()[syringeList.getSelectedIndex()].diameter);
         }
     }
 
@@ -256,36 +280,64 @@ public class Step extends Observable implements Observer, ActionListener {
         }
     }
 
-    class Listener extends MouseAdapter implements ActionListener {
+    class Listener implements ActionListener, FocusListener {
 
         void updateSyringeInformation() {
+            Syringe syringe = Syringe.values()[syringeList.getSelectedIndex()];
+
+            if (syringe.equals(Syringe.PERISTALTIC)) {
+                volume.setText(time.getText());
+                volumeUnitsList.setSelectedIndex(VolumeUnit.UL.ordinal());
+                volumeUnitsList.setEnabled(false);
+                volume.setEnabled(false);
+            } else {
+                volumeUnitsList.setEnabled(true);
+                volume.setEnabled(true);
+            }
+
             if (pumpManager.anyPumpsConnected()) {
                 rateSlider.setPumpSelection(pumpList.getSelectedIndex());
-                rateSlider.setSyringeDiameter(SyringeList.getDiameter(syringe.getSelectedIndex()));
+                rateSlider.setSyringeDiameter(syringe.diameter);
+            }
+        }
+
+        public void updateTime() {
+            float duration;
+
+            try {
+                duration = Float.parseFloat(time.getText());
+            } catch (Exception e1) {
+                duration = 1;
+            }
+
+            if (duration < 0 ) {
+                time.setText("0");
+            }
+            else time.setText("" + Math.round(duration));
+
+            if (Syringe.values()[syringeList.getSelectedIndex()].equals(Syringe.PERISTALTIC))
+                volume.setText(time.getText());
+        }
+
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource().equals(syringeList)) {
+                updateSyringeInformation();
+            }
+
+            if (e.getSource().equals(time)) {
+                updateTime();
             }
         }
 
         @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource().equals(syringe))
-                updateSyringeInformation();
+        public void focusGained(FocusEvent e) { }
 
-            if (e.getSource().equals(time)) {
-                float duration;
-
-                try {
-                    duration = Float.parseFloat(time.getText());
-                } catch (Exception e1) {
-                    duration = 1;
-                }
-
-                if (duration < 0 ) {
-                    time.setText("0");
-                }
-                else time.setText("" + Math.round(duration));
-            }
+        @Override
+        public void focusLost(FocusEvent e) {
+            updateTime();
         }
-
     }
 
     // Methods
@@ -299,7 +351,7 @@ public class Step extends Observable implements Observer, ActionListener {
         info.put("suck", "" + suck.isSelected());
         info.put("time",time.getText());
         info.put("timeUnits","" + timeUnitsList.getSelectedIndex());
-        info.put("syringe","" + syringe.getSelectedIndex());
+        info.put("syringe","" + syringeList.getSelectedIndex());
         info.put("rate", "" + rateSlider.getSliderValue());
         info.put("volume",volume.getText());
         info.put("volumeUnits","" + volumeUnitsList.getSelectedIndex());
@@ -328,7 +380,7 @@ public class Step extends Observable implements Observer, ActionListener {
         suck.setSelected(Boolean.parseBoolean(givenInformation.get("suck")));
         time.setText(givenInformation.get("time"));
         timeUnitsList.setSelectedIndex(Integer.parseInt(givenInformation.get("timeUnits")));
-        syringe.setSelectedIndex(Integer.parseInt(givenInformation.get("syringe")));
+        syringeList.setSelectedIndex(Integer.parseInt(givenInformation.get("syringe")));
         rateSlider.setFlowRate(Integer.parseInt(givenInformation.get("rate")));
         volume.setText(givenInformation.get("volume"));
         volumeUnitsList.setSelectedIndex(Integer.parseInt(givenInformation.get("volumeUnits")));
@@ -337,16 +389,16 @@ public class Step extends Observable implements Observer, ActionListener {
 
     public double getTargetVolume() {
         double targetVolume = Double.parseDouble(volume.getText());
-        if (volumeUnitsList.getSelectedItem() == VOLUME_UNITS[1])
+        if (volumeUnitsList.getSelectedItem() == VolumeUnit.ML.name)
             targetVolume = targetVolume * 1000;
         return targetVolume;
     }
 
     public int getDuration() {
         int duration = Integer.parseInt(time.getText());
-        if(timeUnitsList.getSelectedItem() == TIME_UNITS[1])
+        if(timeUnitsList.getSelectedItem() == TimeUnit.MINS.name)
             duration = duration*60;
-        else if(timeUnitsList.getSelectedItem() == TIME_UNITS[2])
+        else if(timeUnitsList.getSelectedItem() == TimeUnit.HOURS.name)
             duration = duration*3600;
         return duration;
     }
@@ -381,16 +433,16 @@ public class Step extends Observable implements Observer, ActionListener {
         return suck.isSelected();
     }
 
-    public String getTimeUnits() {
-        return TIME_UNITS[timeUnitsList.getSelectedIndex()];
+    public TimeUnit getTimeUnit() {
+        return TimeUnit.values()[timeUnitsList.getSelectedIndex()];
     }
 
     public int getSelectedPump() {
         return pumpList.getSelectedIndex();
     }
 
-    public int getSyringeIndex() {
-        return syringe.getSelectedIndex();
+    public Syringe getSyringeIndex() {
+        return Syringe.values()[syringeList.getSelectedIndex()];
     }
 
     public Pump.Action getAction() {
