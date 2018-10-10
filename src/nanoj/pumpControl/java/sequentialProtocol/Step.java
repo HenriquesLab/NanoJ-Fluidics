@@ -68,6 +68,7 @@ public class Step extends Observable implements Observer, ActionListener {
     private FlowRateSlider rateSlider;
     private JTextField volume;
     private JComboBox volumeUnitsList;
+    private JLabel peristalticLabel = new JLabel("secs.");
     private JComboBox action = new JComboBox(Pump.Action.values());
     private int number;
 
@@ -110,7 +111,6 @@ public class Step extends Observable implements Observer, ActionListener {
         this.time = new JTextField(Integer.toString(time), 2);
         Listener listener = new Listener();
         this.time.addActionListener(listener);
-        this.time.addFocusListener(listener);
         step.add(this.time);
 
         timeUnitsList = new JComboBox(TimeUnit.values());
@@ -146,6 +146,7 @@ public class Step extends Observable implements Observer, ActionListener {
         volumeUnitsList = new JComboBox(VolumeUnit.values());
         volumeUnitsList.setSelectedIndex(volumeUnit.ordinal());
         step.add(volumeUnitsList);
+        step.add(peristalticLabel);
 
         this.action.setSelectedItem(action);
         step.add(this.action);
@@ -280,43 +281,28 @@ public class Step extends Observable implements Observer, ActionListener {
         }
     }
 
-    class Listener implements ActionListener, FocusListener {
+    class Listener implements ActionListener {
 
         void updateSyringeInformation() {
             Syringe syringe = Syringe.values()[syringeList.getSelectedIndex()];
 
             if (syringe.equals(Syringe.PERISTALTIC)) {
-                volume.setText(time.getText());
                 volumeUnitsList.setSelectedIndex(VolumeUnit.UL.ordinal());
+
                 volumeUnitsList.setEnabled(false);
-                volume.setEnabled(false);
+                volumeUnitsList.setVisible(false);
+                peristalticLabel.setVisible(true);
+
             } else {
                 volumeUnitsList.setEnabled(true);
-                volume.setEnabled(true);
+                volumeUnitsList.setVisible(true);
+                peristalticLabel.setVisible(true);
             }
 
             if (pumpManager.anyPumpsConnected()) {
                 rateSlider.setPumpSelection(pumpList.getSelectedIndex());
                 rateSlider.setSyringeDiameter(syringe.diameter);
             }
-        }
-
-        public void updateTime() {
-            float duration;
-
-            try {
-                duration = Float.parseFloat(time.getText());
-            } catch (Exception e1) {
-                duration = 1;
-            }
-
-            if (duration < 0 ) {
-                time.setText("0");
-            }
-            else time.setText("" + Math.round(duration));
-
-            if (Syringe.values()[syringeList.getSelectedIndex()].equals(Syringe.PERISTALTIC))
-                volume.setText(time.getText());
         }
 
 
@@ -327,16 +313,19 @@ public class Step extends Observable implements Observer, ActionListener {
             }
 
             if (e.getSource().equals(time)) {
-                updateTime();
+                float duration;
+
+                try {
+                    duration = Float.parseFloat(time.getText());
+                } catch (Exception e1) {
+                    duration = 1;
+                }
+
+                if (duration < 0 ) {
+                    time.setText("0");
+                }
+                else time.setText("" + Math.round(duration));
             }
-        }
-
-        @Override
-        public void focusGained(FocusEvent e) { }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-            updateTime();
         }
     }
 
