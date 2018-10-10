@@ -17,7 +17,7 @@ print( seqProt.stopPump(1) );                          // Or a specific pump (va
 
 // Example script
 
-print( seqProt.startSequence(2,4) );
+print( seqProt.startSequence(2,3) );
  
 int previoustStep = 0;
 

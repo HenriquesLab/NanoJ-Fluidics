@@ -151,7 +151,7 @@ public final class GUI {
     }
 
     public String startSequence(int startStep, int endStep) {
-        String message = sequentialLabelling.listener.start(startStep-1, endStep-1);
+        String message = sequentialLabelling.listener.start(startStep-1, endStep);
         log.message(message);
         return message;
     }

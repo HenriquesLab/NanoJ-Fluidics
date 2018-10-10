@@ -172,6 +172,10 @@ public class SequenceManager extends Observable implements Runnable {
     public synchronized void start(Sequence givenSteps, int start, int end) {
         this.sequence = givenSteps;
         isSyringeExchangeRequiredOnSequence();
+
+        start = (start < 0) ? 0 : start;
+        end = (end > givenSteps.size()) ? givenSteps.size() : end;
+
         startStep = start;
         endStep = end;
         started = true;
