@@ -385,9 +385,9 @@ public class Step extends Observable implements Observer, ActionListener {
 
     public int getDuration() {
         int duration = Integer.parseInt(time.getText());
-        if(timeUnitsList.getSelectedItem() == TimeUnit.MINS.name)
+        if(timeUnitsList.getSelectedIndex() == TimeUnit.MINS.ordinal())
             duration = duration*60;
-        else if(timeUnitsList.getSelectedItem() == TimeUnit.HOURS.name)
+        else if(timeUnitsList.getSelectedIndex() == TimeUnit.HOURS.ordinal())
             duration = duration*3600;
         return duration;
     }
