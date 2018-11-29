@@ -383,8 +383,8 @@ public class Step extends Observable implements Observer, ActionListener {
         return targetVolume;
     }
 
-    public int getDuration() {
-        int duration = Integer.parseInt(time.getText());
+    public float getDuration() {
+        float duration = Integer.parseInt(time.getText());
         if(timeUnitsList.getSelectedIndex() == TimeUnit.MINS.ordinal())
             duration = duration*60;
         else if(timeUnitsList.getSelectedIndex() == TimeUnit.HOURS.ordinal())

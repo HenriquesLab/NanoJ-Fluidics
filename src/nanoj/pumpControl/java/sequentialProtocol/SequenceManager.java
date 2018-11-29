@@ -23,7 +23,7 @@ public class SequenceManager extends Observable implements Runnable {
 
     private boolean monkeyReady = true;
     private Sequence sequence;
-    private int suckDuration;
+    private float suckDuration;
     private int startStep = 0;
     private int endStep = 0;
     private int currentPump = 0;
@@ -73,7 +73,7 @@ public class SequenceManager extends Observable implements Runnable {
                         if (!started) break;
 
                         //Calculate how much time there is still to go in seconds.
-                        int timeToGo = (suckDuration - (int) (System.currentTimeMillis() / 1000 - startTime));
+                        float timeToGo = (suckDuration - (float) (System.currentTimeMillis() / 1000 - startTime));
                         if (timeToGo < 60) setWaitingMessage("Withdrawal step. Waiting for: " + timeToGo + " seconds.");
                         else if (timeToGo >= 60) setWaitingMessage("Withdrawal step. Waiting for: "
                                 + timeToGo / 60 + " more minutes.");
@@ -126,7 +126,7 @@ public class SequenceManager extends Observable implements Runnable {
                         if (!started) break;
 
                         //Calculate how much time there is still to go in seconds.
-                        int timeToGo = (step.getDuration() - (int) (System.currentTimeMillis() / 1000 - startTime));
+                        float timeToGo = (step.getDuration() - (float) (System.currentTimeMillis() / 1000 - startTime));
                         // This and the next "else if" let you know how long the pump has been waiting for the syringe
                         //  in minutes after the first minute waiting for the syringe ready signal
                         if (timeToGo < -60) setWaitingMessage("Step: " + step.getNumber() + ", "
