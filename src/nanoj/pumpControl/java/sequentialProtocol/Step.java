@@ -311,21 +311,6 @@ public class Step extends Observable implements Observer, ActionListener {
             if (e.getSource().equals(syringeList)) {
                 updateSyringeInformation();
             }
-
-            if (e.getSource().equals(time)) {
-                float duration;
-
-                try {
-                    duration = Float.parseFloat(time.getText());
-                } catch (Exception e1) {
-                    duration = 1;
-                }
-
-                if (duration < 0 ) {
-                    time.setText("0");
-                }
-                else time.setText("" + Math.round(duration));
-            }
         }
     }
 
@@ -384,7 +369,7 @@ public class Step extends Observable implements Observer, ActionListener {
     }
 
     public float getDuration() {
-        float duration = Integer.parseInt(time.getText());
+        float duration = Float.parseFloat(time.getText());
         if(timeUnitsList.getSelectedIndex() == TimeUnit.MINS.ordinal())
             duration = duration*60;
         else if(timeUnitsList.getSelectedIndex() == TimeUnit.HOURS.ordinal())
