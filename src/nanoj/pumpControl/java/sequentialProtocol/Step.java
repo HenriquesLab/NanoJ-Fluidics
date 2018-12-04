@@ -363,7 +363,7 @@ public class Step extends Observable implements Observer, ActionListener {
 
     public double getTargetVolume() {
         double targetVolume = Double.parseDouble(volume.getText());
-        if (volumeUnitsList.getSelectedItem() == VolumeUnit.ML.name)
+        if (volumeUnitsList.getSelectedIndex() == VolumeUnit.ML.ordinal())
             targetVolume = targetVolume * 1000;
         return targetVolume;
     }
