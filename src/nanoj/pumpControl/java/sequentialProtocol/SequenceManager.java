@@ -1,10 +1,10 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
+import ij.IJ;
 import nanoj.pumpControl.java.pumps.PumpManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Observable;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class SequenceManager extends Observable implements Runnable {
     public static final String NEW_STEP_STARTED = "New step started.";
@@ -21,6 +21,8 @@ public class SequenceManager extends Observable implements Runnable {
     // Foreign objects
     private PumpManager pumpManager = PumpManager.INSTANCE;
 
+    private SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+
     private boolean monkeyReady = true;
     private Sequence sequence;
     private float suckDuration;
@@ -34,7 +36,9 @@ public class SequenceManager extends Observable implements Runnable {
 
     private String waitingMessage = "Sequence not yet started.";
 
-    private SequenceManager() { }
+    private SequenceManager() {
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     @Override
     public void run(){
@@ -100,8 +104,7 @@ public class SequenceManager extends Observable implements Runnable {
                         e.printStackTrace();
                     }
 
-                    //Get starting time in millisecs, convert to seconds
-                    startTime = System.currentTimeMillis() / 1000;
+                    startTime = System.currentTimeMillis();
 
                     // If this isn't the last step, then set the "syringe ready" status to false. This makes
                     // the sequence wait until the user has confirmed the syringe exchange.
@@ -120,17 +123,23 @@ public class SequenceManager extends Observable implements Runnable {
                     notifyObservers(SYRINGE_STATUS_CHANGED);
 
                     // While the time between steps hasn't passed OR the syringe hasn't been readied...
-                    while ((System.currentTimeMillis() / 1000 - startTime) < step.getDuration() ||
+                    while ( (System.currentTimeMillis() - startTime) < step.getDuration()*1000 ||
                             !monkeyReady && syringeExchangeNeeded) {
                         //Stop sequence if the "Stop" button was pressed.
                         if (!started) break;
 
                         //Calculate how much time there is still to go in seconds.
-                        float timeToGo = (step.getDuration() - (float) (System.currentTimeMillis() / 1000 - startTime));
+                        float timeToGo = (step.getDuration()*1000 - (float) (System.currentTimeMillis() - startTime));
+
+                        String formattedTime = format.format(new Date((long) timeToGo));
+
+                        timeToGo /= 1000;
+                        timeToGo = Math.round(timeToGo);
+
                         // This and the next "else if" let you know how long the pump has been waiting for the syringe
                         //  in minutes after the first minute waiting for the syringe ready signal
                         if (timeToGo < -60) setWaitingMessage("Step: " + step.getNumber() + ", "
-                                + step.getName() + ". Waiting for syringe for the past " + - (1 + (timeToGo / 60)) + " minutes.");
+                                + step.getName() + ". Waiting for syringe for " + formattedTime);
                             //  but before that it's in seconds.
                         else if (timeToGo < 0) setWaitingMessage("Step: " + step.getNumber() + ", "
                                 + step.getName() + ". Waiting for syringe for the past " + -timeToGo + " seconds.");
@@ -139,7 +148,7 @@ public class SequenceManager extends Observable implements Runnable {
                                 + step.getName() + ". Waiting for: " + timeToGo + " seconds.");
                             //  and before that it's minutes to set duration
                         else if (timeToGo >= 60) setWaitingMessage("Step: " + step.getNumber() + ", "
-                                + step.getName() + ". Waiting for: " + (1 + (timeToGo / 60)) + " more minutes.");
+                                + step.getName() + ". Waiting for: " + formattedTime);
                         try {
                             Thread.sleep(300);
                         } catch (InterruptedException e) {
