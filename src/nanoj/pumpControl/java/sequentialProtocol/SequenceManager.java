@@ -70,17 +70,25 @@ public class SequenceManager extends Observable implements Runnable {
                         }
                     } else suckDuration = 0;
 
-                    long startTime = System.currentTimeMillis() / 1000;
+                    suckDuration *= 1000;
 
-                    while ((System.currentTimeMillis() / 1000 - startTime) < suckDuration) {
+                    long startTime = System.currentTimeMillis();
+
+                    while ((System.currentTimeMillis() - startTime) < suckDuration) {
                         //Stop sequence if the "Stop" button was pressed.
                         if (!started) break;
 
                         //Calculate how much time there is still to go in seconds.
-                        float timeToGo = (suckDuration - (float) (System.currentTimeMillis() / 1000 - startTime));
-                        if (timeToGo < 60) setWaitingMessage("Withdrawal step. Waiting for: " + timeToGo + " seconds.");
-                        else if (timeToGo >= 60) setWaitingMessage("Withdrawal step. Waiting for: "
-                                + timeToGo / 60 + " more minutes.");
+                        float timeToGo = (suckDuration - (float) (System.currentTimeMillis() - startTime));
+
+                        String formattedTime = format.format(new Date((long) timeToGo));
+
+                        if (timeToGo > 60000)
+                            setWaitingMessage("Withdrawal step. Waiting for: " + formattedTime);
+                        else
+                            setWaitingMessage("Withdrawal step. Waiting for: " +
+                                    Math.round(timeToGo/1000) + " seconds");
+
                         try {
                             Thread.sleep(300);
                         } catch (InterruptedException e) {
