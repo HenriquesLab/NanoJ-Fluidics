@@ -27,6 +27,10 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import java.io.File; 
+import java.util.Scanner;
+
+
 
 // -----------------------------------------------------------------------------------
 // --------------------------------- Functions ---------------------------------------
@@ -80,62 +84,6 @@ boolean eventTriggerCellRounding(ImageProcessor ip, double thresholdTemp, FileWr
 }
 
 
-// --------------------------------- Virus expression detection ---------------------------------------
-boolean eventTriggerVirusExpression(ImageProcessor ipAnalysis, ImageProcessor ipMask, double threshold, FileWriter fileWriter){
-
-	boolean virusExpressed = false;
-	RoiManager rm = new RoiManager(true);
-
-	IJ.run("Clear Results", "");
-	impChannelAnalysis = new ImagePlus("thisFrame", ipAnalysis);
-	impMask = new ImagePlus("thisFrame", ipMask);
-
-
-	IJ.setAutoThreshold(impMask, "Otsu dark no-reset");
-	Prefs.blackBackground = true;
-	IJ.run(impMask, "Convert to Mask", "");
-	IJ.run(impMask, "Options...", "iterations=5 count=5 black pad do=Open");
-	IJ.run(impMask, "Create Selection", "");
-	rm.addRoi(impMask.getRoi());
-	
-	roiCount = rm.getCount();
-
-	if (roiCount > 0){
-		IJ.run(impMask, "Make Inverse", "");
-		rm.addRoi(impMask.getRoi());
-
-		rm.select(impChannelAnalysis, 0);
-		IJ.run(impChannelAnalysis, "Measure", "");
-		rm.select(impChannelAnalysis, 1);
-		IJ.run(impChannelAnalysis, "Measure", "");
-
-		ResultsTable rt = ResultsTable.getResultsTable();
-
-		meanSignal = rt.getValue("Mean", 0);
-		meanBG = rt.getValue("Mean", 1);
-
-		signal = meanSignal - meanBG;
-		gui.message("Mean signal: "+signal+" (ADC)");
-		fileWriter.write("Mean signal in cells: "+signal+" (ADC)"+linesep);
-		fileWriter.flush();
-
-		if (signal >= threshold) virusExpressed = true;
-		
-	}
-	else {
-		gui.message("No cells around...");
-		fileWriter.write("No cells around..."+linesep);
-		fileWriter.flush();
-	}
-
-
-	rm.close();
-	impMask.close();
-	impChannelAnalysis.close();
-	
-	return virusExpressed;
-
-}
 
 // --------------------------------- Channel settings ---------------------------------------
 boolean setMyChannelsRight(String acqName, String[] channelsList){
@@ -181,21 +129,21 @@ boolean setMyChannelsRight(String acqName, String[] channelsList){
 
 
 // --------------------------------- Send emails ---------------------------------------
-boolean sendEmail(String emailAddress, String messageSubject, String messageCore){
+boolean sendEmail(String emailAddress, String messageSubject, String messageCore, String emailFrom, String passwordFrom){
 
 	boolean emailSentOK = false;
 	// Setup mail server
 	Properties properties = System.getProperties();
 	properties.setProperty("mail.smtp.host", "smtp.gmail.com");
 	properties.put("mail.smtp.port", "587");
-	properties.setProperty("mail.user", "pumpymcpump");
-	properties.setProperty("mail.password", "blink0ns");
+	properties.setProperty("mail.user", emailFrom);
+	properties.setProperty("mail.password", passwordFrom);
 	properties.put("mail.smtp.starttls.enable", "true");
 	properties.put("mail.smtp.auth", "true"); //enable authentication
 
 	authenticator = new javax.mail.Authenticator() {
    	         protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
-      	          return new javax.mail.PasswordAuthentication("pumpymcpump@gmail.com", "blink0ns");
+      	          return new javax.mail.PasswordAuthentication(emailFrom, passwordFrom);
          	   }
         	};
 
@@ -208,7 +156,7 @@ boolean sendEmail(String emailAddress, String messageSubject, String messageCore
             MimeMessage message = new MimeMessage(session);
 
             // Set From: header field of the header.
-            message.setFrom(new InternetAddress("pumpymcpump@gmail.com"));
+            message.setFrom(new InternetAddress(emailFrom));
 
             // Set To: header field of the header.
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(emailAddress));
@@ -246,18 +194,12 @@ double[] allExposuresPrePump = {100, 100};
 timeIntervals = 300; // in seconds (300 s = 5 min)
 int nFramesMax = 250; // maximum number of frames before pumps are activated
 
-eventTriggering = 0;
-// if eventTriggering = 0 --> test for cell rounding (cell division)
-// if eventTriggering = 1 --> test for expression level (virus late gene expressions)
+
 double minFraction = 0.25; // fraction of FOV that have triggered necessary to trigger the pumps
 
 // Parameter for cell rounding ---
 double thresholdCircularity = 0.82; // threshold in circularity
 channelNumberForAnalysis = 0; // this is zero-based !!!!!!!!!!!!!!!!!!!!
-
-// Parameter for virus expression ---
-double thresholdVirus = 250; // threshold in intensity (ADC) - background
-channelNumberForDetection = 0; // Green channel - this is zero-based !!!!!!!!!!!!!!!!!!!!
 
 waitingPostImageTrigger = 900; // in seconds (after clock starts) (4h min = 14,400 ss)
 
@@ -284,6 +226,9 @@ String myEmailAddress = "yourEmail@email.com";
 
 
 // Let's get started ! ---------------------------------------------------------------------
+
+
+
 
 
 seqProt = GUI.INSTANCE;
@@ -334,17 +279,9 @@ fileWriter.write(linesep);
 fileWriter.write("Time interval: "+(timeIntervals/1000)+"s"+linesep);
 fileWriter.write("Maximum number of frames before pumps: "+nFramesMax+linesep);
 fileWriter.write("--------------------"+linesep);
-if (eventTriggering == 1){
-	fileWriter.write("Triggering based on virus expression:"+linesep);
-	fileWriter.write("Channel for analysis: "+channelNumberForAnalysisVirus+linesep);
-	fileWriter.write("Channel for detection: "+channelNumberForDetectionVirus+linesep);
-	fileWriter.write("ADC threshold: "+thresholdVirus+linesep);
-}
-else {
-	fileWriter.write("Triggering based on circularity:"+linesep);
-	fileWriter.write("Channel for analysis: "+channelNumberForAnalysis+linesep);
-	fileWriter.write("Circularity threshold: "+thresholdCircularity+linesep);
-}
+fileWriter.write("Triggering based on circularity:"+linesep);
+fileWriter.write("Channel for analysis: "+channelNumberForAnalysis+linesep);
+fileWriter.write("Circularity threshold: "+thresholdCircularity+linesep);
 
 fileWriter.write("Time to wait after event is triggered: "+(waitingPostImageTrigger/1000)+"s"+linesep);
 fileWriter.write("Minnimum fraction of FOV for pump trigger: "+minFraction+linesep);
@@ -365,6 +302,25 @@ fileWriter.write("N plane negative Z: "+nZposNegative+linesep);
 fileWriter.write("N plane positive Z: "+nZposPositive+" (um)"+linesep);
 fileWriter.write("deltaZ: "+dZ+linesep);
 
+// Check for credentials for email 
+File file = new File(IJ.getDirectory("startup")+"\\pumpyEmailCredentials.txt");
+boolean sendEmailOrNot = false;
+if (file.exists()){
+	Scanner sc = new Scanner(file); 
+	emailFrom = sc.nextLine();
+	passwordFrom = sc.nextLine();
+	
+	sendEmailOrNot = true;
+	gui.message("Credentials found. Sending emails to "+email);
+	fileWriter.write("Credentials found. Sending emails to "+email+linesep);
+}
+else{
+	gui.message("Credentials file does not exist.");
+	fileWriter.write("Credentials file does not exist."+linesep);
+	emailFrom = "";
+	passwordFrom = "";
+}
+
 fileWriter.flush();
 
 
@@ -372,12 +328,7 @@ fileWriter.flush();
 if (gui.isLiveModeOn()) gui.enableLiveMode(false);
 
 // Set the measurements
-if (eventTriggering == 1){
-	IJ.run("Set Measurements...", "mean standard min redirect=None decimal=3");
-}
-else {
-	IJ.run("Set Measurements...", "area mean standard min perimeter shape median redirect=None decimal=3");
-}
+IJ.run("Set Measurements...", "area mean standard min perimeter shape median redirect=None decimal=3");
 
 
 
@@ -487,11 +438,6 @@ for (int nf = 0; nf < nFramesMax; nf++){
 			fileWriter.flush();
 			nPFSfail++;
 			}
-		
-		//mmc.incrementalFocus();
-		//mmc.setAutoFocusOffset(206);
-		//double offset = mmc.getAutoFocusOffset();
-		//gui.message("Z offset: "+offset);
 
 		nc = 0;
 		for (thisChannel : prePumpChannels){
@@ -522,14 +468,6 @@ for (int nf = 0; nf < nFramesMax; nf++){
 				while (mmc.deviceBusy(mmc.getCameraDevice())) mmc.noop();
 				ipAnalysis.setPixels(mmc.getImage());
 			}
-
-			if (eventTriggering == 1){
-				if (nc == channelNumberForDetection) {
-					ipDetection = new ShortProcessor(width, height);
-					while (mmc.deviceBusy(mmc.getCameraDevice())) mmc.noop();
-					ipDetection.setPixels(mmc.getImage());
-				}
-			}
 			
 			nc ++;
 		}
@@ -537,14 +475,7 @@ for (int nf = 0; nf < nFramesMax; nf++){
 		if (nf == 0 && np == 0) setMyChannelsRight(acqName+"_prePumping", prePumpChannels);
 
 		// Check for event triggering in the current FOV
-		if (eventTriggering == 1){
-			gui.message("Check for virus expression");
-			thisFOVtriggered = eventTriggerVirusExpression(ipAnalysis, ipDetection, thresholdVirus, fileWriter);
-		}
-		else {
-			gui.message("Check for circularity");
-			thisFOVtriggered = eventTriggerCellRounding(ipAnalysis, thresholdCircularity, fileWriter);
-		}
+		thisFOVtriggered = eventTriggerCellRounding(ipAnalysis, thresholdCircularity, fileWriter);
 
 		//if (nf == 2) thisFOVtriggered = true; // FOR TESTING !!!!!!!!!!!!!!! --------------------- remove !
 		
@@ -558,8 +489,8 @@ for (int nf = 0; nf < nFramesMax; nf++){
 				nFOVtriggered += decisionPerFOV[i];
 			}
 
-			if ((nFOVtriggered) == (Math.ceil(minFraction*nPositions)-1) && !emailWarningSentOK){ // all FOVs triggered minus 1!
-				emailWarningSentOK = sendEmail(myEmailAddress,"Pumpy about to trigger!","Dear beloved Pumpy customer, \n Nearly all the required number of FOVs have triggered (just one FOV missing).\n Pumpy");
+			if ((nFOVtriggered) == (Math.ceil(minFraction*nPositions)-1) && !emailWarningSentOK && sendEmailOrNot){ // all FOVs triggered minus 1!
+				emailWarningSentOK = sendEmail(myEmailAddress,"Pumpy about to trigger!","Dear beloved Pumpy customer, \n Nearly all the required number of FOVs have triggered (just one FOV missing).\n Pumpy", emailFrom, passwordFrom);
 				if (emailWarningSentOK) gui.message("Email sent successfuly !");
 				fileWriter.write("Email sent successfuly !"+linesep);
 			}
@@ -574,10 +505,13 @@ for (int nf = 0; nf < nFramesMax; nf++){
 				nFramesMax = nf + addedFrames;
 				gui.message("Adding "+addedFrames+" frames.");
 				fileWriter.write("Adding "+addedFrames+" frames."+linesep);
-				emailSentOK = sendEmail(myEmailAddress,"Pumpy just triggered!","Dear beloved Pumpy customer, \n The required number of FOVs have triggered. There will be "+addedFrames+" added frames before pumps are activated.\n Pumpy");
-				if (emailSentOK) {
-					gui.message("Email sent successfuly !");
-					fileWriter.write("Email sent successfuly !"+linesep);
+
+				if (sendEmailOrNot){
+					emailSentOK = sendEmail(myEmailAddress,"Pumpy just triggered!","Dear beloved Pumpy customer, \n The required number of FOVs have triggered. There will be "+addedFrames+" added frames before pumps are activated.\n Pumpy", emailFrom, passwordFrom);
+					if (emailSentOK) {
+						gui.message("Email sent successfuly !");
+						fileWriter.write("Email sent successfuly !"+linesep);
+					}
 				}
 				fileWriter.flush();
 			}
@@ -631,9 +565,12 @@ else {
 	messageSubject = "Pumps are activating! (Pre-pump frames exceeded)";
 	messageCore = "Dear beloved Pumpy customer, \n The maximum number of frames pre-pumping has been exceeded. The pumps will be activated now.\n Pumpy";
 }
-	
-emailSentOK = sendEmail(myEmailAddress,messageSubject,messageCore);
-if (emailSentOK) gui.message("Email sent successfuly !");
+
+if (sendEmailOrNot){
+	emailSentOK = sendEmail(myEmailAddress,messageSubject,messageCore, emailFrom, passwordFrom);
+	if (emailSentOK) gui.message("Email sent successfuly !");
+}
+
 
 print(seqProt.startSequence() );
 
@@ -758,4 +695,9 @@ fileWriter.write("All done, mate."+linesep);
 fileWriter.flush();
 
 fileWriter.close();
+
+if (sendEmailOrNot){
+	emailSentOK = sendEmail(myEmailAddress,"Pumpy all done.","Dear,\n Pumpy has now finished the post-pumping acquisition. \n Cheers, \n Yours truly.", emailFrom, passwordFrom);
+	if (emailSentOK) gui.message("Email sent successfuly !");
+}
 
