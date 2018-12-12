@@ -191,8 +191,8 @@ boolean useMultiPosition = true;
 String[] prePumpChannels = {"GFP", "mCherry"}; // set "BF" for bright field image (performed with the current filter set)
 double[] allExposuresPrePump = {100, 100};
 
-timeIntervals = 300; // in seconds (300 s = 5 min)
-int nFramesMax = 250; // maximum number of frames before pumps are activated
+timeIntervals = 5; // in seconds (300 s = 5 min)
+int nFramesMax = 3; // maximum number of frames before pumps are activated
 
 
 double minFraction = 0.25; // fraction of FOV that have triggered necessary to trigger the pumps
@@ -201,7 +201,7 @@ double minFraction = 0.25; // fraction of FOV that have triggered necessary to t
 double thresholdCircularity = 0.82; // threshold in circularity
 channelNumberForAnalysis = 0; // this is zero-based !!!!!!!!!!!!!!!!!!!!
 
-waitingPostImageTrigger = 900; // in seconds (after clock starts) (4h min = 14,400 ss)
+waitingPostImageTrigger = 0; // in seconds (after clock starts) (4h min = 14,400 ss)
 
 
 // Post-pumping acquisition ---
@@ -210,19 +210,19 @@ String[] postPumpChannels = {"DAPI","GFP", "mCherry","Cy5","BF"};
 //String[] postPumpChannels = {"DAPI", "mCherry"};
 double[] allExposuresPostPump = {200, 200, 200, 200, 200};
 timeIntervalsPostPump = 300; // in seconds
-int nFramesPostPump = 3;
+int nFramesPostPump = 1;
 
 double dZ = 1; // in um
-int nZposNegative = 10;
-int nZposPositive = 10;
+int nZposNegative = 0;
+int nZposPositive = 0;
 
 // file locations ---
-acqName = "HeLa_Boss_7";
-rootDirName = "E:/UserData/Romain/2018-12-05 HeLa Cdk1";
+acqName = "EmailTest";
+rootDirName = "E:/UserData/Romain/TEST";
 
 
 // For email sending
-String myEmailAddress = "yourEmail@email.com";
+String myEmailAddress = "r.laine@ucl.ac.uk";
 
 
 // Let's get started ! ---------------------------------------------------------------------
@@ -305,17 +305,18 @@ fileWriter.write("deltaZ: "+dZ+linesep);
 // Check for credentials for email 
 File file = new File(IJ.getDirectory("startup")+"\\pumpyEmailCredentials.txt");
 boolean sendEmailOrNot = false;
+fileWriter.write("--------------------"+linesep);
 if (file.exists()){
 	Scanner sc = new Scanner(file); 
 	emailFrom = sc.nextLine();
 	passwordFrom = sc.nextLine();
 	
 	sendEmailOrNot = true;
-	gui.message("Credentials found. Sending emails to "+email);
-	fileWriter.write("Credentials found. Sending emails to "+email+linesep);
+	gui.message("Credentials found. Sending emails to "+myEmailAddress);
+	fileWriter.write("Credentials found. Sending emails to "+myEmailAddress+linesep);
 }
 else{
-	gui.message("Credentials file does not exist.");
+	gui.message("Credentials file does not exist. Emails cannot be sent.");
 	fileWriter.write("Credentials file does not exist."+linesep);
 	emailFrom = "";
 	passwordFrom = "";
