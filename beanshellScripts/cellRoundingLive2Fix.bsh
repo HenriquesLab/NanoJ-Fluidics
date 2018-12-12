@@ -217,12 +217,12 @@ int nZposNegative = 0;
 int nZposPositive = 0;
 
 // file locations ---
-acqName = "EmailTest";
-rootDirName = "E:/UserData/Romain/TEST";
+acqName = "myAcquisitionName";
+rootDirName = "E:/UserData/";
 
 
 // For email sending
-String myEmailAddress = "r.laine@ucl.ac.uk";
+String myEmailAddress = "youremail@email.com";
 
 
 // Let's get started ! ---------------------------------------------------------------------
