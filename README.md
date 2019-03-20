@@ -4,7 +4,7 @@ Note: visit the [**Wiki**][10] or [**Forum**][12] for latest updates.
 
 ![][8]
 
-NanoJ-Fluidics is an open-source device, composed of easily accessible LEGO-parts, electronics and labware. It is designed to automate and simplify fluid exchange experiments in microscopy. Check the pre-print in bioRxiv: [Automating multimodal microscopy with
+NanoJ-Fluidics is an open-source device, composed of easily accessible LEGO-parts, electronics and labware. It is designed to automate and simplify fluid exchange experiments in microscopy. Check the paper in Nature Communications: [Automating multimodal microscopy with
 NanoJ-Fluidics][11].
 
 ## It consists of three parts:
@@ -32,7 +32,7 @@ NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [L
   [8]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Files/PedroPumpsSample.png
   [9]: http://www.neurocytolab.org/
   [10]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki
-  [11]: https://www.biorxiv.org/content/early/2018/05/14/320416
+  [11]: https://doi.org/10.1038/s41467-019-09231-9
   [12]: https://gitter.im/NanoJ-Fluidics
   [3DPrint]: Pumpy-3D-Printing
   [0mgem0]: https://twitter.com/0mgem0
