@@ -1,9 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="NanoJ-Fluidics_MM">
-    <output-path>$PROJECT_DIR$</output-path>
-    <root id="archive" name="NanoJ-Fluidics_MM.jar">
-      <element id="module-output" name="NanoJ-Fluidics" />
-      <element id="module-output" name="pumpControl_MM" />
-    </root>
-  </artifact>
-</component>

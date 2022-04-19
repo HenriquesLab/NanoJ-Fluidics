@@ -1,1 +1,0 @@
-java -jar NanoJ-Fluidics.jar
