@@ -18,15 +18,13 @@ import mmcorej.CMMCore;
  *
  */
 public class ImageJPlugin implements PlugIn {
-    private static CMMCore core;
-    private static GUI userInterface;
 
     @Override
     public void run(String s) {
-        core = new CMMCore();
+        CMMCore core = new CMMCore();
 
         try {
-            userInterface = GUI.INSTANCE;
+            GUI userInterface = GUI.INSTANCE;
             userInterface.setCloseOnExit(false);
             userInterface.create(core);
         } catch (Exception e) {

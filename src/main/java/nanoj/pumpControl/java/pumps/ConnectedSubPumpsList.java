@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
-    private ArrayList<ConnectedSubPump> list = new ArrayList<ConnectedSubPump>();
-    private ArrayList<Pump> connectedPumps = new ArrayList<Pump>();
+    private final ArrayList<ConnectedSubPump> list = new ArrayList<>();
+    private final ArrayList<Pump> connectedPumps = new ArrayList<>();
 
     private static final String OUT_OF_BOUNDS = "SubPump index doesn't exist in list.";
 
@@ -20,7 +20,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     }
 
     public void removePump(String pumpName,String port) {
-        ArrayList<ConnectedSubPump> pumpsToRemove = new ArrayList<ConnectedSubPump>();
+        ArrayList<ConnectedSubPump> pumpsToRemove = new ArrayList<>();
         for (ConnectedSubPump pump: list)
             if (pump.name.equals(pumpName) && pump.port.equals(port))
                 pumpsToRemove.add(pump);
@@ -36,7 +36,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     }
 
     public void removePump(Pump pump) {
-        ArrayList<ConnectedSubPump> found = new ArrayList<ConnectedSubPump>();
+        ArrayList<ConnectedSubPump> found = new ArrayList<>();
         for (ConnectedSubPump subPump: list)
             if (subPump.pump.equals(pump))
                 found.add(subPump);
@@ -90,6 +90,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         return list.get(index);
     }
 
+    @SuppressWarnings("unused")
     public String getFullName(int index) throws IndexOutOfBoundsException {
         if (!notPresent(index))
             throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
@@ -101,7 +102,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     }
 
     public String[] getAllFullNames() {
-        String array[] = new String[list.size()];
+        String[] array = new String[list.size()];
         if (list.isEmpty())
             return new String[]{};
         else {
@@ -135,7 +136,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     }
 
     public ArrayList<String> connectedPorts() {
-        ArrayList<String> ports = new ArrayList<String>();
+        ArrayList<String> ports = new ArrayList<>();
         for (ConnectedSubPump pump: list) {
             if (!ports.contains(pump.port))
                 ports.add(pump.port);
@@ -150,6 +151,5 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
 
     public static class PumpNotFoundException extends RuntimeException {
         public PumpNotFoundException() { super();}
-        public PumpNotFoundException(String message) { super(message);}
     }
 }

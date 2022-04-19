@@ -16,9 +16,9 @@ import java.util.Observer;
 import java.util.prefs.Preferences;
 
 public class DirectControl extends JPanel implements Observer, ActionListener {
-    private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
-    private PumpManager pumpManager = PumpManager.INSTANCE;
-    private GUI gui;
+    private final Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
+    private final PumpManager pumpManager = PumpManager.INSTANCE;
+    private final GUI gui;
 
     public String name = "Direct Pump Control";
 
@@ -27,9 +27,9 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
     JLabel pumpStatusLabel = new JLabel("Pump status:");
     JLabel pumpStatus = new JLabel("Pump not started.");
     JLabel pumpSelectionLabel = new JLabel("Select pump to control: ");
-    JComboBox pumpSelection;
+    JComboBox<String> pumpSelection;
     JLabel syringeLabel = new JLabel("Syringe");
-    JComboBox syringeComboBox;
+    JComboBox<String> syringeComboBox;
     JLabel rateLabel = new JLabel("Rate ("+ PumpManager.FLOW_RATE_UNITS+")");
     FlowRateSlider rateSlider = new FlowRateSlider();
     JLabel targetLabel = new JLabel("Target Volume (" + PumpManager.VOLUME_UNITS + ")");
@@ -48,8 +48,8 @@ public class DirectControl extends JPanel implements Observer, ActionListener {
 
         ButtonGroup buttons = new ButtonGroup();
 
-        syringeComboBox = new JComboBox(Syringe.getAllBrandedNames());
-        pumpSelection = new JComboBox(new String[]{PumpManager.NO_PUMP_CONNECTED});
+        syringeComboBox = new JComboBox<>(Syringe.getAllBrandedNames());
+        pumpSelection = new JComboBox<>(new String[]{PumpManager.NO_PUMP_CONNECTED});
         buttons.add(infuse);
         buttons.add(withdraw);
 

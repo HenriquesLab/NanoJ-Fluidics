@@ -7,7 +7,6 @@ import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,9 +14,9 @@ import java.util.Vector;
 import java.util.prefs.Preferences;
 
 public class PumpConnections extends JPanel {
-    private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
-    private PumpManager pumpManager = PumpManager.INSTANCE;
-    private GUI gui;
+    private final Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
+    private final PumpManager pumpManager = PumpManager.INSTANCE;
+    private final GUI gui;
     public String name = "Pump Connections";
 
     private static final String VIRTUAL_PUMP = "Virtual Pump";
@@ -25,17 +24,16 @@ public class PumpConnections extends JPanel {
     private static final String PORT = "com";
     private static final String PUMP = "pump";
 
-    JComboBox availablePumpsList;
+    JComboBox<String> availablePumpsList;
 
     JLabel version = new JLabel("NanoJ Sequential Labelling version: 1.2.5");
     JLabel pumpListLabel = new JLabel("Pump type");
     JLabel connectLabel = new JLabel("Serial port");
-    JComboBox portsList;
+    JComboBox<String> portsList;
     JButton connectButton = new JButton("Connect");
     JButton disconnectButton = new JButton("Disconnect");
     JLabel connectedPumpsLabel = new JLabel("List of currently connected pumps");
-    private JTable connectedPumpsTable;
-    private ConnectionsTable connectedPumpsTableModel;
+    private final ConnectionsTable connectedPumpsTableModel;
     JScrollPane connectedPumpsListPane;
 
     public PumpConnections(GUI gui) {
@@ -43,13 +41,13 @@ public class PumpConnections extends JPanel {
         this.gui = gui;
 
         connectedPumpsTableModel = new ConnectionsTable();
-        connectedPumpsTable = new JTable(connectedPumpsTableModel);
+        JTable connectedPumpsTable = new JTable(connectedPumpsTableModel);
         connectedPumpsListPane = new JScrollPane(connectedPumpsTable);
 
-        availablePumpsList = new JComboBox(pumpManager.getAvailablePumpsList());
+        availablePumpsList = new JComboBox<>(pumpManager.getAvailablePumpsList());
         availablePumpsList.setSelectedItem(prefs.get(PUMP, VIRTUAL_PUMP));
 
-        portsList = new JComboBox(new Vector(NRSerialPort.getAvailableSerialPorts()));
+        portsList = new JComboBox<>(new Vector<>(NRSerialPort.getAvailableSerialPorts()));
         portsList.addItem(VIRTUAL_PORT);
         portsList.setSelectedItem(prefs.get(PORT, VIRTUAL_PORT));
 
@@ -125,7 +123,7 @@ public class PumpConnections extends JPanel {
         }
     }
 
-    public class ConnectionsTable extends DefaultTableModel {
+    public static class ConnectionsTable extends DefaultTableModel {
 
         protected ConnectionsTable() {
             super(

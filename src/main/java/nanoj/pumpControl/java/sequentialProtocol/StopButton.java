@@ -5,8 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class StopButton extends JButton implements ActionListener {
-    private JComboBox pumpSelection = null;
-    private GUI gui;
+    private final JComboBox<String> pumpSelection;
+    private final GUI gui;
     private int pump = -1;
 
     public StopButton(GUI gui) {
@@ -17,7 +17,7 @@ public class StopButton extends JButton implements ActionListener {
         addActionListener(this);
     }
 
-    public StopButton(GUI gui, JComboBox pumpSelection) {
+    public StopButton(GUI gui, JComboBox<String> pumpSelection) {
         super("Stop Pump!");
         this.gui = gui;
         this.pumpSelection = pumpSelection;

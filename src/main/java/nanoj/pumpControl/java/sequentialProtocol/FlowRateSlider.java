@@ -10,12 +10,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class FlowRateSlider extends JPanel implements ChangeListener {
-    private PumpManager pumpManager = PumpManager.INSTANCE;
+    private final PumpManager pumpManager = PumpManager.INSTANCE;
     double syringeDiameter = 1;
     int pumpSelection = 0;
 
-    private JSlider slider = new JSlider(JSlider.HORIZONTAL, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-    private JLabel text = new JLabel("0.0");
+    private final JSlider slider = new JSlider(JSlider.HORIZONTAL,
+            Integer.MIN_VALUE,
+            Integer.MAX_VALUE,
+            Integer.MAX_VALUE);
+    private final JLabel text = new JLabel("0.0");
 
     public FlowRateSlider() {
         super();

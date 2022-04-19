@@ -1,10 +1,11 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
-import ij.IJ;
 import nanoj.pumpControl.java.pumps.PumpManager;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Observable;
+import java.util.TimeZone;
 
 public class SequenceManager extends Observable implements Runnable {
     public static final String NEW_STEP_STARTED = "New step started.";
@@ -19,19 +20,17 @@ public class SequenceManager extends Observable implements Runnable {
     public final static SequenceManager INSTANCE = new SequenceManager();
 
     // Foreign objects
-    private PumpManager pumpManager = PumpManager.INSTANCE;
+    private final PumpManager pumpManager = PumpManager.INSTANCE;
 
-    private SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+    private final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
 
     private boolean monkeyReady = true;
     private Sequence sequence;
-    private float suckDuration;
     private int startStep = 0;
     private int endStep = 0;
     private int currentPump = 0;
     private int currentStep = -1;
     private boolean started = false;
-    private boolean alive = true;
     private boolean syringeExchangeNeeded = false;
 
     private String waitingMessage = "Sequence not yet started.";
@@ -42,7 +41,7 @@ public class SequenceManager extends Observable implements Runnable {
 
     @Override
     public void run(){
-        while (alive) {
+        while (true) {
             if (started) {
                 for (currentStep = startStep; currentStep < endStep; currentStep++) {
                     if (!started) break;
@@ -50,6 +49,7 @@ public class SequenceManager extends Observable implements Runnable {
                     Step step = sequence.get(currentStep);
 
                     //Tell suck pump to start
+                    float suckDuration;
                     if (sequence.isSuckTrue() && step.suckBefore()) {
                         suckDuration = sequence.getSuckStep().getDuration();
                         try {
@@ -131,7 +131,7 @@ public class SequenceManager extends Observable implements Runnable {
                     notifyObservers(SYRINGE_STATUS_CHANGED);
 
                     // While the time between steps hasn't passed OR the syringe hasn't been readied...
-                    while ( (System.currentTimeMillis() - startTime) < step.getDuration()*1000 ||
+                    while ( (System.currentTimeMillis() - startTime) < step.getDuration()* 1000L ||
                             !monkeyReady && syringeExchangeNeeded) {
                         //Stop sequence if the "Stop" button was pressed.
                         if (!started) break;
@@ -155,7 +155,7 @@ public class SequenceManager extends Observable implements Runnable {
                         else if (timeToGo < 60) setWaitingMessage("Step: " + step.getNumber() + ", "
                                 + step.getName() + ". Waiting for: " + timeToGo + " seconds.");
                             //  and before that it's minutes to set duration
-                        else if (timeToGo >= 60) setWaitingMessage("Step: " + step.getNumber() + ", "
+                        else setWaitingMessage("Step: " + step.getNumber() + ", "
                                 + step.getName() + ". Waiting for: " + formattedTime);
                         try {
                             Thread.sleep(300);
@@ -190,8 +190,8 @@ public class SequenceManager extends Observable implements Runnable {
         this.sequence = givenSteps;
         isSyringeExchangeRequiredOnSequence();
 
-        start = (start < 0) ? 0 : start;
-        end = (end > givenSteps.size()) ? givenSteps.size() : end;
+        start = Math.max(start, 0);
+        end = Math.min(end, givenSteps.size());
 
         startStep = start;
         endStep = end;
@@ -223,11 +223,10 @@ public class SequenceManager extends Observable implements Runnable {
         notifyObservers(MONKEY_CHANGED);
     }
 
-    public synchronized boolean toggleMonkeyReady() {
+    public synchronized void toggleMonkeyReady() {
         monkeyReady = !monkeyReady;
         setChanged();
         notifyObservers(MONKEY_CHANGED);
-        return monkeyReady;
     }
 
     private synchronized void setWaitingMessage(String newStatus) {

@@ -1,18 +1,20 @@
 package nanoj.pumpControl.java.pumps;
 
 import mmcorej.CMMCore;
-import java.util.*;
 import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList.PumpNotFoundException;
+
+import java.util.LinkedHashMap;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.ServiceLoader;
 
 public class PumpManager extends Observable implements Observer {
     private CMMCore serialManager;
-    private LinkedHashMap<String, Pump> availablePumps = new LinkedHashMap<String, Pump>();
-    private ConnectedSubPumpsList connectedSubPumps = new ConnectedSubPumpsList();
-    private boolean alive = true;
+    private final LinkedHashMap<String, Pump> availablePumps = new LinkedHashMap<>();
+    private final ConnectedSubPumpsList connectedSubPumps = new ConnectedSubPumpsList();
     private String status;
 
-    private long wait = 100;  // Wait time for status checker in milliSeconds
-
+    @SuppressWarnings("unused")
     public static final String FAILED_TO_CONNECT = "Failed to connect to pump.";
     public static final String PORT_ALREADY_CONNECTED = "Port already in use.";
     public static final String NOT_AVAILABLE = "Pump not available to manager.";
@@ -73,6 +75,7 @@ public class PumpManager extends Observable implements Observer {
         return answer;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public synchronized String startPumping(int pumpIndex, int seconds, Pump.Action direction) throws Exception {
         String answer;
 
@@ -125,6 +128,7 @@ public class PumpManager extends Observable implements Observer {
         return connectedSubPumps.getConnectedSubPump(pumpIndex).getFullName();
     }
 
+    @SuppressWarnings("unused")
     public synchronized void stopPumping(String pumpName, String subPump, String port) throws Exception {
         connectedSubPumps.getConnectedSubPump(pumpName,subPump,port).pump.stopPump();
         setChanged();
@@ -149,6 +153,7 @@ public class PumpManager extends Observable implements Observer {
         return success;
     }
 
+    @SuppressWarnings("unused")
     public synchronized boolean disconnect(int index) throws Exception {
         boolean success = connectedSubPumps.getConnectedSubPump(index).pump.disconnect();
         String name = connectedSubPumps.getConnectedSubPump(index).name;
@@ -163,7 +168,7 @@ public class PumpManager extends Observable implements Observer {
 
     public String[] getAvailablePumpsList() {
         if (availablePumps.size() > 0) {
-            return availablePumps.keySet().toArray(new String[availablePumps.size()]);
+            return availablePumps.keySet().toArray(new String[0]);
         }
         else return new String[]{NO_PUMP_AVAILABLE};
     }
@@ -172,6 +177,7 @@ public class PumpManager extends Observable implements Observer {
         return connectedSubPumps;
     }
 
+    @SuppressWarnings("unused")
     public Pump getPumpOnPort(String port) {
         Pump pump = null;
         for (ConnectedSubPump subPump: connectedSubPumps)
@@ -195,11 +201,11 @@ public class PumpManager extends Observable implements Observer {
     }
 
     public synchronized boolean isConnected(int pumpIndex) {
-        return connectedSubPumps != null &&
-                pumpIndex < connectedSubPumps.size() &&
-                connectedSubPumps.getConnectedSubPump(pumpIndex).pump.isConnected();
+        return pumpIndex < connectedSubPumps.size()
+                && connectedSubPumps.getConnectedSubPump(pumpIndex).pump.isConnected();
     }
 
+    @SuppressWarnings("unused")
     public synchronized boolean isConnected(String pumpName, String port, boolean fullName) {
         boolean isIt = false;
         if (fullName) {
@@ -209,7 +215,7 @@ public class PumpManager extends Observable implements Observer {
                     break;
                 }
         }
-        else isIt = connectedSubPumps != null && connectedSubPumps.getPump(pumpName, port).isConnected();
+        else isIt = connectedSubPumps.getPump(pumpName, port).isConnected();
 
         return isIt;
     }
@@ -221,6 +227,7 @@ public class PumpManager extends Observable implements Observer {
         return connectedSubPumps.getPump(name,port).getMaxMin(subPump,diameter);
     }
 
+    @SuppressWarnings("unused")
     private synchronized void getStatusFromPump(int pumpIndex) throws Exception {
         if (isConnected(pumpIndex))
             status = connectedSubPumps.getConnectedSubPump(pumpIndex).pump.getStatus();

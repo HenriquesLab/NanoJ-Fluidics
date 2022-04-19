@@ -47,10 +47,9 @@ public final class GUI {
     //Tab objects
     private PumpConnections pumpConnections;
     private DirectControl directControl;
-    private PumpCalibration pumpCalibration;
     private SequentialLabelling sequentialLabelling;
 
-    private PanelListener panelListener = new PanelListener();
+    private final PanelListener panelListener = new PanelListener();
 
     public static final GUI INSTANCE = new GUI();
 
@@ -75,7 +74,7 @@ public final class GUI {
         }
     }
 
-    void create(CMMCore core) throws Exception {
+    void create(CMMCore core) {
         if (mainFrame != null && mainFrame.isVisible())
             return;
 
@@ -94,7 +93,7 @@ public final class GUI {
         //Tab objects
         pumpConnections = new PumpConnections(this);
         directControl = new DirectControl(this);
-        pumpCalibration = new PumpCalibration(this);
+        PumpCalibration pumpCalibration = new PumpCalibration(this);
         sequentialLabelling = new SequentialLabelling(this);
 
         mainFrame.addComponentListener(panelListener);
@@ -136,6 +135,7 @@ public final class GUI {
         directControl.rememberPreferences();
     }
 
+    @SuppressWarnings("unused")
     public ArrayList<Step> getSteps() {
         return sequentialLabelling.sequence;
     }
@@ -144,30 +144,35 @@ public final class GUI {
         return sequentialLabelling.sequenceManager;
     }
 
+    @SuppressWarnings("unused")
     public String startSequence() {
         String message = sequentialLabelling.listener.start();
         log.message(message);
         return message;
     }
 
+    @SuppressWarnings("unused")
     public String startSequence(int startStep, int endStep) {
         String message = sequentialLabelling.listener.start(startStep-1, endStep);
         log.message(message);
         return message;
     }
 
+    @SuppressWarnings("unused")
     public String stopSequence() {
         String message = sequentialLabelling.listener.stop();
         log.message(message);
         return message;
     }
 
+    @SuppressWarnings("unused")
     public String stopAllPumps() throws Exception {
         if (pumpManager.noPumpsConnected()) return "No pump connected.";
         pumpManager.stopAllPumps();
         return "Stopping all pumps!";
     }
 
+    @SuppressWarnings("unused")
     public String stopPump(int pump) throws Exception {
         if (pumpManager.noPumpsConnected()) return "No pump connected.";
         else if (pump > pumpManager.getConnectedPumpsList().size() || pump < 1)
@@ -176,10 +181,12 @@ public final class GUI {
     }
 
 
+    @SuppressWarnings("unused")
     public int getCurrentStep() {
         return getSequenceManager().getCurrentStep()+1;
     }
 
+    @SuppressWarnings("unused")
     public boolean sequenceRunning() { return sequentialLabelling.sequenceManager.isStarted(); }
 
     public void updateGUI() {
@@ -296,6 +303,7 @@ public final class GUI {
         this.sequenceDimensions = sequenceDimensions;
     }
 
+    @SuppressWarnings("unused")
     public boolean isCloseOnExit() {
         return closeOnExit;
     }

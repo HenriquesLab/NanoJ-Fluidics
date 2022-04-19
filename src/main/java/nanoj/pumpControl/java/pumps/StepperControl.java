@@ -5,7 +5,7 @@ import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
 
 public class StepperControl extends Pump{
-	private GUI.Log log = GUI.Log.INSTANCE;
+	private final GUI.Log log = GUI.Log.INSTANCE;
 	private String comPort;
 
 	public StepperControl() {
@@ -46,7 +46,7 @@ public class StepperControl extends Pump{
 	}
 
 	@Override
-	public void setTargetVolume(double target) throws Exception {
+	public void setTargetVolume(double target) {
 		targetVolume = target;  //Target volume should be given in ul
 	}
 
@@ -92,24 +92,20 @@ public class StepperControl extends Pump{
 			}
 		}
 		String result;
-		try {
 
-			core.loadDevice(portName, "SerialManager", comPort);
-			core.setProperty(portName, "AnswerTimeout", "" + timeOut);
-			core.setProperty(portName, "BaudRate", "57600");
-			core.setProperty(portName, "StopBits", "2");
-			core.setProperty(portName, "Parity", "None");
-			core.initializeDevice(portName);
+		core.loadDevice(portName, "SerialManager", comPort);
+		core.setProperty(portName, "AnswerTimeout", "" + timeOut);
+		core.setProperty(portName, "BaudRate", "57600");
+		core.setProperty(portName, "StopBits", "2");
+		core.setProperty(portName, "Parity", "None");
+		core.initializeDevice(portName);
 
-			core.setSerialPortCommand(portName, "", "\r");
-			core.getSerialPortAnswer(portName, "\n");
+		core.setSerialPortCommand(portName, "", "\r");
+		core.getSerialPortAnswer(portName, "\n");
 
-			log.message("Command sent to 3D printed pump: " + command);
-			core.setSerialPortCommand(portName, command + ".", "\r");
-			result = core.getSerialPortAnswer(portName, "\n");
-		} catch (Exception e) {
-			throw e;
-		}
+		log.message("Command sent to 3D printed pump: " + command);
+		core.setSerialPortCommand(portName, command + ".", "\r");
+		result = core.getSerialPortAnswer(portName, "\n");
 		result = result.substring(0, result.length()-1);
 		String prefix = "Response from pump: ";
 		log.message(prefix + result);
@@ -119,7 +115,7 @@ public class StepperControl extends Pump{
 	}
 
 	@Override
-	public String getStatus() throws Exception {
+	public String getStatus() {
 		return "All is well, friend.";
 	}
 

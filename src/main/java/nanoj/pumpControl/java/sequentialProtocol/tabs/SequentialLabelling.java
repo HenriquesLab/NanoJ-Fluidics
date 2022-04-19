@@ -15,11 +15,9 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
 
-import static nanoj.pumpControl.java.sequentialProtocol.SequenceManager.SYRINGE_STATUS_CHANGED;
-
 public class SequentialLabelling extends JPanel implements Observer, ActionListener {
-    private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
-    private PumpManager pumpManager = PumpManager.INSTANCE;
+    private final Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
+    private final PumpManager pumpManager = PumpManager.INSTANCE;
     GUI gui;
     public String name = "Sequential Protocol";
     
@@ -36,7 +34,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
     JPanel topPanel;
     JPanel stepsPanel;
     JScrollPane scrollPane;
-    private StepChanger stepChanger = new StepChanger();
+    private final StepChanger stepChanger = new StepChanger();
     public Sequence sequence;
     UpdateStepPump updateStepPump = new UpdateStepPump();
 
@@ -383,6 +381,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                     ObjectInputStream in = new ObjectInputStream(fileIn);
 
                     // Update information with information from file
+                    //noinspection unchecked
                     updateStepPanel((ArrayList<HashMap<String,String>>) in.readObject());
 
                     // Close file
@@ -436,7 +435,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                     ObjectOutputStream out = new ObjectOutputStream(fileOut);
 
                     // Create output file information
-                    ArrayList<HashMap<String,String>> output = new ArrayList<HashMap<String,String>>();
+                    ArrayList<HashMap<String,String>> output = new ArrayList<>();
                     // First put in the suck step information
                     output.add(sequence.getSuckStep().getStepInformation());
 

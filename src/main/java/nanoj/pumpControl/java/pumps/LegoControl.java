@@ -4,7 +4,7 @@ import mmcorej.StrVector;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
 public class LegoControl extends Pump {
-    private GUI.Log log = GUI.Log.INSTANCE;
+    private final GUI.Log log = GUI.Log.INSTANCE;
     private String comPort;
     private static final String SHIELD = "S";
     private static final String PUMP = "P";
@@ -160,7 +160,7 @@ public class LegoControl extends Pump {
 
     //TODO: Create a status getter that automatically parses the lego style reply.
     @Override
-    public synchronized String getStatus() throws Exception {
+    public synchronized String getStatus() {
         return "Pump alive."/*sendCommand("g")*/;
     }
 
@@ -183,24 +183,20 @@ public class LegoControl extends Pump {
             }
         }
         String result;
-        try {
 
-            core.loadDevice(portName, "SerialManager", comPort);
-            core.setProperty(portName, "AnswerTimeout", "" + timeOut);
-            core.setProperty(portName, "BaudRate", "57600");
-            core.setProperty(portName, "StopBits", "2");
-            core.setProperty(portName, "Parity", "None");
-            core.initializeDevice(portName);
+        core.loadDevice(portName, "SerialManager", comPort);
+        core.setProperty(portName, "AnswerTimeout", "" + timeOut);
+        core.setProperty(portName, "BaudRate", "57600");
+        core.setProperty(portName, "StopBits", "2");
+        core.setProperty(portName, "Parity", "None");
+        core.initializeDevice(portName);
 
-            core.setSerialPortCommand(portName, "", "\r");
-            core.getSerialPortAnswer(portName, "\n");
+        core.setSerialPortCommand(portName, "", "\r");
+        core.getSerialPortAnswer(portName, "\n");
 
-            log.message("Command sent to Lego pump: " + command);
-            core.setSerialPortCommand(portName, command + ".", "\r");
-            result = core.getSerialPortAnswer(portName, "\n");
-        } catch (Exception e) {
-            throw e;
-        }
+        log.message("Command sent to Lego pump: " + command);
+        core.setSerialPortCommand(portName, command + ".", "\r");
+        result = core.getSerialPortAnswer(portName, "\n");
         result = result.substring(0, result.length()-1);
 
         String prefix = "Response from pump: ";

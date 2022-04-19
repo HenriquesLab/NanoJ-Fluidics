@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -18,7 +19,7 @@ public class Step extends Observable implements Observer, ActionListener {
     */
 
     // Foreign objects
-    private PumpManager pumpManager = PumpManager.INSTANCE;
+    private final PumpManager pumpManager = PumpManager.INSTANCE;
 
     // Labels
 
@@ -55,21 +56,21 @@ public class Step extends Observable implements Observer, ActionListener {
     public static final String EXPIRE_TEXT = "Remove step";
     public static final String EXCHANGE_STATUS_CHANGED = "Exchange status changed";
 
-    private FlowLayout step_layout = new FlowLayout(FlowLayout.LEADING);
-    private JPanel step = new JPanel(step_layout);
+    private final FlowLayout step_layout = new FlowLayout(FlowLayout.LEADING);
+    private final JPanel step = new JPanel(step_layout);
     private JLabel numberLabel = new JLabel("");
-    private JTextField name;
-    private JCheckBox suck = new JCheckBox("Wd",false);
-    private JTextField time;
-    private JComboBox timeUnitsList;
-    private JCheckBox exchange = new JCheckBox("Ex");
-    private JComboBox pumpList;
-    private JComboBox syringeList = new JComboBox(Syringe.getAllBrandedNames());
-    private FlowRateSlider rateSlider;
-    private JTextField volume;
-    private JComboBox volumeUnitsList;
-    private JLabel peristalticLabel = new JLabel("secs.");
-    private JComboBox action = new JComboBox(Pump.Action.values());
+    private final JTextField name;
+    private final JCheckBox suck = new JCheckBox("Wd",false);
+    private final JTextField time;
+    private final JComboBox<Step.TimeUnit> timeUnitsList;
+    private final JCheckBox exchange = new JCheckBox("Ex");
+    private final JComboBox<String> pumpList;
+    private final JComboBox<String> syringeList = new JComboBox<>(Syringe.getAllBrandedNames());
+    private final FlowRateSlider rateSlider;
+    private final JTextField volume;
+    private final JComboBox<Step.VolumeUnit> volumeUnitsList;
+    private final JLabel peristalticLabel = new JLabel("secs.");
+    private final JComboBox<Pump.Action> action = new JComboBox<>(Pump.Action.values());
     private int number;
 
     private boolean editing = false;
@@ -113,11 +114,11 @@ public class Step extends Observable implements Observer, ActionListener {
         this.time.addActionListener(listener);
         step.add(this.time);
 
-        timeUnitsList = new JComboBox(TimeUnit.values());
+        timeUnitsList = new JComboBox<>(TimeUnit.values());
         timeUnitsList.setSelectedIndex(timeUnit.ordinal());
         step.add(timeUnitsList);
 
-        String pumps[];
+        String[] pumps;
         if (pumpManager.noPumpsConnected())
             pumps = new String[]{PumpManager.NO_PUMP_CONNECTED};
         else
@@ -127,7 +128,7 @@ public class Step extends Observable implements Observer, ActionListener {
         this.exchange.addActionListener(this);
         step.add(this.exchange);
 
-        pumpList = new JComboBox(pumps);
+        pumpList = new JComboBox<>(pumps);
         pumpList.setPrototypeDisplayValue(PumpManager.NO_PUMP_CONNECTED);
         pumpList.addActionListener(this);
         step.add(pumpList);
@@ -143,7 +144,7 @@ public class Step extends Observable implements Observer, ActionListener {
         this.volume = new JTextField(""+volume, 3);
         step.add(this.volume);
 
-        volumeUnitsList = new JComboBox(VolumeUnit.values());
+        volumeUnitsList = new JComboBox<>(VolumeUnit.values());
         volumeUnitsList.setSelectedIndex(volumeUnit.ordinal());
         step.add(volumeUnitsList);
         step.add(peristalticLabel);
@@ -187,6 +188,7 @@ public class Step extends Observable implements Observer, ActionListener {
         return rateSlider.getCurrentFlowRate();
     }
 
+    @SuppressWarnings("unused")
     public int getRate() {
         return rateSlider.getSliderValue();
     }
@@ -220,10 +222,10 @@ public class Step extends Observable implements Observer, ActionListener {
             ImageIcon duplicate = new ImageIcon();
             ImageIcon expire = new ImageIcon();
             try {
-                up = new ImageIcon(Step.class.getResource("/up.png"));
-                down  = new ImageIcon(Step.class.getResource("/down.png"));
-                duplicate = new ImageIcon(Step.class.getResource("/duplicate.png"));
-                expire = new ImageIcon(Step.class.getResource("/expire.png"));
+                up = new ImageIcon(Objects.requireNonNull(Step.class.getResource("/up.png")));
+                down  = new ImageIcon(Objects.requireNonNull(Step.class.getResource("/down.png")));
+                duplicate = new ImageIcon(Objects.requireNonNull(Step.class.getResource("/duplicate.png")));
+                expire = new ImageIcon(Objects.requireNonNull(Step.class.getResource("/expire.png")));
 
                 up = new ImageIcon(up.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
                 down  = new ImageIcon(down.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
@@ -317,7 +319,7 @@ public class Step extends Observable implements Observer, ActionListener {
     // Methods
 
     public HashMap<String,String> getStepInformation() {
-        HashMap<String,String> info = new HashMap<String,String>();
+        HashMap<String,String> info = new HashMap<>();
         info.put("number", numberLabel.getText());
         info.put("exchange", "" + exchange.isSelected());
         info.put("pump", (String) pumpList.getSelectedItem());
@@ -341,7 +343,7 @@ public class Step extends Observable implements Observer, ActionListener {
         String pump = givenInformation.get("pump");
 
         for (int i = 0; i < pumpList.getItemCount(); i++) {
-            if (pump.equals((String) pumpList.getItemAt(i))) {
+            if (pump.equals(pumpList.getItemAt(i))) {
                 if (pumpManager.isConnected(i))
                     pumpList.setSelectedItem(pump);
                 break;
@@ -374,7 +376,7 @@ public class Step extends Observable implements Observer, ActionListener {
             duration = duration*60;
         else if(timeUnitsList.getSelectedIndex() == TimeUnit.HOURS.ordinal())
             duration = duration*3600;
-        duration = (float) Math.floor( (double) duration);
+        duration = (float) Math.floor(duration);
         return (int) duration;
     }
 
@@ -388,6 +390,7 @@ public class Step extends Observable implements Observer, ActionListener {
         return step;
     }
 
+    @SuppressWarnings("unused")
     public String getNumberLabel() {
         return numberLabel.getText();
     }
@@ -409,6 +412,7 @@ public class Step extends Observable implements Observer, ActionListener {
         return suck.isSelected();
     }
 
+    @SuppressWarnings("unused")
     public TimeUnit getTimeUnit() {
         return TimeUnit.values()[timeUnitsList.getSelectedIndex()];
     }
@@ -422,7 +426,7 @@ public class Step extends Observable implements Observer, ActionListener {
     }
 
     public Pump.Action getAction() {
-        return Pump.Action.valueOf(action.getSelectedItem().toString());
+        return Pump.Action.valueOf(Objects.requireNonNull(action.getSelectedItem()).toString());
     }
 
     public boolean isSyringeExchangeRequired() {

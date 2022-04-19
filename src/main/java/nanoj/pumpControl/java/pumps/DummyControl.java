@@ -3,12 +3,13 @@ package nanoj.pumpControl.java.pumps;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
 public final class DummyControl extends Pump implements PumpInterface {
-    private GUI.Log log;
-    private boolean demo = false;
+    private final GUI.Log log;
 
     public DummyControl() {
         log = GUI.INSTANCE.log;
 
+        boolean demo = false;
+        //noinspection ConstantConditions
         if (demo) {
             name = "NanoJ Lego Control Hub ";
             subPumps = new String[]{
@@ -48,27 +49,24 @@ public final class DummyControl extends Pump implements PumpInterface {
     }
 
     @Override
-    public void setSyringeDiameter(double diameter) throws Exception{
+    public void setSyringeDiameter(double diameter) {
         setStatus(currentSubPump() + "Set Syringe Diameter to " + diameter);
     }
 
     @Override
-    public void setFlowRate(double flowRate) throws Exception {
+    public void setFlowRate(double flowRate) {
         setStatus(currentSubPump() + "Set Flow Rate to " + flowRate + " ul/s");
         message(status);
     }
 
     @Override
-    public void setTargetVolume(double target) throws Exception{
+    public void setTargetVolume(double target) {
         setStatus(currentSubPump() + "Set Syringe Volume to " + target + " ul");
         message(status);
     }
 
     @Override
-    public void startPumping(Action direction) throws Exception {
-        String action;
-        if(direction.equals(Action.Infuse)) action = "push.";
-        else action = "withdraw.";
+    public void startPumping(Action direction) {
         message("Reference diameter for sub pump is: " + referenceRates.get(currentSubPump)[0]);
         message("Reference max rate for sub pump is: " + referenceRates.get(currentSubPump)[1]);
         message("Reference min rate for sub pump is: " + referenceRates.get(currentSubPump)[2]);
@@ -77,7 +75,7 @@ public final class DummyControl extends Pump implements PumpInterface {
     }
 
     @Override
-    public void startPumping(int seconds, Action direction) throws Exception {
+    public void startPumping(int seconds, Action direction) {
         String action;
         if(direction.equals(Action.Infuse)) action = "push";
         else action = "withdraw";
@@ -89,7 +87,7 @@ public final class DummyControl extends Pump implements PumpInterface {
     }
 
     @Override
-    public void stopAllPumps() throws Exception {
+    public void stopAllPumps() {
         setStatus("Stopped ALL the pumps.");
         message(status);
     }
@@ -107,7 +105,7 @@ public final class DummyControl extends Pump implements PumpInterface {
     }
 
     @Override
-    public String sendCommand(String command) throws Exception { return null; }
+    public String sendCommand(String command) { return null; }
 
     @Override
     public String getStatus() { return status; }

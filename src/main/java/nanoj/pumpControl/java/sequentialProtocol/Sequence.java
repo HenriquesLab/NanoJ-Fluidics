@@ -1,8 +1,6 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
-import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList;
 import nanoj.pumpControl.java.pumps.Pump;
-import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.pumps.Syringe;
 import org.micromanager.utils.ReportingUtils;
 
@@ -11,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Observer;
 
 public class Sequence extends ArrayList<Step> {
-    private Observer stepObserver;
-    private Step suckStep;
+    private final Observer stepObserver;
+    private final Step suckStep;
     private boolean suck;
 
     public Sequence(Observer changer) {

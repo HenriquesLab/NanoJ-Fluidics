@@ -20,21 +20,20 @@ import java.util.Observer;
 import java.util.prefs.Preferences;
 
 public class PumpCalibration extends JPanel implements Observer, TableModelListener, ActionListener {
-    private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
-    private PumpManager pumpManager = PumpManager.INSTANCE;
-    private GUI gui;
+    private final Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
+    private final PumpManager pumpManager = PumpManager.INSTANCE;
+    private final GUI gui;
     public String name = "Pump Calibration";
 
     JLabel tableLabel;
-    private JTable table;
-    private CalibrationTable tableModel;
+    private final CalibrationTable tableModel;
     JScrollPane tableScrollPane;
 
     JButton loadCalibration = new JButton("Load Previous Calibration from file");
     JButton saveCalibration = new JButton("Save Current Calibration to file");
     JButton resetCalibration = new JButton("Reset Calibration");
 
-    JComboBox pumpList;
+    JComboBox<String> pumpList;
     JLabel timeToPumpLabel = new JLabel("Time to pump (seconds)");
     JTextField timeToPump = new JTextField("10");
     JButton calibrateButton = new JButton("Start pumping");
@@ -43,12 +42,12 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
     private static final String CAL = "Cal";
     private static final String SAVE_LOCATION = "location";
 
-    private int NAME = 0;
-    private int SUB_PUMP = 1;
-    private int PORT = 2;
-    private int DIAMETER = 3;
-    private int MAX_FLOW_RATE = 4;
-    private int MIN_FLOW_RATE = 5;
+    private final int NAME = 0;
+    private final int SUB_PUMP = 1;
+    private final int PORT = 2;
+    private final int DIAMETER = 3;
+    private final int MAX_FLOW_RATE = 4;
+    private final int MIN_FLOW_RATE = 5;
 
     private boolean editing = false;
 
@@ -57,12 +56,12 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
         this.gui = gui;
 
-        pumpList = new JComboBox(new String[]{PumpManager.NO_PUMP_CONNECTED});
+        pumpList = new JComboBox<>(new String[]{PumpManager.NO_PUMP_CONNECTED});
         stopButton = new StopButton(gui,pumpList);
 
         tableLabel = new JLabel("Currently connected pumps. Diameter is in mm. Flow rates are in ul/sec.");
         tableModel = new CalibrationTable();
-        table = new JTable(tableModel);
+        JTable table = new JTable(tableModel);
         tableScrollPane = new JScrollPane(table);
 
         loadCalibration.addActionListener(this);
@@ -171,6 +170,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                     FileInputStream fileIn = new FileInputStream(chooser.getSelectedFile().getAbsolutePath());
                     ObjectInputStream in = new ObjectInputStream(fileIn);
 
+                    //noinspection unchecked
                     ArrayList<String[]> input = (ArrayList<String[]>) in.readObject();
 
                     editing = true;
@@ -197,7 +197,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                         gui.log.message("WARNING: Loaded calibration only matched a few of the connected pump.");
                     } else if (matches == index) {
                         gui.log.message("Loaded calibration file.");
-                    } else if (matches > index) {
+                    } else {
                         gui.log.message("WARNING: Calibration matches more than the number of connected pumps?.");
                     }
 
@@ -247,7 +247,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                     ObjectOutputStream out = new ObjectOutputStream(fileOut);
 
                     // Create output file information
-                    ArrayList<String[]> output = new ArrayList<String[]>();
+                    ArrayList<String[]> output = new ArrayList<>();
 
                     for (int i = 0; i < tableModel.getRowCount(); i++) {
                         String name = (String) tableModel.getValueAt(i,NAME);
@@ -328,7 +328,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
         }
     }
 
-    private class CalibrationTable extends DefaultTableModel {
+    private static class CalibrationTable extends DefaultTableModel {
 
         protected CalibrationTable() {
             super(new String[][]{{PumpManager.NO_PUMP_CONNECTED,"","","",""}},
@@ -336,9 +336,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
         }
 
         public boolean isCellEditable(int row, int column){
-            if (column > 2)
-                return true;
-            else return false;
+            return column > 2;
         }
 
     }
