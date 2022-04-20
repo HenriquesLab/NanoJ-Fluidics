@@ -5,3 +5,5 @@ PackagedBinaries/
 *.class
 *.lst
 *.MF
+*.jar
+*.properties
