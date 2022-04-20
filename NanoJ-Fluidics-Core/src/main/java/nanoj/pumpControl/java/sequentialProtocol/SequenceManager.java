@@ -156,7 +156,7 @@ public class SequenceManager extends Observable implements Runnable {
                                 + step.getName() + ". Waiting for: " + timeToGo + " seconds.");
                             //  and before that it's minutes to set duration
                         else setWaitingMessage("Step: " + step.getNumber() + ", "
-                                + step.getName() + ". Waiting for: " + formattedTime);
+                                    + step.getName() + ". Waiting for: " + formattedTime);
                         try {
                             Thread.sleep(300);
                         } catch (InterruptedException e) {

@@ -2,3 +2,6 @@ out/
 .idea/
 *.iml
 PackagedBinaries/
+*.class
+*.lst
+*.MF
