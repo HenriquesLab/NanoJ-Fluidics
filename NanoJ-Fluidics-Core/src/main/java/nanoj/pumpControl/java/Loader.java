@@ -12,7 +12,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 
 /**
- * An utility to add classes to the classpath. It loads either all Jars or native libraries in a given directory.
+ * Utility to add classes to the classpath. It loads either all Jars or native libraries in a given directory.
  */
 public class Loader {
     static final ArrayList<File> NO_FILE_FOUND = new ArrayList<>();

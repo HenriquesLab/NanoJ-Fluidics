@@ -21,7 +21,7 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
     protected String[] subPumps= null;
     protected String currentSubPump;
     protected String name;
-    protected LinkedHashMap<String, double[]> referenceRates = new LinkedHashMap<>();
+    protected final LinkedHashMap<String, double[]> referenceRates = new LinkedHashMap<>();
     protected double[] defaultRate = new double[]{1,1,1};
 
     public enum Action {
@@ -81,14 +81,6 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
 
     @Override
     public boolean isConnected() { return connected; }
-
-    @Override
-    public String[] getSubPumps() {
-        if(subPumps == null) return SINGLE_PUMP;
-        else {
-            return subPumps;
-        }
-    }
 
     public double[] getDefaultRate() {
         return defaultRate;

@@ -99,7 +99,7 @@ public final class DummyControl extends Pump implements PumpInterface {
     }
 
     @Override
-    public void stopPump(String subPump) throws Exception {
+    public void stopPump(String subPump) {
         setStatus("Stopped pump: " + subPump);
         message(status);
     }

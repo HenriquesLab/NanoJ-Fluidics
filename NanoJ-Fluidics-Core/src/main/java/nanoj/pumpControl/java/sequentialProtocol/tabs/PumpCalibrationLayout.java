@@ -1,7 +1,5 @@
 package nanoj.pumpControl.java.sequentialProtocol.tabs;
 
-import nanoj.pumpControl.java.sequentialProtocol.GUI;
-
 import javax.swing.*;
 import java.awt.*;
 

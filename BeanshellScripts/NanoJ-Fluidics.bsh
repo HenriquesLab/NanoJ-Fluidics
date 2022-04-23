@@ -19,12 +19,12 @@ print( seqProt.stopPump(1) );                          // Or a specific pump (va
 
 print( seqProt.startSequence(2,3) );
  
-int previoustStep = 0;
+int previousStep = 0;
 
 while(seqProt.sequenceRunning())
-	if(previoustStep != seqProt.getCurrentStep()) {
+	if(previousStep != seqProt.getCurrentStep()) {
 		print("Current step: " + seqProt.getCurrentStep());
-		previoustStep = seqProt.getCurrentStep();
+		previousStep = seqProt.getCurrentStep();
 	}
 
 print("Finished.");

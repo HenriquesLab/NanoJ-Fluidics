@@ -16,52 +16,52 @@ import java.util.Observer;
 import java.util.prefs.Preferences;
 
 public class SequentialLabelling extends JPanel implements Observer, ActionListener {
-    private final Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
+    private final Preferences preferences = Preferences.userRoot().node(this.getClass().getName());
     private final PumpManager pumpManager = PumpManager.INSTANCE;
-    GUI gui;
-    public String name = "Sequential Protocol";
+    final GUI gui;
+    public static final String TAB_NAME = "Sequential Protocol";
     
     // Button labels
     private static final String ADD_STEP = "+";
     private static final String REMOVE_STEP = "-";
 
-    // Preferences keys
+    // Preference keys
     public static final String SUCK = "suck";
     public static final String SAVE_LOCATION = "location";
 
-    public SequentialListener listener = new SequentialListener();
+    public final SequentialListener listener = new SequentialListener();
 
-    JPanel topPanel;
-    JPanel stepsPanel;
-    JScrollPane scrollPane;
+    final JPanel topPanel;
+    final JPanel stepsPanel;
+    final JScrollPane scrollPane;
     private final StepChanger stepChanger = new StepChanger();
-    public Sequence sequence;
-    UpdateStepPump updateStepPump = new UpdateStepPump();
+    public final Sequence sequence;
+    final UpdateStepPump updateStepPump = new UpdateStepPump();
 
-    JButton protocolLoad;
-    JButton protocolSave;
-    JLabel stepsLabel;
-    JTextField numberOfSteps;
-    JButton addStepButton;
-    JButton removeStepButton;
-    JButton startSeqButton;
-    JButton stopSeqButton;
-    StopButton stopPumpButton;
-    JLabel syringeReadyLabel;
-    JButton syringeReadyButton;
-    JLabel seqStatus;
-    JLabel pumpStatusOnSeqLabel;
-    public JLabel pumpStatusOnSeq;
-    JLabel legend = new JLabel("Step legend: Wd = Withdraw before step starts; " +
+    final JButton protocolLoad;
+    final JButton protocolSave;
+    final JLabel stepsLabel;
+    final JTextField numberOfSteps;
+    final JButton addStepButton;
+    final JButton removeStepButton;
+    final JButton startSeqButton;
+    final JButton stopSeqButton;
+    final StopButton stopPumpButton;
+    final JLabel syringeReadyLabel;
+    final JButton syringeReadyButton;
+    final JLabel seqStatus;
+    final JLabel pumpStatusOnSeqLabel;
+    public final JLabel pumpStatusOnSeq;
+    final JLabel legend = new JLabel("Step legend: Wd = Withdraw before step starts; " +
             "Ex = Wait for syringe exchange before step starts.");
-    JLabel suckBetweenStepsLabel;
-    public JCheckBox suckBetweenSteps;
-    JLabel suckStepLabel;
-    public JPanel suckStepPanel;
+    final JLabel suckBetweenStepsLabel;
+    public final JCheckBox suckBetweenSteps;
+    final JLabel suckStepLabel;
+    public final JPanel suckStepPanel;
     
-    public SequenceManager sequenceManager;
+    public final SequenceManager sequenceManager;
 
-    public SequentialLabelling(GUI gui) {
+    public SequentialLabelling(final GUI gui) {
         super();
         this.gui = gui;
 
@@ -92,7 +92,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
         pumpStatusOnSeqLabel = new JLabel("Pump status: ");
         pumpStatusOnSeq = new JLabel("Pump not started.");
         suckBetweenStepsLabel = new JLabel("Withdraw between steps?");
-        suckBetweenSteps = new JCheckBox("", prefs.getBoolean(SUCK, true));
+        suckBetweenSteps = new JCheckBox("", preferences.getBoolean(SUCK, true));
         suckStepLabel = new JLabel();
         suckStepPanel = sequence.getSuckStep().getStepPanel();
         
@@ -125,7 +125,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
     }
 
     private void updateStepPanel(ArrayList<HashMap<String,String>> newStepList) {
-        // The first item on the list is the suck step information, so we updat the step accordingly
+        // The first item on the list is the suck step information, so we update the step accordingly
         sequence.getSuckStep().updateStepInformation(newStepList.get(0));
         newStepList.remove(0);
 
@@ -151,7 +151,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(suckBetweenSteps)) {
-            prefs.putBoolean(SUCK, suckBetweenSteps.isSelected());
+            preferences.putBoolean(SUCK, suckBetweenSteps.isSelected());
             suckStepPanel.setVisible(suckBetweenSteps.isSelected());
         }
     }
@@ -207,7 +207,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
 
     private class StepChanger implements ActionListener, Observer {
          /*
-         When you change the number of steps by entering a number on the text field OR cliking the "+" or "-"
+         When you change the number of steps by entering a number on the text field OR clicking the "+" or "-"
          buttons, this action listener is called. It will change the layout of the protocol in a manner which
          doesn't rewrite the entire protocol list: this means it won't lose what was entered previously.
          */
@@ -247,7 +247,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                     for (int s = 0; s < difference; s++) {
                         int currentStep = steps_on_list + s;
                         // Add to the current step list a new step object with the current index.
-                        // The name of the step will be it's index on the list.
+                        // The name of the step will be its index on the list.
                         Step step = new Step(currentStep + 1);
                         step.addActionListener(updateStepPump);
                         sequence.add(step);
@@ -365,15 +365,15 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
             chooser.setDialogTitle("Choose Protocol to load");
 
             // Get working directory from preferences
-            chooser.setCurrentDirectory(new File(prefs.get(SAVE_LOCATION, System.getProperty("user.home"))));
+            chooser.setCurrentDirectory(new File(preferences.get(SAVE_LOCATION, System.getProperty("user.home"))));
 
             // Get save location from user
             int returnVal = chooser.showOpenDialog(protocolLoad);
 
             // If successful, load protocol
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                // Save location in preferences so it is loaded next time the software is loaded
-                prefs.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
+                // Save location in preferences, so it is loaded next time the software is loaded
+                preferences.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
 
                 try {
                     // Create file opener
@@ -408,7 +408,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
         @Override
         public void actionPerformed(ActionEvent e) {
             // Get working directory from preferences
-            File dir = new File(prefs.get(SAVE_LOCATION, System.getProperty("user.home")));
+            File dir = new File(preferences.get(SAVE_LOCATION, System.getProperty("user.home")));
 
             // Create .nsp file chooser
             JFileChooser chooser = new JFileChooser();
@@ -421,8 +421,8 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
 
             // If successful, save protocol
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                // Save location in preferences so it is loaded next time the software is loaded
-                prefs.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
+                // Save location in preferences, so it is loaded next time the software is loaded
+                preferences.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
 
                 // Make sure file has only one .nsp termination
                 if (!chooser.getSelectedFile().getAbsolutePath().endsWith(".nsp")) {
@@ -467,7 +467,7 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                 return "Can't do anything until a pump is connected.";
             }
 
-            prefs.putBoolean(SUCK, suckBetweenSteps.isSelected());
+            preferences.putBoolean(SUCK, suckBetweenSteps.isSelected());
             sequence.setSuck(suckBetweenSteps.isSelected());
             sequenceManager.start(sequence);
             return "Starting Sequence!";
@@ -478,15 +478,14 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
                 return "Can't do anything until a pump is connected.";
             }
 
-            prefs.putBoolean(SUCK, suckBetweenSteps.isSelected());
+            preferences.putBoolean(SUCK, suckBetweenSteps.isSelected());
             sequence.setSuck(suckBetweenSteps.isSelected());
             sequenceManager.start(sequence, startStep, endStep);
             return "Starting Sequence!";
         }
 
-        public String stop() {
+        public void stop() {
             sequenceManager.stop();
-            return "Stopping Sequence.";
         }
 
         @Override

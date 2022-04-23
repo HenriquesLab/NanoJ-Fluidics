@@ -20,24 +20,24 @@ import java.util.Observer;
 import java.util.prefs.Preferences;
 
 public class PumpCalibration extends JPanel implements Observer, TableModelListener, ActionListener {
-    private final Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
+    private final Preferences preferences = Preferences.userRoot().node(this.getClass().getName());
     private final PumpManager pumpManager = PumpManager.INSTANCE;
     private final GUI gui;
-    public String name = "Pump Calibration";
+    public static final String TAB_NAME = "Pump Calibration";
 
-    JLabel tableLabel;
+    final JLabel tableLabel;
     private final CalibrationTable tableModel;
-    JScrollPane tableScrollPane;
+    final JScrollPane tableScrollPane;
 
-    JButton loadCalibration = new JButton("Load Previous Calibration from file");
-    JButton saveCalibration = new JButton("Save Current Calibration to file");
-    JButton resetCalibration = new JButton("Reset Calibration");
+    final JButton loadCalibration = new JButton("Load Previous Calibration from file");
+    final JButton saveCalibration = new JButton("Save Current Calibration to file");
+    final JButton resetCalibration = new JButton("Reset Calibration");
 
-    JComboBox<String> pumpList;
-    JLabel timeToPumpLabel = new JLabel("Time to pump (seconds)");
-    JTextField timeToPump = new JTextField("10");
-    JButton calibrateButton = new JButton("Start pumping");
-    StopButton stopButton;
+    final JComboBox<String> pumpList;
+    final JLabel timeToPumpLabel = new JLabel("Time to pump (seconds)");
+    final JTextField timeToPump = new JTextField("10");
+    final JButton calibrateButton = new JButton("Start pumping");
+    final StopButton stopButton;
 
     private static final String CAL = "Cal";
     private static final String SAVE_LOCATION = "location";
@@ -94,17 +94,17 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
                 String key = subPump.name + subPump.subPump + subPump.port;
 
-                double diameter = prefs.getDouble(CAL+DIAMETER+key,
+                double diameter = preferences.getDouble(CAL+DIAMETER+key,
                         Double.parseDouble(subPump.asCalibrationArray()[DIAMETER]));
 
                 tableModel.setValueAt(""+diameter,index,DIAMETER);
 
-                double maxFlowRate = prefs.getDouble(CAL+MAX_FLOW_RATE+key,
+                double maxFlowRate = preferences.getDouble(CAL+MAX_FLOW_RATE+key,
                         Double.parseDouble(subPump.asCalibrationArray()[MAX_FLOW_RATE]));
 
                 tableModel.setValueAt(""+maxFlowRate,index,MAX_FLOW_RATE);
 
-                double minFlowRate = prefs.getDouble(CAL+MIN_FLOW_RATE+key,
+                double minFlowRate = preferences.getDouble(CAL+MIN_FLOW_RATE+key,
                         Double.parseDouble(subPump.asCalibrationArray()[MIN_FLOW_RATE]));
 
                 tableModel.setValueAt(""+minFlowRate,index,MIN_FLOW_RATE);
@@ -136,9 +136,9 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
                 pumpManager.updateReferenceRate(e.getFirstRow(),new double[] {diameter,maxFlowRate,minFlowRate});
 
-                prefs.putDouble(CAL+DIAMETER+name+subPump+port,diameter);
-                prefs.putDouble(CAL+MAX_FLOW_RATE+name+subPump+port,maxFlowRate);
-                prefs.putDouble(CAL+MIN_FLOW_RATE+name+subPump+port,minFlowRate);
+                preferences.putDouble(CAL+DIAMETER+name+subPump+port,diameter);
+                preferences.putDouble(CAL+MAX_FLOW_RATE+name+subPump+port,maxFlowRate);
+                preferences.putDouble(CAL+MIN_FLOW_RATE+name+subPump+port,minFlowRate);
 
                 gui.log.message("Updated calibration of " + name + ", " + subPump + " on port " + port + " to: " +
                         diameter + ", " + maxFlowRate + ", " + minFlowRate);
@@ -155,15 +155,15 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
             chooser.setDialogTitle("Choose Calibration file to load");
 
             // Get working directory from preferences
-            chooser.setCurrentDirectory(new File(prefs.get(SAVE_LOCATION, System.getProperty("user.home"))));
+            chooser.setCurrentDirectory(new File(preferences.get(SAVE_LOCATION, System.getProperty("user.home"))));
 
             // Get save location from user
             int returnVal = chooser.showOpenDialog(loadCalibration);
 
             // If successful, load protocol
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                // Save location in preferences so it is loaded next time the software is loaded
-                prefs.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
+                // Save location in preferences, so it is loaded next time the software is loaded
+                preferences.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
 
                 try {
                     // Create file opener
@@ -220,7 +220,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
         else if (e.getSource().equals(saveCalibration)) {
             // Get working directory from preferences
-            File dir = new File(prefs.get(SAVE_LOCATION, System.getProperty("user.home")));
+            File dir = new File(preferences.get(SAVE_LOCATION, System.getProperty("user.home")));
 
             // Create .nsp file chooser
             JFileChooser chooser = new JFileChooser();
@@ -233,8 +233,8 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
             // If successful, save protocol
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                // Save location in preferences so it is loaded next time the software is loaded
-                prefs.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
+                // Save location in preferences, so it is loaded next time the software is loaded
+                preferences.put(SAVE_LOCATION,chooser.getSelectedFile().getParent());
 
                 // Make sure file has only one .nsc termination
                 if (!chooser.getSelectedFile().getAbsolutePath().endsWith(".nsc")) {
@@ -286,15 +286,15 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
                 double diameter = subPump.pump.getDefaultRate()[0];
                 tableModel.setValueAt("" + diameter,index,DIAMETER);
-                prefs.putDouble(CAL+DIAMETER+key,diameter);
+                preferences.putDouble(CAL+DIAMETER+key,diameter);
 
                 double maxFlowRate = subPump.pump.getDefaultRate()[1];
                 tableModel.setValueAt("" + maxFlowRate,index,MAX_FLOW_RATE);
-                prefs.putDouble(CAL+MAX_FLOW_RATE+key,maxFlowRate);
+                preferences.putDouble(CAL+MAX_FLOW_RATE+key,maxFlowRate);
 
                 double minFlowRate = subPump.pump.getDefaultRate()[2];
                 tableModel.setValueAt("" + minFlowRate,index,MIN_FLOW_RATE);
-                prefs.putDouble(CAL+MIN_FLOW_RATE+key,minFlowRate);
+                preferences.putDouble(CAL+MIN_FLOW_RATE+key,minFlowRate);
 
                 pumpManager.updateReferenceRate(index,new double[]{diameter,maxFlowRate,minFlowRate});
 

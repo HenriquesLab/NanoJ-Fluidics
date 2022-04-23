@@ -24,7 +24,7 @@ public final class GUI {
     private boolean closeOnExit = false;
 
     // Log object
-    public Log log = Log.INSTANCE;
+    public final Log log = Log.INSTANCE;
 
     // GUI objects and layout. These are standard Java SWING objects.
     private JFrame mainFrame;
@@ -108,10 +108,10 @@ public final class GUI {
 
         log.set("NanoJ Sequential Labelling");
 
-        topPane.addTab(pumpConnections.name, pumpConnections);
-        topPane.addTab(directControl.name, directControl);
-        topPane.addTab(pumpCalibration.name, pumpCalibration);
-        topPane.addTab(sequentialLabelling.name, sequentialLabelling);
+        topPane.addTab(PumpConnections.TAB_NAME, pumpConnections);
+        topPane.addTab(DirectControl.TAB_NAME, directControl);
+        topPane.addTab(PumpCalibration.TAB_NAME, pumpCalibration);
+        topPane.addTab(SequentialLabelling.TAB_NAME, sequentialLabelling);
 
         mainPanel.setTopComponent(topPane);
         mainPanel.setBottomComponent(logPane);
@@ -160,9 +160,10 @@ public final class GUI {
 
     @SuppressWarnings("unused")
     public String stopSequence() {
-        String message = sequentialLabelling.listener.stop();
-        log.message(message);
-        return message;
+        sequentialLabelling.listener.stop();
+        String stopMessage = "Stopping Sequence.";
+        log.message(stopMessage);
+        return stopMessage;
     }
 
     @SuppressWarnings("unused")
@@ -197,7 +198,7 @@ public final class GUI {
     // Private classes
 
     public static class Log extends JTextArea {
-        public static Log INSTANCE = new Log();
+        public static final Log INSTANCE = new Log();
 
         private Log() {
             super();

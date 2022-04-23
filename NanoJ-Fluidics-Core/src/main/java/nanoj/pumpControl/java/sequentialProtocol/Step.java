@@ -14,7 +14,7 @@ import java.util.Observer;
 public class Step extends Observable implements Observer, ActionListener {
     /*
     When you add a step on the GUI, it creates a prototypical object of this type.
-    It will be able to update itself when any change is  done and it will also be able to report back it's currently
+    It will be able to update itself when any change is done, and it will also be able to report back it's currently
     entered values.
     */
 
