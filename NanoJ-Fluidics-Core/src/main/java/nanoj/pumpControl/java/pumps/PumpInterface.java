@@ -6,7 +6,7 @@ public interface PumpInterface {
 
     String connectToPump(String comPort) throws Exception;
 
-    boolean disconnect() throws Exception; // TODO remove boolean
+    void disconnect() throws Exception;
 
     void setSyringeDiameter(double diameter) throws Exception;
 

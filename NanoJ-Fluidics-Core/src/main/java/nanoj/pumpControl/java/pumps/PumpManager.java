@@ -135,35 +135,31 @@ public class PumpManager extends Observable implements Observer {
         notifyObservers(NEW_STATUS_AVAILABLE);
     }
 
-    public synchronized boolean disconnect(String port) throws Exception {
-        boolean success = false;
-        Pump pump = null;
-        for (ConnectedSubPump subPump: connectedSubPumps)
+    /**
+     * @param port The name of the COM port
+     * @throws Exception In case an error occurs while disconnecting.
+     */
+    public synchronized void disconnect(String port) throws Exception {
+        for (ConnectedSubPump subPump: connectedSubPumps) {
             if (subPump.port.equals(port)) {
-                pump = subPump.pump;
-                success = subPump.pump.disconnect();
+                subPump.pump.disconnect();
                 break;
             }
-
-        if (success)
-            connectedSubPumps.removePump(pump);
+        }
 
         setChanged();
         notifyObservers(PUMP_DISCONNECTED);
-        return success;
     }
 
     @SuppressWarnings("unused")
-    public synchronized boolean disconnect(int index) throws Exception {
-        boolean success = connectedSubPumps.getConnectedSubPump(index).pump.disconnect();
+    public synchronized void disconnect(int index) throws Exception {
+        connectedSubPumps.getConnectedSubPump(index).pump.disconnect();
         String name = connectedSubPumps.getConnectedSubPump(index).name;
         String port = connectedSubPumps.getConnectedSubPump(index).port;
-        if (success)
-            connectedSubPumps.removePump(name,port);
+        connectedSubPumps.removePump(name,port);
 
         setChanged();
         notifyObservers(PUMP_DISCONNECTED);
-        return success;
     }
 
     public String[] getAvailablePumpsList() {

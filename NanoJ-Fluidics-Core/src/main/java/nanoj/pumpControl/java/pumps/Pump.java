@@ -41,10 +41,9 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
     }
 
     @Override
-    public boolean disconnect() throws Exception {
+    public void disconnect() throws Exception {
         connected = false;
         core.unloadDevice(portName);
-        return true;
     }
 
     @Override

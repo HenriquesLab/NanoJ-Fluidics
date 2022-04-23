@@ -101,24 +101,21 @@ public class PumpConnections extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            boolean success = false;
-            String port = "Undefined";
-            String name = "Undefined";
             try {
-                port = (String) portsList.getSelectedItem();
-                name = pumpManager.getPumpNameOnPort(port);
-                success = pumpManager.disconnect(port);
+                String port = (String) portsList.getSelectedItem();
+                String name = pumpManager.getPumpNameOnPort(port);
+                pumpManager.disconnect(port);
+                connectedPumpsTableModel.setRowCount(0);
+
+                for (ConnectedSubPump subPump: pumpManager.getConnectedPumpsList()) {
+                    connectedPumpsTableModel.addRow(subPump.asConnectionArray());
+                }
+
+                gui.log.message("Disconnected from " + name + " on port " + port + ".");
+
             } catch (Exception e1) {
                 gui.log.message("Error, failed to disconnect properly.");
                 e1.printStackTrace();
-            }
-            if (success) {
-                connectedPumpsTableModel.setRowCount(0);
-
-                for (ConnectedSubPump subPump: pumpManager.getConnectedPumpsList())
-                    connectedPumpsTableModel.addRow(subPump.asConnectionArray());
-
-                gui.log.message("Disconnected from " + name + " on port " + port + ".");
             }
         }
     }
