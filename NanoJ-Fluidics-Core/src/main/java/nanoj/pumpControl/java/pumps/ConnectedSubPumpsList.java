@@ -7,8 +7,6 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     private final ArrayList<ConnectedSubPump> list = new ArrayList<>();
     private final ArrayList<Pump> connectedPumps = new ArrayList<>();
 
-    private static final String OUT_OF_BOUNDS = "SubPump index doesn't exist in list.";
-
     public boolean notPresent(int index) {
         return index >= list.size() || index < 0;
     }
@@ -35,6 +33,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
             }
     }
 
+    @SuppressWarnings("unused")
     public void removePump(Pump pump) {
         ArrayList<ConnectedSubPump> found = new ArrayList<>();
         for (ConnectedSubPump subPump: list)
@@ -84,16 +83,16 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         return list.isEmpty();
     }
 
-    public ConnectedSubPump getConnectedSubPump(int index) throws IndexOutOfBoundsException {
+    public ConnectedSubPump getConnectedSubPump(int index) throws PumpIndexNotFound {
         if (notPresent(index))
-            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+            throw new PumpIndexNotFound(index);
         return list.get(index);
     }
 
     @SuppressWarnings("unused")
-    public String getFullName(int index) throws IndexOutOfBoundsException {
+    public String getFullName(int index) throws PumpIndexNotFound {
         if (!notPresent(index))
-            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+            throw new PumpIndexNotFound(index);
         return list.get(index).getFullName();
     }
 
@@ -113,21 +112,21 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         }
     }
 
-    public String getPumpName(int index) throws IndexOutOfBoundsException {
+    public String getPumpName(int index) throws PumpIndexNotFound {
         if (notPresent(index))
-            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+            throw new PumpIndexNotFound(index);
         return list.get(index).name;
     }
 
-    public String getPumpSubName(int index) throws IndexOutOfBoundsException {
+    public String getPumpSubName(int index) throws PumpIndexNotFound {
         if (notPresent(index))
-            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+            throw new PumpIndexNotFound(index);
         return list.get(index).subPump;
     }
 
-    public String getPumpPort(int index) throws IndexOutOfBoundsException {
+    public String getPumpPort(int index) throws PumpIndexNotFound {
         if (notPresent(index))
-            throw new IndexOutOfBoundsException(OUT_OF_BOUNDS);
+            throw new PumpIndexNotFound(index);
         return list.get(index).port;
     }
 
@@ -149,7 +148,13 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         return list.iterator();
     }
 
-    public static class PumpNotFoundException extends RuntimeException {
+    public static class PumpNotFoundException extends Exception {
         public PumpNotFoundException() { super();}
+    }
+    
+    public static class PumpIndexNotFound extends Exception {
+        PumpIndexNotFound(int index) {
+            super("SubPump index " + index + " doesn't exist in list.");
+        }
     }
 }

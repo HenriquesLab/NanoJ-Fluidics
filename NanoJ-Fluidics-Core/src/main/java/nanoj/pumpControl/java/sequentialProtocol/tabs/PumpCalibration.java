@@ -1,6 +1,7 @@
 package nanoj.pumpControl.java.sequentialProtocol.tabs;
 
 import nanoj.pumpControl.java.pumps.ConnectedSubPump;
+import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList;
 import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
@@ -109,7 +110,14 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
 
                 tableModel.setValueAt(""+minFlowRate,index,MIN_FLOW_RATE);
 
-                pumpManager.updateReferenceRate(index,new double[]{diameter,maxFlowRate,minFlowRate});
+                try {
+                    pumpManager.updateReferenceRate(index, new double[]{diameter,maxFlowRate,minFlowRate});
+                }
+                catch (ConnectedSubPumpsList.PumpIndexNotFound e) {
+                    GUI.Log.INSTANCE.message("Error updating reference rate");
+                    e.printStackTrace();
+                    break;
+                }
 
                 index++;
             }
@@ -134,7 +142,14 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                 String subPump = (String) tableModel.getValueAt(e.getFirstRow(),SUB_PUMP);
                 String port = (String) tableModel.getValueAt(e.getFirstRow(),PORT);
 
-                pumpManager.updateReferenceRate(e.getFirstRow(),new double[] {diameter,maxFlowRate,minFlowRate});
+                try {
+                    pumpManager.updateReferenceRate(e.getFirstRow(),new double[] {diameter,maxFlowRate,minFlowRate});
+                }
+                catch (ConnectedSubPumpsList.PumpIndexNotFound ex) {
+                    GUI.Log.INSTANCE.message("Error updating reference rate");
+                    ex.printStackTrace();
+                    return;
+                }
 
                 preferences.putDouble(CAL+DIAMETER+name+subPump+port,diameter);
                 preferences.putDouble(CAL+MAX_FLOW_RATE+name+subPump+port,maxFlowRate);
@@ -285,18 +300,24 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                 String key = subPump.name+subPump.subPump+subPump.port;
 
                 double diameter = subPump.pump.getDefaultRate()[0];
-                tableModel.setValueAt("" + diameter,index,DIAMETER);
-                preferences.putDouble(CAL+DIAMETER+key,diameter);
+                tableModel.setValueAt("" + diameter, index, DIAMETER);
+                preferences.putDouble(CAL + DIAMETER + key, diameter);
 
                 double maxFlowRate = subPump.pump.getDefaultRate()[1];
-                tableModel.setValueAt("" + maxFlowRate,index,MAX_FLOW_RATE);
-                preferences.putDouble(CAL+MAX_FLOW_RATE+key,maxFlowRate);
+                tableModel.setValueAt("" + maxFlowRate, index, MAX_FLOW_RATE);
+                preferences.putDouble(CAL + MAX_FLOW_RATE + key, maxFlowRate);
 
                 double minFlowRate = subPump.pump.getDefaultRate()[2];
-                tableModel.setValueAt("" + minFlowRate,index,MIN_FLOW_RATE);
-                preferences.putDouble(CAL+MIN_FLOW_RATE+key,minFlowRate);
+                tableModel.setValueAt("" + minFlowRate, index, MIN_FLOW_RATE);
+                preferences.putDouble(CAL + MIN_FLOW_RATE + key, minFlowRate);
 
-                pumpManager.updateReferenceRate(index,new double[]{diameter,maxFlowRate,minFlowRate});
+                try {
+                    pumpManager.updateReferenceRate(index, new double[]{diameter,maxFlowRate,minFlowRate});
+                } catch (ConnectedSubPumpsList.PumpIndexNotFound ex) {
+                    GUI.Log.INSTANCE.message("Error updating reference rate");
+                    ex.printStackTrace();
+                    break;
+                }
 
                 index++;
             }

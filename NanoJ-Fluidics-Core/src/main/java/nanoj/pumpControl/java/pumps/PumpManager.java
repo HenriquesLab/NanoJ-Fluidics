@@ -197,26 +197,35 @@ public class PumpManager extends Observable implements Observer {
     }
 
     public synchronized boolean isConnected(int pumpIndex) {
-        return pumpIndex < connectedSubPumps.size()
-                && connectedSubPumps.getConnectedSubPump(pumpIndex).pump.isConnected();
+        try {
+            return connectedSubPumps.getConnectedSubPump(pumpIndex).pump.isConnected();
+        } catch (ConnectedSubPumpsList.PumpIndexNotFound e) {
+            return false;
+        }
     }
 
     @SuppressWarnings("unused")
     public synchronized boolean isConnected(String pumpName, String port, boolean fullName) {
-        boolean isIt = false;
         if (fullName) {
-            for (String pump: getAllFullNames())
+            for (String pump: getAllFullNames()) {
                 if (pump.equals(pumpName)) {
-                    isIt = true;
-                    break;
+                    return true;
                 }
+            }
+            return false;
         }
-        else isIt = connectedSubPumps.getPump(pumpName, port).isConnected();
-
-        return isIt;
+        else {
+            try {
+                return connectedSubPumps.getPump(pumpName, port).isConnected();
+            } catch (PumpNotFoundException e) {
+                return false;
+            }
+        }
     }
 
-    public double[] getMaxMin(int pumpIndex, double diameter) throws PumpNotFoundException {
+    public double[] getMaxMin(int pumpIndex, double diameter)
+            throws PumpNotFoundException, ConnectedSubPumpsList.PumpIndexNotFound
+    {
         String name = connectedSubPumps.getPumpName(pumpIndex);
         String port = connectedSubPumps.getPumpPort(pumpIndex);
         String subPump = connectedSubPumps.getPumpSubName(pumpIndex);
@@ -245,10 +254,13 @@ public class PumpManager extends Observable implements Observer {
         return connectedSubPumps.getAllFullNames();
     }
 
-    public void updateReferenceRate(int pumpIndex, double[] newRate) {
+    public void updateReferenceRate(int pumpIndex, double[] newRate)
+            throws ConnectedSubPumpsList.PumpIndexNotFound
+    {
         connectedSubPumps.getConnectedSubPump(pumpIndex).pump.updateReferenceRate(
                 connectedSubPumps.getConnectedSubPump(pumpIndex).subPump,
-                newRate);
+                newRate
+        );
     }
 
     @Override

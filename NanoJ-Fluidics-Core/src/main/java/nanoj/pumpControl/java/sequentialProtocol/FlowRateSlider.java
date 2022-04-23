@@ -9,6 +9,9 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static nanoj.pumpControl.java.pumps.ConnectedSubPumpsList.PumpIndexNotFound;
+import static nanoj.pumpControl.java.pumps.ConnectedSubPumpsList.PumpNotFoundException;
+
 public class FlowRateSlider extends JPanel implements ChangeListener {
     private final PumpManager pumpManager = PumpManager.INSTANCE;
     double syringeDiameter = 1;
@@ -60,9 +63,16 @@ public class FlowRateSlider extends JPanel implements ChangeListener {
     }
 
     private void update() {
-        double[] newInformation = pumpManager.getMaxMin(
-                pumpSelection,
-                syringeDiameter);
+        double[] newInformation;
+        try {
+            newInformation = pumpManager.getMaxMin(
+                    pumpSelection,
+                    syringeDiameter);
+        } catch (PumpNotFoundException | PumpIndexNotFound e) {
+            GUI.Log.INSTANCE.message("Error updating flow-rate for given pump");
+            e.printStackTrace();
+            return;
+        }
 
         double syringeMin = newInformation[1];
         double syringeRate = (newInformation[0] - newInformation[1]);
