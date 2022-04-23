@@ -15,6 +15,14 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
 
+/**
+ * The GUI Panel that controls the sequential labelling process.
+ *
+ * <p>
+ * It starts and manages the running sequence (using {@link SequenceManager}) so it also contains convenience
+ * methods to get the sequence status.
+ * </p>
+ */
 public class SequentialLabelling extends JPanel implements Observer, ActionListener {
     private final Preferences preferences = Preferences.userRoot().node(this.getClass().getName());
     private final PumpManager pumpManager = PumpManager.INSTANCE;
@@ -58,8 +66,8 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
     public final JCheckBox suckBetweenSteps;
     final JLabel suckStepLabel;
     public final JPanel suckStepPanel;
-    
-    public final SequenceManager sequenceManager;
+
+    private SequenceManager sequenceManager;
 
     public SequentialLabelling(final GUI gui) {
         super();
@@ -109,15 +117,6 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
         startSeqButton.addActionListener(listener);
         stopSeqButton.addActionListener(listener);
         syringeReadyButton.addActionListener(new ToggleMonkeyState());
-        
-        //Initiate SequenceManager
-        sequenceManager = SequenceManager.INSTANCE;
-        Thread sequenceThread = new Thread(sequenceManager);
-        sequenceThread.start();
-
-        sequenceManager.addObserver(new SequenceObserver());
-        sequenceManager.defineSequence(sequence);
-        sequenceManager.isSyringeExchangeRequiredOnSequence();
 
         pumpManager.addObserver(this);
 
@@ -154,6 +153,18 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
             preferences.putBoolean(SUCK, suckBetweenSteps.isSelected());
             suckStepPanel.setVisible(suckBetweenSteps.isSelected());
         }
+    }
+
+    /**
+     * @return Returns the step (0-based) that the sequence is currently performing or -1 if not running.
+     */
+    public int getCurrentStep() {
+        if (sequenceManager != null) return sequenceManager.getCurrentStep();
+        else return -1;
+    }
+
+    public boolean isRunning() {
+        return sequenceManager.isStarted();
     }
 
     private class SequenceObserver implements Observer {
@@ -469,7 +480,9 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
 
             preferences.putBoolean(SUCK, suckBetweenSteps.isSelected());
             sequence.setSuck(suckBetweenSteps.isSelected());
-            sequenceManager.start(sequence);
+            sequenceManager = new SequenceManager(sequence);
+            sequenceManager.addObserver(new SequentialLabelling.SequenceObserver());
+            sequenceManager.startSequence();
             return "Starting Sequence!";
         }
 
@@ -480,7 +493,9 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
 
             preferences.putBoolean(SUCK, suckBetweenSteps.isSelected());
             sequence.setSuck(suckBetweenSteps.isSelected());
-            sequenceManager.start(sequence, startStep, endStep);
+            sequenceManager = new SequenceManager(sequence);
+            sequenceManager.addObserver(new SequentialLabelling.SequenceObserver());
+            sequenceManager.startSequence(startStep, endStep);
             return "Starting Sequence!";
         }
 

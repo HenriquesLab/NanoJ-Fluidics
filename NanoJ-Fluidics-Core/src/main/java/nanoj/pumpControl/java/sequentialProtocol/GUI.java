@@ -140,10 +140,6 @@ public final class GUI {
         return sequentialLabelling.sequence;
     }
 
-    public SequenceManager getSequenceManager() {
-        return sequentialLabelling.sequenceManager;
-    }
-
     @SuppressWarnings("unused")
     public String startSequence() {
         String message = sequentialLabelling.listener.start();
@@ -173,6 +169,10 @@ public final class GUI {
         return "Stopping all pumps!";
     }
 
+    /**
+     * @param pump Pump index (1-based)
+     * @return A string describing what has occurred.
+     */
     @SuppressWarnings("unused")
     public String stopPump(int pump) throws Exception {
         if (pumpManager.noPumpsConnected()) return "No pump connected.";
@@ -181,14 +181,17 @@ public final class GUI {
         else return "Stopping pump " + pumpManager.stopPumping(pump-1);
     }
 
-
+    /**
+     * @return Returns the step (1-based) that the sequence is currently performing or -1 if not running.
+     */
     @SuppressWarnings("unused")
     public int getCurrentStep() {
-        return getSequenceManager().getCurrentStep()+1;
+        int step = sequentialLabelling.getCurrentStep();
+        return (step == -1)? step : ++step;
     }
 
     @SuppressWarnings("unused")
-    public boolean sequenceRunning() { return sequentialLabelling.sequenceManager.isStarted(); }
+    public boolean sequenceRunning() { return sequentialLabelling.isRunning(); }
 
     public void updateGUI() {
         mainFrame.validate();
