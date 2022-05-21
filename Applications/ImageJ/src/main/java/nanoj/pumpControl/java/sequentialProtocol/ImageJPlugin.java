@@ -1,7 +1,7 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
-import ij.plugin.PlugIn;
 import mmcorej.CMMCore;
+import org.scijava.command.Command;
 
 /**
  * Created by palmada on 22/05/2017.
@@ -17,10 +17,10 @@ import mmcorej.CMMCore;
  *      libmmgr_dal_SerialManager
  *
  */
-public class ImageJPlugin implements PlugIn {
+public class ImageJPlugin implements Command {
 
     @Override
-    public void run(String s) {
+    public void run() {
         CMMCore core = new CMMCore();
 
         try {

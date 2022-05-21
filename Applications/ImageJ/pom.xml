@@ -11,6 +11,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ImageJ</artifactId>
+
+    <repositories>
+        <repository>
+            <id>sci-java.public</id>
+            <url>https://maven.scijava.org/content/groups/public</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>net.imagej</groupId>
@@ -24,6 +32,12 @@
             <artifactId>NanoJ-Fluidics-Core</artifactId>
             <version>1.3.0-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scijava</groupId>
+            <artifactId>scijava-common</artifactId>
+            <version>2.85.0</version>
         </dependency>
     </dependencies>
 
