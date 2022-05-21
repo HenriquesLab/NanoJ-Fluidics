@@ -12,10 +12,6 @@
 
     <repositories>
         <repository>
-            <id>ImageJ</id>
-            <url>https://maven.imagej.net/content/repositories/public/</url>
-        </repository>
-        <repository>
             <id>sci-java.public</id>
             <url>https://maven.scijava.org/content/groups/public</url>
         </repository>
@@ -36,6 +32,7 @@
             <!--suppress MavenPackageUpdate -->
             <version>1.48v</version>
         </dependency>
+
         <dependency>
             <groupId>org.scijava</groupId>
             <artifactId>scijava-common</artifactId>
