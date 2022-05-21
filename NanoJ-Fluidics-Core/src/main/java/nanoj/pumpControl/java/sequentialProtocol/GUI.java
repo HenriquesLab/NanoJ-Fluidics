@@ -7,7 +7,7 @@ import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpCalibration;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpConnections;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.SequentialLabelling;
 import org.apache.commons.lang3.SystemUtils;
-import org.micromanager.utils.ReportingUtils;
+import org.micromanager.internal.utils.ReportingUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -44,9 +44,6 @@ public final class GUI {
     public static final int smallButtonWidth = 50;
     public static final int sizeSecondColumn = 250;
 
-    //Tab objects
-    private PumpConnections pumpConnections;
-    private DirectControl directControl;
     private SequentialLabelling sequentialLabelling;
 
     private final PanelListener panelListener = new PanelListener();
@@ -91,8 +88,9 @@ public final class GUI {
         topPane = new JTabbedPane();
 
         //Tab objects
-        pumpConnections = new PumpConnections(this);
-        directControl = new DirectControl(this);
+        //Tab objects
+        PumpConnections pumpConnections = new PumpConnections(this);
+        DirectControl directControl = new DirectControl(this);
         PumpCalibration pumpCalibration = new PumpCalibration(this);
         sequentialLabelling = new SequentialLabelling(this);
 
@@ -123,16 +121,6 @@ public final class GUI {
         updateGUI();
 
         mainFrame.setVisible(true);
-    }
-
-    public void dispose() {
-        try {
-            pumpManager.stopAllPumps();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        pumpConnections.rememberSettings();
-        directControl.rememberPreferences();
     }
 
     @SuppressWarnings("unused")

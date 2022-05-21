@@ -2,7 +2,7 @@ package nanoj.pumpControl.java.sequentialProtocol;
 
 import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.Syringe;
-import org.micromanager.utils.ReportingUtils;
+import org.micromanager.internal.utils.ReportingUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;

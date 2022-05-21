@@ -1,7 +1,7 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
 import nanoj.pumpControl.java.pumps.*;
-import org.micromanager.utils.ReportingUtils;
+import org.micromanager.internal.utils.ReportingUtils;
 
 import javax.swing.*;
 import java.awt.*;

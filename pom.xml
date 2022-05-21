@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.micromanager</groupId>
             <artifactId>MMJ_</artifactId>
-            <version>1.4.22</version>
+            <version>2.0</version>
         </dependency>
 
         <dependency>
