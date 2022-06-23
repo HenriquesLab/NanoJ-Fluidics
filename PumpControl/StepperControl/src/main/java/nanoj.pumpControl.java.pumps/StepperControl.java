@@ -4,7 +4,7 @@ import mmcorej.StrVector;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
 
-public class StepperControl extends Pump{
+public class StepperControl extends Pump {
 	private final GUI.Log log = GUI.Log.INSTANCE;
 	private String comPort;
 
