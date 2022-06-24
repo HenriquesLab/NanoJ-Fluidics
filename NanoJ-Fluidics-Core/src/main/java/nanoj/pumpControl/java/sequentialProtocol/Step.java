@@ -1,11 +1,15 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
-import nanoj.pumpControl.java.pumps.*;
+import nanoj.pumpControl.java.pumps.ConnectedSubPump;
+import nanoj.pumpControl.java.pumps.Pump;
+import nanoj.pumpControl.java.pumps.PumpManager;
+import nanoj.pumpControl.java.pumps.Syringe;
 import org.micromanager.internal.utils.ReportingUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Observable;
@@ -214,13 +218,13 @@ public class Step extends Observable implements Observer, ActionListener {
         ButtonPanel() {
 
             int height = 21;
-
             int width = 21;
 
             ImageIcon up = new ImageIcon();
             ImageIcon down = new ImageIcon();
             ImageIcon duplicate = new ImageIcon();
             ImageIcon expire = new ImageIcon();
+
             try {
                 up = new ImageIcon(Objects.requireNonNull(Step.class.getResource("/up.png")));
                 down  = new ImageIcon(Objects.requireNonNull(Step.class.getResource("/down.png")));
