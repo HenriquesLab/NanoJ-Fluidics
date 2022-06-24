@@ -2,13 +2,9 @@ package nanoj.pumpControl.java;
 
 import org.apache.commons.lang3.SystemUtils;
 
-import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 
 /**
@@ -18,32 +14,6 @@ public class Loader {
     static final ArrayList<File> NO_FILE_FOUND = new ArrayList<>();
     static final String DLL = ".dll";
     static final String JNILIB = ".jnilib";
-    static final String JAR = ".jar";
-
-    public static void loadJars(URL url) throws IntrospectionException, MalformedURLException, FileNotFoundException {
-        // Adapted from http://baptiste-wicht.com/posts/2010/05/tip-add-resources-dynamically-to-a-classloader.html
-        URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-        Class<URLClassLoader> classLoaderClass = URLClassLoader.class;
-
-        ArrayList<File> listOfFiles = findFilesOfType(url, JAR);
-
-        if (listOfFiles.isEmpty())
-            throw new FileNotFoundException("Did not find any jar files in " + url.getPath());
-
-        for (File currentFile: listOfFiles) {
-            URL currentURL = currentFile.toURI().toURL();
-
-            try {
-                Method method = classLoaderClass.getDeclaredMethod("addURL", URL.class);
-                method.setAccessible(true);
-                method.invoke(systemClassLoader, currentURL);
-                System.out.println("Loaded the jar: " + currentFile.getName());
-            } catch (Throwable t) {
-                t.printStackTrace();
-                throw new IntrospectionException("Error when adding url to system ClassLoader.");
-            }
-        }
-    }
 
     public static void loadLibrary(URL url) throws FileNotFoundException {
         String lib;

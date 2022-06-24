@@ -12,12 +12,6 @@ public class Main {
         String root = "file:" + System.getProperty("user.dir") + File.separator;
 
         try {
-            // Load extension jars for pumps and acquisition systems
-            Loader.loadJars(new URL(root + "PumpPlugins"));
-
-            // Load library jars, including apache commons used in loadLibrary
-            Loader.loadJars(new URL(root + "Libraries"));
-
             // Load java native libraries
             Loader.loadLibrary(new URL(root + "Libraries"));
 
