@@ -13,6 +13,7 @@
         <module>Applications/StandAlone</module>
         <module>Applications/ImageJ</module>
         <module>Applications/MicroManager</module>
+        <module>PumpControl/LegoControl</module>
         <module>PumpControl/HarvardElite</module>
         <module>PumpControl/StepperControl</module>
     </modules>
