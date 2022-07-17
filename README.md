@@ -27,6 +27,14 @@ with contributions from the community:
   * [Leo Saunders][MySaundersleo] (University of Colorado Denver): 
   * 3D printed syringe pump body (see [section][MySaundersleoSection]).
 
+### Transition notes  
+This branch currently contains code that is being in transition of working with maven.
+To compile correctly, you'll need to install Micro-Manager 2.0 and,
+from the NanoJ-Fluidics project directory, run the following command:
+```powershell
+mvn install:install-file -Dfile="PATH\plugins\Micro-Manager\MMJ_.jar" -DgroupId="org.micromanager" -DartifactId="MMJ_" -Dversion="2.0" -Dpackaging="jar"
+```
+Where `PATH` is your local path to where you installed micro-manager.
 
   [1]: http://www.ucl.ac.uk/lmcb/users/ricardo-henriques
   [2]: http://www.ucl.ac.uk/lmcb/
