@@ -4,7 +4,8 @@ Note: visit the [**Wiki**][10] or [**Forum**][12] for latest updates.
 
 ![][8]
 
-NanoJ-Fluidics is an open-source device, composed of easily accessible LEGO-parts, electronics and labware. It is designed to automate and simplify fluid exchange experiments in microscopy. Check the paper in Nature Communications: [Automating multimodal microscopy with
+NanoJ-Fluidics is an open-source device, composed of easily accessible LEGO-parts, electronics and labware. 
+It is designed to automate and simplify fluid exchange experiments in microscopy. Check the paper in Nature Communications: [Automating multimodal microscopy with
 NanoJ-Fluidics][11].
 
 ## It consists of three parts:
@@ -12,15 +13,20 @@ NanoJ-Fluidics][11].
 + [A simple "hack" to enable liquid exchange on cell culture dishes][5]
 + And a comprehensive [electronic][6] and [software][7] control suite to control the pumps.
 
-This [Wiki][10] provides all the information necessary for researchers to reproduce their own systems and start performing fluidic experiments on their microscopes.
+This [Wiki][10] provides all the information necessary for researchers to reproduce their own systems
+and start performing fluidic experiments on their microscopes.
 
 ## Developers
 NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [Leterrier][9] laboratories. 
 
 ## Developers
-NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [Leterrier][9] laboratories, with contributions from the community:
-  * [Matthew Meyer][0mgem0] (La Jolla Institute of Allergy & Immunology's Microscopy Core): 3D printed syringe pump body, v-slot adaptor, other parts (see [section](https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Pumpy-3D-Printing-MMeyer)).
-  * [Leo Saunders][MySaundersleo] (University of Colorado Denver): 3D printed syringe pump body (see [section](https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Pumpy-3D-Printing-LSaunders)).
+NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [Leterrier][9] laboratories,
+with contributions from the community:
+  * [Matthew Meyer][0mgem0] (La Jolla Institute of Allergy & Immunology's Microscopy Core):
+3D printed syringe pump body, v-slot adaptor, other parts (see [section][MayerSection]).
+  * [Leo Saunders][MySaundersleo] (University of Colorado Denver): 
+  * 3D printed syringe pump body (see [section][MySaundersleoSection]).
+
 
   [1]: http://www.ucl.ac.uk/lmcb/users/ricardo-henriques
   [2]: http://www.ucl.ac.uk/lmcb/
@@ -36,4 +42,6 @@ NanoJ-Fluidics is developed in a collaboration between the [Henriques][1] and [L
   [12]: https://gitter.im/NanoJ-Fluidics
   [3DPrint]: Pumpy-3D-Printing
   [0mgem0]: https://twitter.com/0mgem0
+  [MayerSection]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Pumpy-3D-Printing-MMeyer
   [MySaundersleo]: https://twitter.com/MySaundersleo
+  [MySaundersleoSection]: https://github.com/HenriquesLab/NanoJ-Fluidics/wiki/Pumpy-3D-Printing-LSaunders
