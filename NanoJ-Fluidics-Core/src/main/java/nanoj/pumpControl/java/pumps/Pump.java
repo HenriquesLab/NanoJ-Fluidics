@@ -8,6 +8,9 @@ import java.util.LinkedHashMap;
 
 public abstract class Pump extends java.util.Observable implements PumpInterface {
     protected CMMCore core;
+    /**
+     * The name of the COM port used to connect to the serial device.
+     */
     protected String portName;
     protected String status = "Not connected.";
     protected double syringeDiameter;

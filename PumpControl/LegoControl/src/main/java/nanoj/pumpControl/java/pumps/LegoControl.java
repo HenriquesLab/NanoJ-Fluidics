@@ -1,13 +1,21 @@
 package nanoj.pumpControl.java.pumps;
 
-import mmcorej.StrVector;
+import gnu.io.NRSerialPort;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class LegoControl extends Pump {
     private final GUI.Log log = GUI.Log.INSTANCE;
-    private String comPort;
     private static final String SHIELD = "S";
     private static final String PUMP = "P";
+
+    public final static int BAUD_RATE = 57600;
+    private NRSerialPort serialPort;
+    private DataInputStream serialPortInput;
+    private DataOutputStream serialPortOutput;
 
     public LegoControl() {
         name = "NanoJ Lego Control Hub";
@@ -18,37 +26,23 @@ public class LegoControl extends Pump {
     }
 
     @Override
-    public String connectToPump(String comPort) throws Exception{
+    public String connectToPump(String comPort) throws IOException {
         String answer;
 
-        this.comPort = comPort;
-        //First, unload any potential leftovers of failed connections
-        portName = comPort;
-        StrVector devices = core.getLoadedDevices();
-        for (int i = 0; i < devices.size(); i++) {
-            if (devices.get(i).equals(portName)) {
-                core.unloadDevice(portName);
+        if (serialPort != null) {
+            if (serialPort.isConnected()) {
+                serialPort.disconnect();
             }
         }
 
-        /*  code assuming the core object doesn't need to reconnect every time
-        try {
-            core.loadDevice(portName, "SerialManager", comPort);
-            core.setProperty(portName, "AnswerTimeout", "" + timeOut);
-            core.setProperty(portName, "BaudRate", "57600");
-            core.setProperty(portName, "StopBits", "2");
-            core.setProperty(portName, "Parity", "None");
-            core.initializeDevice(portName);
+        portName = comPort;
+        serialPort = new NRSerialPort(comPort, BAUD_RATE);
+        serialPort.connect();
+        serialPortInput = new DataInputStream(serialPort.getInputStream());
+        serialPortOutput = new DataOutputStream(serialPort.getOutputStream());
 
-            sendCommand("");
-            answer = sendCommand("p");
-            out(sendCommand("a").getBytes().length + "");
-            out(sendCommand("p").getBytes().length + "");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return FAILED_TO_CONNECT;
-        }
-        */
+        // Discard initial "Connected!" message
+        readPortData();
 
         try {
             answer = sendCommand("p");
@@ -60,8 +54,9 @@ public class LegoControl extends Pump {
         connected = true;
         int[] sPumps = new int[] {
                 Integer.parseInt(answer.substring(0, answer.indexOf("."))),
-                Integer.parseInt(answer.substring(answer.indexOf(".")+1/*,answer.length()-1*/))
+                Integer.parseInt(answer.substring(answer.indexOf(".") + 1))
         };
+
         subPumps = new String[sPumps[0]*sPumps[1]];
         int a = 0;
         for (int s = 0; s < sPumps[0]; s++)
@@ -166,45 +161,32 @@ public class LegoControl extends Pump {
 
     @Override
     public String sendCommand(String command) throws Exception {
-        /* code assuming the core object doesn't need to reconnect every time
-        core.setSerialPortCommand(portName, command + ".", "\r");
-        String answer = core.getSerialPortAnswer(portName, "\n");
-        //CharVector answer =  core.readFromSerialPort(portName);
-        out("Command sent to Lego pump: " + command + ", heard: " + answer);
-        return "" + answer;
-        */
+        log.message("Command sent to Lego pump: " + command);
+        serialPortOutput.writeBytes(command + ".");
+        return readPortData();
+    }
 
-        //First, unload any potential leftovers of failed connections
-        portName = comPort;
-        StrVector devices = core.getLoadedDevices();
-        for(int i = 0; i<devices.size(); i++) {
-            if (devices.get(i).equals(portName)) {
-                core.unloadDevice(portName);
+    public String readPortData() throws IOException {
+        long start = System.currentTimeMillis();
+        long timeLapsed;
+
+        StringBuilder response = new StringBuilder();
+
+        while (true) {
+            if (serialPortInput.available() > 0) {
+                char nextByte = (char) serialPortInput.read();
+                if (nextByte == '\n') break;
+                response.append(nextByte);
+            }
+            else {
+                timeLapsed = System.currentTimeMillis() - start;
+                if (timeLapsed >= 10_000) {
+                    throw new IOException("Connection timed out!");
+                }
             }
         }
-        String result;
 
-        core.loadDevice(portName, "SerialManager", comPort);
-        core.setProperty(portName, "AnswerTimeout", "" + timeOut);
-        core.setProperty(portName, "BaudRate", "57600");
-        core.setProperty(portName, "StopBits", "2");
-        core.setProperty(portName, "Parity", "None");
-        core.initializeDevice(portName);
-
-        core.setSerialPortCommand(portName, "", "\r");
-        core.getSerialPortAnswer(portName, "\n");
-
-        log.message("Command sent to Lego pump: " + command);
-        core.setSerialPortCommand(portName, command + ".", "\r");
-        result = core.getSerialPortAnswer(portName, "\n");
-        result = result.substring(0, result.length()-1);
-
-        String prefix = "Response from pump: ";
-        log.message(prefix + result);
-        setStatus(prefix + result);
-
-        return result;
-
+        return response.toString();
     }
 
     private String parseSubPump(String subPumpString){
