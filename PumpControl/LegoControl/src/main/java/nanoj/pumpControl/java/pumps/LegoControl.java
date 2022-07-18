@@ -1,20 +1,11 @@
 package nanoj.pumpControl.java.pumps;
 
-import nanoj.pumpControl.java.sequentialProtocol.GUI;
-
-import java.io.IOException;
-
-import static nanoj.pumpControl.java.pumps.SerialConnection.BaudRate.B57600;
-
-public class LegoControl extends Pump {
-    private final GUI.Log log = GUI.Log.INSTANCE;
+public class LegoControl extends SerialPump {
     private static final String SHIELD = "S";
     private static final String PUMP = "P";
 
-    public final static SerialConnection.BaudRate BAUD_RATE = B57600;
-    private SerialConnection connection;
-
     public LegoControl() {
+        super(SerialConnection.BaudRate.B57600);
         name = "NanoJ Lego Control Hub";
         timeOut = 2000;
 
@@ -23,17 +14,10 @@ public class LegoControl extends Pump {
     }
 
     @Override
-    public String connectToPump(String comPort) throws IOException {
+    public String connectToPump(String comPort) throws Exception {
         String answer;
 
-        // Clean up any previous connection
-        disconnect();
-
-        portName = comPort;
-        connection = new SerialConnection(comPort, BAUD_RATE);
-
-        // Discard initial "Connected!" message
-        connection.readPortData();
+       super.connectToPump(comPort);
 
         try {
             answer = sendCommand("p");
@@ -128,14 +112,6 @@ public class LegoControl extends Pump {
         */
         sendCommand("r" + parseSubPump(currentSubPump) + action + target);
     }
-
-    @Override
-    public void disconnect() {
-        if (connection != null && connection.isConnected()) {
-            connection.disconnect();
-        }
-    }
-
     @Override
     public void stopAllPumps() throws Exception {
         sendCommand("a");
@@ -155,12 +131,6 @@ public class LegoControl extends Pump {
     @Override
     public synchronized String getStatus() {
         return "Pump alive."/*sendQuery("g")*/;
-    }
-
-    @Override
-    public String sendCommand(String command) throws Exception {
-        log.message("Command sent to Lego pump: " + command);
-        return connection.sendQuery(command);
     }
 
     private String parseSubPump(String subPumpString){
