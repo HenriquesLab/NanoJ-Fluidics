@@ -1,6 +1,5 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
-import mmcorej.CMMCore;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.DirectControl;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpCalibration;
@@ -90,13 +89,12 @@ public final class GUI {
         }
     }
 
-    void create(CMMCore core) {
+    void create() {
         if (mainFrame != null && mainFrame.isVisible())
             return;
 
         //Initiate PumpManager
         pumpManager = PumpManager.INSTANCE;
-        pumpManager.setCore(core);
         pumpManager.loadPlugins();
         // GUI objects and layout.
         mainFrame = new JFrame("Pump Control and Sequential Protocol");

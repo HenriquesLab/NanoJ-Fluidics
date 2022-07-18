@@ -1,7 +1,5 @@
 package nanoj.pumpControl.java.pumps;
 
-import nanoj.pumpControl.java.sequentialProtocol.GUI;
-
 /**
  * A Pump class that connects through a serial port.
  * <p>
@@ -12,10 +10,10 @@ import nanoj.pumpControl.java.sequentialProtocol.GUI;
  * </p>
  */
 public abstract class SerialPump extends Pump {
-    protected final GUI.Log log = GUI.Log.INSTANCE;
 
     public final SerialConnection.BaudRate baudRate;
     protected SerialConnection connection;
+    protected String portName;
 
     protected SerialPump(SerialConnection.BaudRate baudRate) {
         this.baudRate = baudRate;
@@ -39,15 +37,22 @@ public abstract class SerialPump extends Pump {
 
     @Override
     public void disconnect() {
-        if (connection != null && connection.isConnected()) {
+        if (isConnected()) {
             connection.disconnect();
         }
     }
 
     @Override
+    public boolean isConnected() {
+        return connection != null && connection.isConnected();
+    }
+
+    @Override
     public String sendCommand(String command) throws Exception {
-        log.message("Command sent to Lego pump: " + command);
-        return connection.sendQuery(command);
+        setStatus("Sending command to pump: " + command);
+        String response = connection.sendQuery(command);
+        setStatus("Pump response: " + response);
+        return response;
     }
 
 

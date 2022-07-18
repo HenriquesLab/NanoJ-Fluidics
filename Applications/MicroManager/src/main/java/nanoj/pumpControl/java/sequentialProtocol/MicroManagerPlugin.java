@@ -7,15 +7,14 @@ import org.micromanager.internal.utils.ReportingUtils;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
+@SuppressWarnings("unused")
 @Plugin(type = Command.class, menuPath = "NanoJ>Fluidics")
 public class MicroManagerPlugin implements MenuPlugin {
 
-    private Studio studio;
     private final GUI userInterface = GUI.INSTANCE;
 
     @Override
     public void setContext(Studio studio) {
-        this.studio = studio;
     }
 
     @Override
@@ -46,7 +45,7 @@ public class MicroManagerPlugin implements MenuPlugin {
     @Override
     public void onPluginSelected() {
         try {
-            userInterface.create(studio.core());
+            userInterface.create();
         } catch (Exception e) {
             IJ.log("Error, problem when initiating GUI.");
             ReportingUtils.logError(e);

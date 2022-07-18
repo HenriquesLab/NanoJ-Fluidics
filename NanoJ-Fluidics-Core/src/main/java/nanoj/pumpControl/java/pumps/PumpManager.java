@@ -1,6 +1,5 @@
 package nanoj.pumpControl.java.pumps;
 
-import mmcorej.CMMCore;
 import nanoj.pumpControl.java.pumps.ConnectedSubPumpsList.PumpNotFoundException;
 
 import java.util.LinkedHashMap;
@@ -9,7 +8,6 @@ import java.util.Observer;
 import java.util.ServiceLoader;
 
 public class PumpManager extends Observable implements Observer {
-    private CMMCore serialManager;
     private final LinkedHashMap<String, Pump> availablePumps = new LinkedHashMap<>();
     private final ConnectedSubPumpsList connectedSubPumps = new ConnectedSubPumpsList();
     private String status;
@@ -49,14 +47,11 @@ public class PumpManager extends Observable implements Observer {
         availablePumps.put(dummy.getName(), dummy);
     }
 
-    public void setCore(CMMCore core) { serialManager = core; }
-
     public String connect(String pump, String port) throws Exception {
         if (connectedSubPumps.connectedPorts().contains(port)) return PORT_ALREADY_CONNECTED;
         if (!availablePumps.containsKey(pump)) return NOT_AVAILABLE;
 
         Pump newPump = availablePumps.get(pump).getNewInstance();
-        newPump.setCore(serialManager);
         String answer = newPump.connectToPump(port);
 
         if (answer.equals(Pump.FAILED_TO_CONNECT)) {
@@ -138,7 +133,7 @@ public class PumpManager extends Observable implements Observer {
      */
     public synchronized void disconnect(String port) throws Exception {
         for (ConnectedSubPump subPump: connectedSubPumps) {
-            if (subPump.port.equals(port)) {
+            if (subPump.connectionIdentifier.equals(port)) {
                 subPump.pump.disconnect();
                 connectedSubPumps.removePump(subPump.pump);
                 break;
@@ -153,7 +148,7 @@ public class PumpManager extends Observable implements Observer {
     public synchronized void disconnect(int index) throws Exception {
         connectedSubPumps.getConnectedSubPump(index).pump.disconnect();
         String name = connectedSubPumps.getConnectedSubPump(index).name;
-        String port = connectedSubPumps.getConnectedSubPump(index).port;
+        String port = connectedSubPumps.getConnectedSubPump(index).connectionIdentifier;
         connectedSubPumps.removePump(name,port);
 
         setChanged();
@@ -175,7 +170,7 @@ public class PumpManager extends Observable implements Observer {
     public Pump getPumpOnPort(String port) {
         Pump pump = null;
         for (ConnectedSubPump subPump: connectedSubPumps)
-            if (subPump.port.equals(port)) {
+            if (subPump.connectionIdentifier.equals(port)) {
                 pump = subPump.pump;
                 break;
             }
@@ -186,7 +181,7 @@ public class PumpManager extends Observable implements Observer {
     public String getPumpNameOnPort(String port) {
         String pump = "Not found";
         for (ConnectedSubPump subPump: connectedSubPumps)
-            if (subPump.port.equals(port)) {
+            if (subPump.connectionIdentifier.equals(port)) {
                 pump = subPump.name;
                 break;
             }

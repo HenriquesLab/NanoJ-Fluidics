@@ -4,7 +4,9 @@ public interface PumpInterface {
 
     Pump getNewInstance() throws Exception;
 
-    String connectToPump(String comPort) throws Exception;
+    String connectToPump(String connectionIdentifier) throws Exception;
+
+    String getConnectionIdentifier();
 
     void disconnect() throws Exception;
 

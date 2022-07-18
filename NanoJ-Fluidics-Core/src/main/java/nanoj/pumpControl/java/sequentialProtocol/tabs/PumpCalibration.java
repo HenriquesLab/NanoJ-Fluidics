@@ -93,7 +93,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                 pumpList.addItem(subPump.getFullName());
                 tableModel.addRow(subPump.asCalibrationArray());
 
-                String key = subPump.name + subPump.subPump + subPump.port;
+                String key = subPump.name + subPump.subPump + subPump.connectionIdentifier;
 
                 double diameter = preferences.getDouble(CAL+DIAMETER+key,
                         Double.parseDouble(subPump.asCalibrationArray()[DIAMETER]));
@@ -195,7 +195,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
                         for (String[] entry: input) {
                             if (entry[NAME].equals(subPump.name) &&
                                     entry[SUB_PUMP].equals(subPump.subPump) &&
-                                    entry[PORT].equals(subPump.port)) {
+                                    entry[PORT].equals(subPump.connectionIdentifier)) {
                                 tableModel.setValueAt(entry[DIAMETER],index,DIAMETER);
                                 tableModel.setValueAt(entry[MAX_FLOW_RATE],index,MAX_FLOW_RATE);
                                 tableModel.setValueAt(entry[MIN_FLOW_RATE],index,MIN_FLOW_RATE);
@@ -297,7 +297,7 @@ public class PumpCalibration extends JPanel implements Observer, TableModelListe
             int index = 0;
 
             for (ConnectedSubPump subPump: pumpManager.getConnectedPumpsList()) {
-                String key = subPump.name+subPump.subPump+subPump.port;
+                String key = subPump.name+subPump.subPump+subPump.connectionIdentifier;
 
                 double diameter = subPump.pump.getDefaultRate()[0];
                 tableModel.setValueAt("" + diameter, index, DIAMETER);

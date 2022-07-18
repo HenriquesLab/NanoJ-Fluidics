@@ -5,7 +5,7 @@ public class LegoControl extends SerialPump {
     private static final String PUMP = "P";
 
     public LegoControl() {
-        super(SerialConnection.BaudRate.B57600);
+        super(SerialConnection.BaudRate.B_57600);
         name = "NanoJ Lego Control Hub";
         timeOut = 2000;
 
@@ -14,10 +14,10 @@ public class LegoControl extends SerialPump {
     }
 
     @Override
-    public String connectToPump(String comPort) throws Exception {
+    public String connectToPump(String connectionIdentifier) throws Exception {
         String answer;
 
-       super.connectToPump(comPort);
+       super.connectToPump(connectionIdentifier);
 
         try {
             answer = sendCommand("p");

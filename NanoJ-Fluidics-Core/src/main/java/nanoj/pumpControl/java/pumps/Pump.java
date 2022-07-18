@@ -1,17 +1,10 @@
 package nanoj.pumpControl.java.pumps;
 
-import mmcorej.CMMCore;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.LinkedHashMap;
 
 public abstract class Pump extends java.util.Observable implements PumpInterface {
-    protected CMMCore core;
-    /**
-     * The name of the COM port used to connect to the serial device.
-     */
-    protected String portName;
     protected String status = "Not connected.";
     protected double syringeDiameter;
     protected double targetVolume;
@@ -32,10 +25,7 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
         Withdraw
     }
 
-    public static final String[] SINGLE_PUMP = {"This is a single pump device."};
     public static final String FAILED_TO_CONNECT = "Failed to connect!";
-
-    public void setCore(CMMCore givenCore) { core = givenCore; }
 
     @Override
     public Pump getNewInstance() throws Exception {

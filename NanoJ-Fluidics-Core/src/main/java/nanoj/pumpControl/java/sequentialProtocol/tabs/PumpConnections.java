@@ -58,11 +58,6 @@ public class PumpConnections extends JPanel {
 
     }
 
-    public void rememberSettings() {
-        preferences.put(PORT, (String) portsList.getSelectedItem());
-        preferences.put(PUMP, (String) availablePumpsList.getSelectedItem());
-    }
-
     private class Connect implements ActionListener {
 
         @Override
