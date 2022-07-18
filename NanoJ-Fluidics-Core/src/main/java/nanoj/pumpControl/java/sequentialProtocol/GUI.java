@@ -16,10 +16,12 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public final class GUI {
+    private static String Version;
     public PumpManager pumpManager;
     private boolean closeOnExit = false;
 
@@ -49,6 +51,23 @@ public final class GUI {
     private final PanelListener panelListener = new PanelListener();
 
     public static final GUI INSTANCE = new GUI();
+
+    public static String Version() {
+        if (Version == null) {
+            try {
+                InputStream inputStream = GUI.class.getResourceAsStream("/app.properties");
+                Properties prop = new Properties();
+                prop.load(inputStream);
+
+                Version = prop.getProperty("application.version");
+            } catch (Exception e) {
+                e.printStackTrace();
+                Version = "Not Loaded";
+            }
+        }
+
+        return Version;
+    }
 
     /*
      * This no-argument constructor is to make the GUI object a singleton.
