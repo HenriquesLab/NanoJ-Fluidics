@@ -171,12 +171,17 @@ public class LegoControl extends Pump {
         long timeLapsed;
 
         StringBuilder response = new StringBuilder();
+        char previousByte = 0;
 
         while (true) {
             if (serialPortInput.available() > 0) {
                 char nextByte = (char) serialPortInput.read();
-                if (nextByte == '\n') break;
+                if (previousByte == '\r' && nextByte == '\n') {
+                    response.deleteCharAt(response.length() - 1);
+                    break;
+                }
                 response.append(nextByte);
+                previousByte = nextByte;
             }
             else {
                 timeLapsed = System.currentTimeMillis() - start;
