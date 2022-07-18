@@ -362,7 +362,9 @@ public class SequentialLabelling extends JPanel implements Observer, ActionListe
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            sequenceManager.isSyringeExchangeRequiredOnSequence();
+            if (sequenceManager != null) {
+                sequenceManager.isSyringeExchangeRequiredOnSequence();
+            }
         }
     }
 
