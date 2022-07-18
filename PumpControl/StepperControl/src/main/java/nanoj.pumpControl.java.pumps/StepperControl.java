@@ -1,30 +1,17 @@
 package nanoj.pumpControl.java.pumps;
 
-import mmcorej.StrVector;
-import nanoj.pumpControl.java.sequentialProtocol.GUI;
-
-
-public class StepperControl extends Pump {
-	private final GUI.Log log = GUI.Log.INSTANCE;
-	private String comPort;
+public class StepperControl extends SerialPump {
 
 	public StepperControl() {
+		super(SerialConnection.BaudRate.B_57600);
 		subPumps = new String[]{"Single"};
 		name = "NanoJ 3D printed pump";
 		timeOut = 2000;
 	}
 
 	@Override
-	public String connectToPump(String comPort) throws Exception {
-		this.comPort = comPort;
-		//First, unload any potential leftovers of failed connections
-		portName = comPort;
-		StrVector devices = core.getLoadedDevices();
-		for (int i = 0; i < devices.size(); i++) {
-			if (devices.get(i).equals(portName)) {
-				core.unloadDevice(portName);
-			}
-		}
+	public String connectToPump(String connectionIdentifier) throws Exception {
+		super.connectToPump(connectionIdentifier);
 
 		String answer;
 
@@ -70,48 +57,6 @@ public class StepperControl extends Pump {
 	@Override
 	public void stopPump() throws Exception {
 		sendCommand("a");
-	}
-
-
-	@Override
-	public String sendCommand(String command) throws Exception {
-        /* code assuming the core object doesn't need to reconnect every time
-        core.setSerialPortCommand(portName, command + ".", "\r");
-        String answer = core.getSerialPortAnswer(portName, "\n");
-        //CharVector answer =  core.readFromSerialPort(portName);
-        out("Command sent to Lego pump: " + command + ", heard: " + answer);
-        return "" + answer;
-        */
-
-		//First, unload any potential leftovers of failed connections
-		portName = comPort;
-		StrVector devices = core.getLoadedDevices();
-		for(int i = 0; i<devices.size(); i++) {
-			if (devices.get(i).equals(portName)) {
-				core.unloadDevice(portName);
-			}
-		}
-		String result;
-
-		core.loadDevice(portName, "SerialManager", comPort);
-		core.setProperty(portName, "AnswerTimeout", "" + timeOut);
-		core.setProperty(portName, "BaudRate", "57600");
-		core.setProperty(portName, "StopBits", "2");
-		core.setProperty(portName, "Parity", "None");
-		core.initializeDevice(portName);
-
-		core.setSerialPortCommand(portName, "", "\r");
-		core.getSerialPortAnswer(portName, "\n");
-
-		log.message("Command sent to 3D printed pump: " + command);
-		core.setSerialPortCommand(portName, command + ".", "\r");
-		result = core.getSerialPortAnswer(portName, "\n");
-		result = result.substring(0, result.length()-1);
-		String prefix = "Response from pump: ";
-		log.message(prefix + result);
-		setStatus(prefix + result);
-		return result;
-
 	}
 
 	@Override
