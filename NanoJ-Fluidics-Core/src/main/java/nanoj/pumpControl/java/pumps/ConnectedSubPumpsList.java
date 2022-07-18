@@ -17,17 +17,17 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         connectedPumps.add(pump);
     }
 
-    public void removePump(String pumpName,String port) {
+    public void removePump(String pumpName, String port) {
         ArrayList<ConnectedSubPump> pumpsToRemove = new ArrayList<>();
         for (ConnectedSubPump pump: list)
-            if (pump.name.equals(pumpName) && pump.port.equals(port))
+            if (pump.name.equals(pumpName) && pump.connectionIdentifier.equals(port))
                 pumpsToRemove.add(pump);
 
         for (ConnectedSubPump pumpToRemove: pumpsToRemove)
             list.remove(pumpToRemove);
 
         for (ConnectedSubPump pump: list)
-            if (pump.name.equals(pumpName) && pump.port.equals(port)) {
+            if (pump.name.equals(pumpName) && pump.connectionIdentifier.equals(port)) {
                 connectedPumps.remove(pump.pump);
                 break;
             }
@@ -51,7 +51,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
         for (ConnectedSubPump connectedSubPump : list)
             if (connectedSubPump.name.equals(name) &&
                 connectedSubPump.subPump.equals(subPump) &&
-                connectedSubPump.port.equals(port))
+                connectedSubPump.connectionIdentifier.equals(port))
             {
                 result = connectedSubPump;
                 break;
@@ -65,7 +65,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     public Pump getPump(String pumpName, String port) throws PumpNotFoundException {
         Pump pump = null;
         for (ConnectedSubPump subPump: list)
-            if (subPump.name.equals(pumpName) && subPump.port.equals(port)) {
+            if (subPump.name.equals(pumpName) && subPump.connectionIdentifier.equals(port)) {
                 pump = subPump.pump;
                 break;
             }
@@ -127,7 +127,7 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     public String getPumpPort(int index) throws PumpIndexNotFound {
         if (notPresent(index))
             throw new PumpIndexNotFound(index);
-        return list.get(index).port;
+        return list.get(index).connectionIdentifier;
     }
 
     public int size() {
@@ -137,8 +137,8 @@ public class ConnectedSubPumpsList implements Iterable<ConnectedSubPump> {
     public ArrayList<String> connectedPorts() {
         ArrayList<String> ports = new ArrayList<>();
         for (ConnectedSubPump pump: list) {
-            if (!ports.contains(pump.port))
-                ports.add(pump.port);
+            if (!ports.contains(pump.connectionIdentifier))
+                ports.add(pump.connectionIdentifier);
         }
         return ports;
     }

@@ -22,12 +22,17 @@ public abstract class SerialPump extends Pump {
     }
 
     @Override
-    public String connectToPump(String comPort) throws Exception {
+    public String getConnectionIdentifier() {
+        return portName;
+    }
+
+    @Override
+    public String connectToPump(String connectionIdentifier) throws Exception {
         // Clean up any previous connection
         disconnect();
 
-        portName = comPort;
-        connection = new SerialConnection(comPort, baudRate);
+        portName = connectionIdentifier;
+        connection = new SerialConnection(connectionIdentifier, baudRate);
 
         return connection.readPortData();
     }

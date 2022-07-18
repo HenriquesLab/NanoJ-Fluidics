@@ -5,6 +5,9 @@ import nanoj.pumpControl.java.sequentialProtocol.GUI;
 public final class DummyControl extends Pump implements PumpInterface {
     private final GUI.Log log;
 
+    private boolean connected = false;
+    private String connectionIdentifier;
+
     public DummyControl() {
         log = GUI.INSTANCE.log;
 
@@ -32,7 +35,7 @@ public final class DummyControl extends Pump implements PumpInterface {
     }
 
     private String currentSubPump() {
-        return portName + ", " + getCurrentSubPump() + ": ";
+        return getCurrentSubPump() + ": ";
     }
 
     void message(String text) {
@@ -40,12 +43,21 @@ public final class DummyControl extends Pump implements PumpInterface {
     }
 
     @Override
-    public String connectToPump(String comPort) throws Exception {
+    public String connectToPump(String connectionIdentifier) {
         connected = true;
-        portName = comPort;
-        core.loadDevice(portName, "SerialManager", comPort);
-        setStatus("Connected to " + portName);
+        this.connectionIdentifier = connectionIdentifier;
+        setStatus("Connected to " + connectionIdentifier);
         return status;
+    }
+
+    @Override
+    public String getConnectionIdentifier() {
+        return connectionIdentifier;
+    }
+
+    @Override
+    public void disconnect() {
+        connected = false;
     }
 
     @Override
@@ -109,5 +121,10 @@ public final class DummyControl extends Pump implements PumpInterface {
 
     @Override
     public String getStatus() { return status; }
+
+    @Override
+    public boolean isConnected() {
+        return connected;
+    }
 
 }
