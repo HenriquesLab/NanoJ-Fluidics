@@ -140,6 +140,7 @@ public class PumpManager extends Observable implements Observer {
         for (ConnectedSubPump subPump: connectedSubPumps) {
             if (subPump.port.equals(port)) {
                 subPump.pump.disconnect();
+                connectedSubPumps.removePump(subPump.pump);
                 break;
             }
         }
