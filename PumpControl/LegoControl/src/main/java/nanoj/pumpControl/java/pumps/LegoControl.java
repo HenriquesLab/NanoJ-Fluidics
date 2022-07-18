@@ -1,21 +1,18 @@
 package nanoj.pumpControl.java.pumps;
 
-import gnu.io.NRSerialPort;
 import nanoj.pumpControl.java.sequentialProtocol.GUI;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+
+import static nanoj.pumpControl.java.pumps.SerialConnection.BaudRate.B57600;
 
 public class LegoControl extends Pump {
     private final GUI.Log log = GUI.Log.INSTANCE;
     private static final String SHIELD = "S";
     private static final String PUMP = "P";
 
-    public final static int BAUD_RATE = 57600;
-    private NRSerialPort serialPort;
-    private DataInputStream serialPortInput;
-    private DataOutputStream serialPortOutput;
+    public final static SerialConnection.BaudRate BAUD_RATE = B57600;
+    private SerialConnection connection;
 
     public LegoControl() {
         name = "NanoJ Lego Control Hub";
@@ -29,20 +26,14 @@ public class LegoControl extends Pump {
     public String connectToPump(String comPort) throws IOException {
         String answer;
 
-        if (serialPort != null) {
-            if (serialPort.isConnected()) {
-                serialPort.disconnect();
-            }
-        }
+        // Clean up any previous connection
+        disconnect();
 
         portName = comPort;
-        serialPort = new NRSerialPort(comPort, BAUD_RATE);
-        serialPort.connect();
-        serialPortInput = new DataInputStream(serialPort.getInputStream());
-        serialPortOutput = new DataOutputStream(serialPort.getOutputStream());
+        connection = new SerialConnection(comPort, BAUD_RATE);
 
         // Discard initial "Connected!" message
-        readPortData();
+        connection.readPortData();
 
         try {
             answer = sendCommand("p");
@@ -139,6 +130,13 @@ public class LegoControl extends Pump {
     }
 
     @Override
+    public void disconnect() {
+        if (connection != null && connection.isConnected()) {
+            connection.disconnect();
+        }
+    }
+
+    @Override
     public void stopAllPumps() throws Exception {
         sendCommand("a");
     }
@@ -156,42 +154,13 @@ public class LegoControl extends Pump {
     //TODO: Create a status getter that automatically parses the lego style reply.
     @Override
     public synchronized String getStatus() {
-        return "Pump alive."/*sendCommand("g")*/;
+        return "Pump alive."/*sendQuery("g")*/;
     }
 
     @Override
     public String sendCommand(String command) throws Exception {
         log.message("Command sent to Lego pump: " + command);
-        serialPortOutput.writeBytes(command + ".");
-        return readPortData();
-    }
-
-    public String readPortData() throws IOException {
-        long start = System.currentTimeMillis();
-        long timeLapsed;
-
-        StringBuilder response = new StringBuilder();
-        char previousByte = 0;
-
-        while (true) {
-            if (serialPortInput.available() > 0) {
-                char nextByte = (char) serialPortInput.read();
-                if (previousByte == '\r' && nextByte == '\n') {
-                    response.deleteCharAt(response.length() - 1);
-                    break;
-                }
-                response.append(nextByte);
-                previousByte = nextByte;
-            }
-            else {
-                timeLapsed = System.currentTimeMillis() - start;
-                if (timeLapsed >= 10_000) {
-                    throw new IOException("Connection timed out!");
-                }
-            }
-        }
-
-        return response.toString();
+        return connection.sendQuery(command);
     }
 
     private String parseSubPump(String subPumpString){
