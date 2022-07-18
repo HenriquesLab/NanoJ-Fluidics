@@ -44,12 +44,6 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
     }
 
     @Override
-    public void disconnect() throws Exception {
-        connected = false;
-        core.unloadDevice(portName);
-    }
-
-    @Override
     public String getPumpName() {
         return name;
     }
@@ -80,9 +74,6 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
         min = min.setScale(6, RoundingMode.HALF_UP);
         return new double[]{max.doubleValue(),min.doubleValue()};
     }
-
-    @Override
-    public boolean isConnected() { return connected; }
 
     public double[] getDefaultRate() {
         return defaultRate;
