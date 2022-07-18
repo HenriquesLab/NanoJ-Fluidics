@@ -89,6 +89,11 @@ public abstract class Pump extends java.util.Observable implements PumpInterface
         notifyObservers(text);
     }
 
+    @Override
+    public String getStatus() throws Exception {
+        return status;
+    }
+
     public String getCurrentSubPump() { return currentSubPump; }
 
     public void setUnitsOfTime(String units) {
