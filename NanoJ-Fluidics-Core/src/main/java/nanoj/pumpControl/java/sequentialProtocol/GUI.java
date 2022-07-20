@@ -5,7 +5,6 @@ import nanoj.pumpControl.java.sequentialProtocol.tabs.DirectControl;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpCalibration;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpConnections;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.SequentialLabelling;
-import org.apache.commons.lang3.SystemUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -79,7 +78,7 @@ public final class GUI {
         }
 
         // Adapt dimensions to the windows look and feel
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (System.getProperty("os.name").contains("Windows")) {
             connectionsDimensions = new Dimension(500, 270);
             controlDimensions = new Dimension(500, 240);
             calibrationDimensions = new Dimension(600, 350);
