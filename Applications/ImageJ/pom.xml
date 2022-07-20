@@ -42,4 +42,8 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <finalName>NanoJ-Fluidics_ImageJ-${revision}</finalName>
+    </build>
+
 </project>

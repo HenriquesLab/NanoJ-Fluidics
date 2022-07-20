@@ -6,21 +6,18 @@
     <formats>
         <format>zip</format>
     </formats>
-    <dependencySets>
-        <dependencySet>
-            <outputDirectory/>
-            <excludes>
-                <exclude>${project.groupId}:${project.artifactId}:jar:*</exclude>
-            </excludes>
-        </dependencySet>
-    </dependencySets>
+    <files>
+        <file>
+            <source>${project.parent.basedir}/Applications/ImageJ/target/NanoJ-Fluidics_ImageJ-${revision}.jar</source>
+            <outputDirectory>plugins</outputDirectory>
+        </file>
+    </files>
     <moduleSets>
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
 
             <!-- Now, select which projects to include in this module-set. -->
             <includes>
-                <include>nanoj.app:ImageJ</include>
                 <include>nanoj.pumpControl:LegoControl</include>
                 <include>nanoj.pumpControl:HarvardElite</include>
                 <include>nanoj.pumpControl:StepperControl</include>
@@ -29,8 +26,7 @@
                 <exclude>${project.groupId}:${project.artifactId}:jar:*</exclude>
             </excludes>
             <binaries>
-                <includeDependencies>false</includeDependencies>
-                <outputDirectory/>
+                <outputDirectory>jars</outputDirectory>
                 <unpack>false</unpack>
             </binaries>
         </moduleSet>
