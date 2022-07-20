@@ -25,6 +25,7 @@
         <module>PumpControl/LegoControl</module>
         <module>PumpControl/HarvardElite</module>
         <module>PumpControl/StepperControl</module>
+        <module>Distribution</module>
     </modules>
 
     <organization>
