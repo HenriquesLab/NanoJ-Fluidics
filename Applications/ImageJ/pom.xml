@@ -43,7 +43,7 @@
     </dependencies>
 
     <build>
-        <finalName>NanoJ-Fluidics_ImageJ-${revision}</finalName>
+        <finalName>NanoJ-Fluidics_ImageJ</finalName>
     </build>
 
 </project>

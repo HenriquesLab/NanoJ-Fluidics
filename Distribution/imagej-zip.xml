@@ -8,7 +8,7 @@
     </formats>
     <files>
         <file>
-            <source>${project.parent.basedir}/Applications/ImageJ/target/NanoJ-Fluidics_ImageJ-${revision}.jar</source>
+            <source>${project.parent.basedir}/Applications/ImageJ/target/NanoJ-Fluidics_ImageJ.jar</source>
             <outputDirectory>plugins</outputDirectory>
         </file>
     </files>
