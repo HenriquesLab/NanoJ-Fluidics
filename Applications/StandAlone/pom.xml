@@ -10,6 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>nanoj.app</groupId>
     <artifactId>StandAlone</artifactId>
 
     <dependencies>
