@@ -88,8 +88,9 @@ public final class GUI {
     }
 
     void create() {
-        if (mainFrame != null && mainFrame.isVisible())
+        if (mainFrame != null && mainFrame.isVisible()) {
             return;
+        }
 
         //Initiate PumpManager
         pumpManager = PumpManager.INSTANCE;

@@ -16,7 +16,7 @@
         <dependency>
             <groupId>nanoj</groupId>
             <artifactId>NanoJ-Fluidics-Core</artifactId>
-            <version>${project.version}</version>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 
@@ -57,6 +57,22 @@
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>imagej-zip.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>package-micro-manager</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.parent.basedir}</outputDirectory>
+                            <finalName>NanoJ-Fluidics_MicroManager-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>micro-manager-zip.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>
