@@ -6,7 +6,6 @@ import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpCalibration;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.PumpConnections;
 import nanoj.pumpControl.java.sequentialProtocol.tabs.SequentialLabelling;
 import org.apache.commons.lang3.SystemUtils;
-import org.micromanager.internal.utils.ReportingUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -76,7 +75,7 @@ public final class GUI {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            ReportingUtils.logError(e);
+            e.printStackTrace();
         }
 
         // Adapt dimensions to the windows look and feel
