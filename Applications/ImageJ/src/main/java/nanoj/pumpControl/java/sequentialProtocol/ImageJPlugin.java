@@ -1,12 +1,11 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
-import ij.IJ;
-import ij.plugin.PlugIn;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
-@Plugin(type=Command.class, menuPath = "NanoJ>Fluidics")
-public class ImageJPlugin implements Command, PlugIn {
+@SuppressWarnings("unused")
+@Plugin(type = Command.class, menuPath = "NanoJ>NanoJ-Fluidics")
+public class ImageJPlugin implements Command {
 
     @Override
     public void run() {
@@ -19,8 +18,4 @@ public class ImageJPlugin implements Command, PlugIn {
         }
     }
 
-    @Override
-    public void run(String s) {
-        run();
-    }
 }

@@ -1,7 +1,5 @@
 package nanoj.pumpControl.java.sequentialProtocol;
 
-import java.io.File;
-
 public class Main {
 
     public static void main(String[] args) {

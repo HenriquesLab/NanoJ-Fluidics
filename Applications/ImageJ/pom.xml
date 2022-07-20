@@ -24,8 +24,7 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <!--suppress MavenPackageUpdate -->
-            <version>1.48v</version>
+            <version>1.53q</version>
         </dependency>
 
         <dependency>
