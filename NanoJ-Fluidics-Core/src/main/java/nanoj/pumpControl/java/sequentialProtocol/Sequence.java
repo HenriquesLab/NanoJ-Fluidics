@@ -2,7 +2,6 @@ package nanoj.pumpControl.java.sequentialProtocol;
 
 import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.Syringe;
-import org.micromanager.internal.utils.ReportingUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -15,12 +14,6 @@ public class Sequence extends ArrayList<Step> {
 
     public Sequence(Observer changer) {
         super();
-
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            ReportingUtils.logError(e);
-        }
 
         this.stepObserver = changer;
 

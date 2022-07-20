@@ -4,7 +4,6 @@ import nanoj.pumpControl.java.pumps.ConnectedSubPump;
 import nanoj.pumpControl.java.pumps.Pump;
 import nanoj.pumpControl.java.pumps.PumpManager;
 import nanoj.pumpControl.java.pumps.Syringe;
-import org.micromanager.internal.utils.ReportingUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -91,13 +90,6 @@ public class Step extends Observable implements Observer, ActionListener {
     Step(int num, String name, boolean suck, boolean exchange, int time, TimeUnit timeUnit,
          Syringe syringe, double volume, VolumeUnit volumeUnit, Pump.Action action)
     {
-
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            ReportingUtils.logError(e);
-        }
-
         number = num;
         if (num > 0) {
             step.add(new ButtonPanel());
