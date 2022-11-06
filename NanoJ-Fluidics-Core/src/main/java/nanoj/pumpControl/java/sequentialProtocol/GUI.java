@@ -66,9 +66,9 @@ public final class GUI {
         return Version;
     }
 
-    /*
+    /**
      * This no-argument constructor is to make the GUI object a singleton.
-     * The GUI is created by getting INSTANCE and calling the create() method.
+     * The GUI is created by getting INSTANCE and calling the {@link #create()} method.
      */
     private GUI() {
         try {
@@ -87,6 +87,9 @@ public final class GUI {
         }
     }
 
+    /**
+     * Creates and displays the user interface.
+     */
     public void create() {
         if (mainFrame != null && mainFrame.isVisible()) {
             return;
