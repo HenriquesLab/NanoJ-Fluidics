@@ -87,7 +87,7 @@ public final class GUI {
         }
     }
 
-    void create() {
+    public void create() {
         if (mainFrame != null && mainFrame.isVisible()) {
             return;
         }
