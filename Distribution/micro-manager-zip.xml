@@ -14,7 +14,7 @@
     </files>
     <dependencySets>
         <dependencySet>
-            <outputDirectory>plugins\Micro-Manager</outputDirectory>
+            <outputDirectory>plugins</outputDirectory>
             <excludes>
                 <exclude>${project.groupId}:${project.artifactId}:jar:*</exclude>
             </excludes>

@@ -103,7 +103,7 @@ public class MicroManagerPlugin implements MenuPlugin {
     public void onPluginSelected() {
         try {
             String root = "file:" + System.getProperty("user.dir") + File.separator;
-            LoadJars(new URL(root + "plugins"  + File.separator +"Micro-Manager"));
+            LoadJars(new URL(root + "plugins"));
             LoadJars(new URL(root + "mmplugins"  + File.separator +"PumpPlugins"));
             GUI.INSTANCE.create();
         } catch (Exception e) {
