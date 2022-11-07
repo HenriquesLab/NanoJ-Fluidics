@@ -1,6 +1,6 @@
 out/
 .idea/
 *.iml
-PackagedBinaries/
+Binaries/
 target/
 *.zip

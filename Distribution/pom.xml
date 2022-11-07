@@ -36,7 +36,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.parent.basedir}</outputDirectory>
+                            <outputDirectory>${project.parent.basedir}/Binaries</outputDirectory>
                             <finalName>NanoJ-Fluidics-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
@@ -52,7 +52,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.parent.basedir}</outputDirectory>
+                            <outputDirectory>${project.parent.basedir}/Binaries</outputDirectory>
                             <finalName>NanoJ-Fluidics_ImageJ-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
@@ -68,7 +68,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.parent.basedir}</outputDirectory>
+                            <outputDirectory>${project.parent.basedir}/Binaries</outputDirectory>
                             <finalName>NanoJ-Fluidics_MicroManager-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
