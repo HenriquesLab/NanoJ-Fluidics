@@ -1,1 +1,0 @@
-java -cp "./Libraries/*";"./PumpPlugins/*" nanoj.pumpControl.java.sequentialProtocol.Main
